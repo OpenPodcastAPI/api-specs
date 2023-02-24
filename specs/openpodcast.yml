@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  title: OpenPodcast API
+  description: |-
+    This is the OpenAPI specification for the OpenPodcast API
+  version: 0.1.0
+tags:
+  - name: Subscriptions
+    description: All actions relating to subscription management
+paths:
+  /subscriptions:
+    get:
+      tags:
+        - Subscriptions
+      summary: Retrieve all updated subscription information
+      description: Retrieve all subscription information that has changed since the provided timestamp
+      operationId: getSubscriptions
+      parameters:
+        - in: query
+          name: since
+          schema:
+            type: string
+            format: date-time
+          required: false
+          example:
+            '2022-04-23T18:25:43.511Z'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Subscriptions'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - read:subscriptions
+    post:
+      tags:
+        - Subscriptions
+      summary: Add new subscriptions for the authenticated user
+      description: Add one or more new subscriptions for the authenticated user by passing an array of feed URLs in the request body
+      operationId: addSubscription
+      requestBody:
+        $ref: '#/components/requestBodies/FeedArray'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewSubscriptions'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/NewSubscriptions'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - write:subscriptions
+  /subscriptions/{guid}:
+    get:
+      tags:
+        - Subscriptions
+      summary: Retrieve information about a single subscription
+      description: Retrieve information about a single subscription specified in the path
+      operationId: getSubscription
+      parameters:
+        - in: path
+          name: guid
+          schema:
+            type: string
+            format: guid
+          required: true
+          example: 968cb508-803c-493c-8ff2-9e397dadb83c
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - read:subscriptions
+    patch:
+      tags:
+        - Subscriptions
+      summary: Update a single subscription entry
+      description: Udate information about a single subscription specified in the path
+      operationId: updateSubscription
+      parameters:
+        - in: path
+          name: guid
+          schema:
+            type: string
+            format: guid
+          required: true
+          example: 968cb508-803c-493c-8ff2-9e397dadb83c
+      requestBody:
+        $ref: '#/components/requestBodies/PatchedSubscription'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchedSubscription'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PatchedSubscription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - write:subscriptions
+    delete:
+      tags:
+        - Subscriptions
+      summary: Delete a single subscription entry
+      description: Deletes a single subscription specified in the path
+      operationId: deleteSubscription
+      parameters:
+        - in: path
+          name: guid
+          schema:
+            type: string
+            format: guid
+          required: true
+          example: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedSubscription'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DeletedSubscription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - write:subscriptions
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: User not authorized
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: User not authorized
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Resource not found
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Resource not found
+    ValidationException:
+      description: Validation exception
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 405
+            message: Input could not be validated
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 405
+            message: Input could not be validated
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Subscription:
+      required:
+        - feed_url
+        - guid
+        - is_subscribed
+      type: object
+      properties:
+        feed_url:
+          type: string
+          format: url
+        guid:
+          type: string
+          format: guid
+        is_subscribed:
+          type: boolean
+        subscription_changed:
+          type: string
+          format: date-time
+        new_guid:
+          type: string
+          format: guid
+        guid_changed:
+          type: string
+          format: date-time
+      example:
+        feed_url: https://example.com/feed2
+        guid: 968cb508-803c-493c-8ff2-9e397dadb83c
+        is_subscribed: true
+    NewSubscription:
+      required:
+        - feed_url
+        - guid
+        - is_subscribed
+        - subscription_changed
+      type: object
+      properties:
+        feed_url:
+          type: string
+          format: url
+        guid:
+          type: string
+          format: guid
+        is_subscribed:
+          type: boolean
+        subscription_changed:
+          type: string
+          format: date-time
+    Subscriptions:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+      example:
+        - feed_url: https://example.com/rss1
+          guid: 31740ac6-e39d-49cd-9179-634bcecf4143
+          is_subscribed: true
+          guid_changed: 2022-09-21T10:25:32.411Z
+          new_guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
+        - feed_url: https://example.com/rss2
+          guid: 968cb508-803c-493c-8ff2-9e397dadb83c
+          is_subscribed: false
+          subscription_changed: 2022-04-24T17:53:21.573Z
+    NewSubscriptions:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewSubscription'
+      example:
+        - feed_url: https://example.com/rss1
+          guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
+          is_subscribed: true
+          subscription_changed: 2023-02-23T14:00:00.000Z
+        - feed_url: https://example.com/rss2
+          guid: 968cb508-803c-493c-8ff2-9e397dadb83c
+          is_subscribed: true
+          subscription_changed: 2023-02-23T14:00:00.000Z
+        - feed_url: https://example.com/rss3
+          guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
+          is_subscribed: true
+          subscription_changed: 2023-02-23T14:00:00.000Z
+        - feed_url: https://example.com/rss4
+          guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+          is_subscribed: true
+          subscription_changed: 2023-02-23T14:00:00.000Z
+    FeedArray:
+      type: object
+      properties:
+        feed_urls:
+          type: array
+          format: string
+          example:
+            - https://example.com/feed1
+            - https://example.com/feed2
+            - https://example.com/feed3
+            - https://example.com/feed4
+    SubscriptionUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        new_feed_url:
+          type: string
+          format: url
+        new_guid:
+          type: string
+          format: uuid
+        is_subscribed:
+          type: boolean
+      example:
+        new_feed_url: https://example.com/rss5
+        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
+        is_subscribed: false
+    PatchedSubscription:
+      type: object
+      minProperties: 1
+      properties:
+        new_feed_url:
+          type: string
+          format: url
+        is_subscribed:
+          type: boolean
+        subscription_changed:
+          type: string
+          format: date-time
+        new_guid:
+          type: string
+          format: uuid
+        guid_changed:
+          type: string
+          format: date-time
+      example:
+        new_feed_url: https://example.com/rss5
+        is_subscribed: false
+        subscription_changed: 2023-02-23T14:41:00.000Z
+        guid_changed: 2023-02-23T14:41:00.000Z
+        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
+    DeletedSubscription:
+      type: object
+      required:
+        - feed_url
+        - guid
+        - is_deleted
+      properties:
+        feed_url:
+          type: string
+          format: url
+        guid:
+          type: string
+          format: uuid
+        is_deleted:
+          type: boolean
+      example:
+        new_feed_url: https://example.com/rss5
+        new_guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+        is_deleted: true
+  requestBodies:
+    FeedArray:
+      description: An array of feeds the user wants to subscribe to
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FeedArray'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/FeedArray'
+    PatchedSubscription:
+      description: A request containing new information to update an existing subscription with
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SubscriptionUpdate'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/SubscriptionUpdate'
+  securitySchemes:
+    podcast_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://test.openpodcastapi.com/oauth/authorize
+          scopes:
+            write:subscriptions: modify subscription information for your account
+            read:subscriptions: read your subscription information
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
