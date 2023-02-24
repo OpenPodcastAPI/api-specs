@@ -323,7 +323,8 @@ components:
       properties:
         feed_urls:
           type: array
-          format: string
+          items:
+            type: string
           example:
             - https://example.com/feed1
             - https://example.com/feed2
