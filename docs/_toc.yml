@@ -1,0 +1,5 @@
+root: index
+defaults:
+  hidden: False
+  maxdepth: 1
+  numbered: False
