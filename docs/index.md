@@ -1,3 +1,3 @@
-# OpenPodcast API specification hub
+# Open Podcast API specification hub
 
-This site contains the specifications and documentation for the OpenPodcast API.
+This site contains the specifications and documentation for the Open Podcast API.
