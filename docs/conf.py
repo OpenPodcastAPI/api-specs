@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'OpenPodcast API specification'
-copyright = '2023, OpenPodcast API team'
-author = 'OpenPodcast API team'
+project = 'Open Podcast API specification'
+copyright = '2023, Open Podcast API team'
+author = 'Open Podcast API team'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
