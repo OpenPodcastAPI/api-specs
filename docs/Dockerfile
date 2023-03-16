@@ -6,7 +6,6 @@ ENV POETRY_HOME="/opt/poetry"
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt-get update && apt-get install -y curl
-RUN pip install poetry-core pip --upgrade
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 COPY poetry.lock pyproject.toml ./
