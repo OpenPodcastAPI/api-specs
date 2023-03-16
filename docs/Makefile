@@ -18,7 +18,7 @@ build:
 	docker build -t docs .
 
 preview:
-	docker run -v ${PWD}:/app/ -p 8000:8000 docs
+	docker run -ti -v ${PWD}:/app/ -p 8000:8000 docs
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
