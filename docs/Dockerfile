@@ -1,6 +1,4 @@
 FROM python:3.11
-
-ENV POETRY_VIRTUALENVS_IN_PROJECT=false
 ENV POETRY_VIRTUALENVS_CREATE=false
 ENV POETRY_HOME="/opt/poetry"
 ENV PATH="$POETRY_HOME/bin:$PATH"
@@ -12,3 +10,4 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install
 
 WORKDIR /app
+CMD sphinx-autobuild --host 0.0.0.0 /app /app/_build
