@@ -10,4 +10,4 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install
 
 WORKDIR /app
-CMD sphinx-autobuild --host 0.0.0.0 /app /app/_build
+CMD ["sphinx-autobuild", "--host", "0.0.0.0", "/app", "/app/_build"]
