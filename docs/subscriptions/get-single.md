@@ -28,11 +28,11 @@ This endpoint returns subscription information relating to a specific subscripti
 * - `subscription_changed`
    - Datetime
    - No
-   - The date on which the is_subscribed field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `guid_changed`
    - Datetime
    - No
-   - The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+   - The date on which the podcast's `guid` or `new_guid` was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `new_guid`
    - String<UUID>
    - No
@@ -79,6 +79,7 @@ curl -X 'GET' \
 
 :::
 ::::
+
 ## Example 200 response
 
 :::{tab-set-code}
@@ -98,6 +99,29 @@ curl -X 'GET' \
 	<guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
 	<is_subscribed>true</is_subscribed>
 </subscription>
+```
+
+:::
+
+## Example 410 response
+
+If a subscription has been [deleted](delete.md), the server must respond with a `410 (Gone)` response to inform the client.
+
+:::{tab-set-code}
+
+```json
+{
+  "code": 410,
+  "message": "Subscription has been deleted"
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Error>
+	<code>410</code>
+	<message>Subscription has been deleted</message>
+</Error>
 ```
 
 :::

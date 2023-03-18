@@ -58,11 +58,11 @@ This endpoint enables clients to return all subscription information relating to
 * - `subscription_changed`
    - Datetime
    - No
-   - The date on which the is_subscribed field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `guid_changed`
    - Datetime
    - No
-   - The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+   - The date on which the podcast's `guid` or `new_guid` was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `new_guid`
    - String<UUID>
    - No
