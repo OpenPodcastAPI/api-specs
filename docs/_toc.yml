@@ -18,3 +18,4 @@ subtrees:
       - file: subscriptions/get-single
       - file: subscriptions/update
       - file: subscriptions/delete
+      - file: subscriptions/status

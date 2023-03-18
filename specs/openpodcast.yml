@@ -115,6 +115,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '405':
           $ref: '#/components/responses/ValidationException'
+        '410':
+          $ref: '#/components/responses/Gone'
       security:
         - podcast_auth:
             - read:subscriptions
@@ -168,15 +170,8 @@ paths:
           required: true
           example: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
       responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletedSubscription'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/DeletedSubscription'
+        '202':
+          $ref: '#/components/responses/DeletionReceived'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -186,6 +181,33 @@ paths:
       security:
         - podcast_auth:
             - write:subscriptions
+  /deletions/{id}:
+    get:
+      tags:
+        - Subscriptions
+      summary: Retrieve information subscription deletion
+      description: Retrieve information about a deletion by querying the ID sent in a deletion request
+      operationId: getDeletions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+            format: integer
+          required: true
+          example: 25
+      responses:
+        '200':
+          $ref: '#/components/responses/DeletionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - read:subscriptions
 components:
   responses:
     Unauthorized:
@@ -233,12 +255,104 @@ components:
           example:
             code: 405
             message: Input could not be validated
+    Gone:
+      description: Object deleted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 410
+            message: Subscription has been deleted
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 410
+            message: Subscription has been deleted
+    DeletionReceived:
+      description: The deletion request has been received and will be processed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Success'
+          example:
+            code: 202
+            deletion_id: 25
+            message: Deletion request was received and will be processed
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Success'
+          example:
+            code: 202
+            deletion_id: 25
+            message: Deletion request was received and will be processed
+    DeletionResponse:
+      description: The object was successfully deleted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Deletion'
+          examples:
+            Success:
+              value:
+                deletion_id: 25
+                success: true
+                complete: true
+                message: Subscription deleted successfully
+            Pending:
+              value:
+                deletion_id: 25
+                success: false
+                complete: false
+                message: Deletion is pending
+            Failure:
+              value:
+                deletion_id: 25
+                success: false
+                complete: true
+                message: The deletion process encountered an error and was rolled back
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Deletion'
+          examples:
+            Success:
+              value:
+                deletion_id: 25
+                success: true
+                complete: true
+                message: Subscription deleted successfully
+            Pending:
+              value:
+                deletion_id: 25
+                success: false
+                complete: false
+                message: Deletion is pending
+            Failure:
+              value:
+                deletion_id: 25
+                success: false
+                complete: true
+                message: The deletion process encountered an error and was rolled back
   schemas:
     Error:
       type: object
       properties:
         code:
           type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Success:
+      type: object
+      properties:
+        code:
+          type: string
+        deletion_id:
+          type: number
+          format: integer
         message:
           type: string
       required:
@@ -427,25 +541,25 @@ components:
         subscription_changed: 2023-02-23T14:41:00.000Z
         guid_changed: 2023-02-23T14:41:00.000Z
         new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
-    DeletedSubscription:
+    Deletion:
+      xml:
+        name: deletion
       type: object
-      required:
-        - feed_url
-        - guid
-        - is_deleted
       properties:
-        feed_url:
-          type: string
-          format: url
-        guid:
-          type: string
-          format: uuid
-        is_deleted:
+        deletion_id:
+          type: number
+          format: integer
+        success:
           type: boolean
+        complete:
+          type: boolean
+        message:
+          type: string
       example:
-        new_feed_url: https://example.com/rss5
-        new_guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-        is_deleted: true
+        deletion_id: 25
+        success: true
+        complete: true
+        message: Subscription deleted successfully
   requestBodies:
     FeedArray:
       description: An array of feeds the user wants to subscribe to
