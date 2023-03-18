@@ -28,7 +28,7 @@ This endpoint enables clients to add new subscriptions to the system for the aut
 * - `subscription_changed`
    - Datetime
    - Yes
-   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html).
+   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 
 :::
 
@@ -55,7 +55,7 @@ The client must provide a list of objects containing the following parameters:
 :::
 
 :::{important}
-If a client passes a `guid` this is treated as authoritative by the server. The client must pass a `guid` only if it is parsed from the podcast RSS feed.
+If a client passes a `guid` this is treated as authoritative by the server. The client may pass a `guid` **only** if it is parsed from the podcast RSS feed.
 :::
 
 ```json
@@ -63,15 +63,12 @@ If a client passes a `guid` this is treated as authoritative by the server. The 
    "subscriptions": [
       {
          "feed_url": "https://example.com/rss1",
-         "guid": ""
       },
       {
          "feed_url": "https://example.com/rss2",
-         "guid": ""
       },
       {
          "feed_url": "https://example.com/rss3",
-         "guid": ""
       },
       {
          "feed_url": "https://example.com/rss4",
@@ -171,6 +168,8 @@ curl --location '/subscriptions' \
 
 ## Example 200 response
 
+:::{tab-set-code}
+
 ```json
 {
    "subscriptions": [
@@ -201,3 +200,35 @@ curl --location '/subscriptions' \
    ]
 }
 ```
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+  <subscriptions>
+    <feed_url>https://example.com/rss1</feed_url>
+    <guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</guid>
+    <is_subscribed>true</is_subscribed>
+    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+  </subscriptions>
+  <subscriptions>
+    <feed_url>https://example.com/rss2</feed_url>
+    <guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
+    <is_subscribed>true</is_subscribed>
+    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+  </subscriptions>
+  <subscriptions>
+    <feed_url>https://example.com/rss3</feed_url>
+    <guid>e672c1f4-230d-4ab4-99d3-390a9f835ec1</guid>
+    <is_subscribed>true</is_subscribed>
+    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+  </subscriptions>
+  <subscriptions>
+    <feed_url>https://example.com/rss4</feed_url>
+    <guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+    <is_subscribed>true</is_subscribed>
+    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+  </subscriptions>
+</results>
+```
+
+:::
