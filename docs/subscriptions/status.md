@@ -32,6 +32,10 @@ This endpoint enables clients to query the status of a [deletion](delete.md). Wh
 
 :::
 
+## Parameters
+
+The client must send the deletion's `id` in the path of the request.
+
 ## Example request
 
 ::::{tab-set}
