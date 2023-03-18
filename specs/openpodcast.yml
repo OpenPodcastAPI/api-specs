@@ -403,7 +403,7 @@ components:
         is_subscribed: false
     PatchedSubscription:
       xml:
-        name: results
+        name: subscription
       type: object
       minProperties: 1
       properties:
