@@ -245,6 +245,8 @@ components:
         - code
         - message
     Subscription:
+      xml:
+        name: subscription
       required:
         - feed_url
         - guid
@@ -273,6 +275,8 @@ components:
         guid: 968cb508-803c-493c-8ff2-9e397dadb83c
         is_subscribed: true
     NewSubscription:
+      xml:
+        name: subscription
       required:
         - feed_url
         - guid
@@ -292,6 +296,8 @@ components:
           type: string
           format: date-time
     Subscriptions:
+      xml:
+        name: subscriptions
       type: object
       properties:
         total:
@@ -324,9 +330,9 @@ components:
             guid: 968cb508-803c-493c-8ff2-9e397dadb83c
             is_subscribed: false
             subscription_changed: 2022-04-24T17:53:21.573Z
-      xml:
-        name: results
     NewSubscriptions:
+      xml:
+        name: subscriptions
       type: object
       properties:
         subscriptions:
@@ -334,28 +340,33 @@ components:
           items:
             $ref: '#/components/schemas/NewSubscription'
       example:
-        - feed_url: https://example.com/rss1
-          guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-          is_subscribed: true
-          subscription_changed: 2023-02-23T14:00:00.000Z
-        - feed_url: https://example.com/rss2
-          guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-          is_subscribed: true
-          subscription_changed: 2023-02-23T14:00:00.000Z
-        - feed_url: https://example.com/rss3
-          guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
-          is_subscribed: true
-          subscription_changed: 2023-02-23T14:00:00.000Z
-        - feed_url: https://example.com/rss4
-          guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-          is_subscribed: true
-          subscription_changed: 2023-02-23T14:00:00.000Z
+        subscriptions:
+          - feed_url: https://example.com/rss1
+            guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
+            is_subscribed: true
+            subscription_changed: 2023-02-23T14:00:00.000Z
+          - feed_url: https://example.com/rss2
+            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
+            is_subscribed: true
+            subscription_changed: 2023-02-23T14:00:00.000Z
+          - feed_url: https://example.com/rss3
+            guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
+            is_subscribed: true
+            subscription_changed: 2023-02-23T14:00:00.000Z
+          - feed_url: https://example.com/rss4
+            guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+            is_subscribed: true
+            subscription_changed: 2023-02-23T14:00:00.000Z
     FeedArray:
+      xml:
+        name: subscriptions
       required:
         - subscriptions
       type: object
       properties:
         subscriptions:
+          xml:
+            name: subscription
           type: array
           items:
             type: object
@@ -372,9 +383,9 @@ components:
             - feed_url: https://example.com/feed3
             - feed_url: https://example.com/feed4
               guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-      xml:
-        name: results
     SubscriptionUpdate:
+      xml:
+        name: subscription
       type: object
       minProperties: 1
       properties:
@@ -391,6 +402,8 @@ components:
         new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
         is_subscribed: false
     PatchedSubscription:
+      xml:
+        name: results
       type: object
       minProperties: 1
       properties:
