@@ -277,14 +277,12 @@ components:
           schema:
             $ref: '#/components/schemas/Success'
           example:
-            code: 202
             deletion_id: 25
             message: Deletion request was received and will be processed
         application/xml:
           schema:
             $ref: '#/components/schemas/Success'
           example:
-            code: 202
             deletion_id: 25
             message: Deletion request was received and will be processed
     DeletionResponse:
@@ -348,8 +346,6 @@ components:
     Success:
       type: object
       properties:
-        code:
-          type: string
         deletion_id:
           type: number
           format: integer
