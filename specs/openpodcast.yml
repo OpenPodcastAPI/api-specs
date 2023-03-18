@@ -24,13 +24,27 @@ paths:
           required: false
           example:
             '2022-04-23T18:25:43.511Z'
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example:
+            1
+        - in: query
+          name: per_page
+          schema:
+            type: number
+          required: false
+          example:
+            5
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscriptions'          
+                $ref: '#/components/schemas/Subscriptions'
             application/xml:
               schema:
                 $ref: '#/components/schemas/Subscriptions'
@@ -57,7 +71,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewSubscriptions'          
+                $ref: '#/components/schemas/NewSubscriptions'
             application/xml:
               schema:
                 $ref: '#/components/schemas/NewSubscriptions'
@@ -91,7 +105,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscription'          
+                $ref: '#/components/schemas/Subscription'
             application/xml:
               schema:
                 $ref: '#/components/schemas/Subscription'
@@ -126,7 +140,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PatchedSubscription'          
+                $ref: '#/components/schemas/PatchedSubscription'
             application/xml:
               schema:
                 $ref: '#/components/schemas/PatchedSubscription'
@@ -159,7 +173,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeletedSubscription'          
+                $ref: '#/components/schemas/DeletedSubscription'
             application/xml:
               schema:
                 $ref: '#/components/schemas/DeletedSubscription'
@@ -280,20 +294,38 @@ components:
     Subscriptions:
       type: object
       properties:
+        total:
+          type: number
+        page:
+          type: number
+        per_page:
+          type: number
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
         subscriptions:
           type: array
           items:
             $ref: '#/components/schemas/Subscription'
       example:
-        - feed_url: https://example.com/rss1
-          guid: 31740ac6-e39d-49cd-9179-634bcecf4143
-          is_subscribed: true
-          guid_changed: 2022-09-21T10:25:32.411Z
-          new_guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-        - feed_url: https://example.com/rss2
-          guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-          is_subscribed: false
-          subscription_changed: 2022-04-24T17:53:21.573Z
+        total: 2
+        page: 1
+        per_page: 5
+        has_next: false
+        has_prev: false
+        subscriptions:
+          - feed_url: https://example.com/rss1
+            guid: 31740ac6-e39d-49cd-9179-634bcecf4143
+            is_subscribed: true
+            guid_changed: 2022-09-21T10:25:32.411Z
+            new_guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
+          - feed_url: https://example.com/rss2
+            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
+            is_subscribed: false
+            subscription_changed: 2022-04-24T17:53:21.573Z
+      xml:
+        name: results
     NewSubscriptions:
       type: object
       properties:
@@ -319,17 +351,29 @@ components:
           is_subscribed: true
           subscription_changed: 2023-02-23T14:00:00.000Z
     FeedArray:
+      required:
+        - subscriptions
       type: object
       properties:
-        feed_urls:
+        subscriptions:
           type: array
           items:
-            type: string
+            type: object
+            required:
+              - feed_url
+            properties:
+              feed_url:
+                type: string
+              guid:
+                type: string
           example:
-            - https://example.com/feed1
-            - https://example.com/feed2
-            - https://example.com/feed3
-            - https://example.com/feed4
+            - feed_url: https://example.com/feed1
+            - feed_url: https://example.com/feed2
+            - feed_url: https://example.com/feed3
+            - feed_url: https://example.com/feed4
+              guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+      xml:
+        name: results
     SubscriptionUpdate:
       type: object
       minProperties: 1
