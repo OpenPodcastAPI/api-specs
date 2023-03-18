@@ -3,3 +3,18 @@ defaults:
   hidden: False
   maxdepth: 1
   numbered: False
+subtrees:
+  - caption: 📚 Specs
+    hidden: True
+    entries:
+    - file: subscriptions/index
+      title: Subscriptions
+      options:
+        hidden: False
+        caption: Actions
+      entries:
+      - file: subscriptions/add-new
+      - file: subscriptions/get-all
+      - file: subscriptions/get-single
+      - file: subscriptions/update
+      - file: subscriptions/delete
