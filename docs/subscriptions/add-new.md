@@ -58,6 +58,8 @@ The client must provide a list of objects containing the following parameters:
 If a client passes a `guid` this is treated as authoritative by the server. The client may pass a `guid` **only** if it is parsed from the podcast RSS feed.
 :::
 
+:::{tab-set-code}
+
 ```json
 {
    "subscriptions": [
@@ -77,6 +79,27 @@ If a client passes a `guid` this is treated as authoritative by the server. The 
    ]
 }
 ```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<subscription>
+		<feed_url>https://example.com/feed1</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed2</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed3</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed4</feed_url>
+		<guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+	</subscription>
+</subscriptions>
+```
+
+:::
 
 ## Server-side behavior
 
@@ -141,6 +164,10 @@ flowchart TD
 
 ## Example request
 
+::::{tab-set}
+:::{tab-item} JSON
+:sync: tabcode-json
+
 ```bash
 curl --location '/subscriptions' \
 --header 'Content-Type: application/json' \
@@ -166,69 +193,97 @@ curl --location '/subscriptions' \
 }'
 ```
 
+:::
+:::{tab-item} XML
+:sync: tabcode-xml
+
+```bash
+curl --location '/subscriptions' \
+--header 'Content-Type: application/xml' \
+--data '<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<subscription>
+		<feed_url>https://example.com/feed1</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed2</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed3</feed_url>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/feed4</feed_url>
+		<guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+	</subscription>
+</subscriptions>'
+```
+
+:::
+::::
+
 ## Example 200 response
 
 :::{tab-set-code}
 
 ```json
 {
-   "subscriptions": [
-      {
-         "feed_url": "https://example.com/rss1",
-         "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
-         "is_subscribed": true,
-         "subscription_changed": "2023-02-23T14:00:00.000Z"
-      },
-      {
-         "feed_url": "https://example.com/rss2",
-         "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
-         "is_subscribed": true,
-         "subscription_changed": "2023-02-23T14:00:00.000Z"
-      },
-      {
-         "feed_url": "https://example.com/rss3",
-         "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
-         "is_subscribed": true,
-         "subscription_changed": "2023-02-23T14:00:00.000Z"
-      },
-      {
-         "feed_url": "https://example.com/rss4",
-         "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71",
-         "is_subscribed": true,
-         "subscription_changed": "2023-02-23T14:00:00.000Z"
-      },
-   ]
+  "subscriptions": [
+    {
+      "feed_url": "https://example.com/rss1",
+      "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
+      "is_subscribed": true,
+      "subscription_changed": "2023-02-23T14:00:00.000Z"
+    },
+    {
+      "feed_url": "https://example.com/rss2",
+      "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
+      "is_subscribed": true,
+      "subscription_changed": "2023-02-23T14:00:00.000Z"
+    },
+    {
+      "feed_url": "https://example.com/rss3",
+      "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
+      "is_subscribed": true,
+      "subscription_changed": "2023-02-23T14:00:00.000Z"
+    },
+    {
+      "feed_url": "https://example.com/rss4",
+      "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71",
+      "is_subscribed": true,
+      "subscription_changed": "2023-02-23T14:00:00.000Z"
+    }
+  ]
 }
 ```
 
 ```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<results>
-  <subscriptions>
-    <feed_url>https://example.com/rss1</feed_url>
-    <guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</guid>
-    <is_subscribed>true</is_subscribed>
-    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-  </subscriptions>
-  <subscriptions>
-    <feed_url>https://example.com/rss2</feed_url>
-    <guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
-    <is_subscribed>true</is_subscribed>
-    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-  </subscriptions>
-  <subscriptions>
-    <feed_url>https://example.com/rss3</feed_url>
-    <guid>e672c1f4-230d-4ab4-99d3-390a9f835ec1</guid>
-    <is_subscribed>true</is_subscribed>
-    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-  </subscriptions>
-  <subscriptions>
-    <feed_url>https://example.com/rss4</feed_url>
-    <guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
-    <is_subscribed>true</is_subscribed>
-    <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-  </subscriptions>
-</results>
+<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<subscription>
+		<feed_url>https://example.com/rss1</feed_url>
+		<guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</guid>
+		<is_subscribed>true</is_subscribed>
+		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/rss2</feed_url>
+		<guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
+		<is_subscribed>true</is_subscribed>
+		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/rss3</feed_url>
+		<guid>e672c1f4-230d-4ab4-99d3-390a9f835ec1</guid>
+		<is_subscribed>true</is_subscribed>
+		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/rss4</feed_url>
+		<guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+		<is_subscribed>true</is_subscribed>
+		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+	</subscription>
+</subscriptions>
 ```
 
 :::

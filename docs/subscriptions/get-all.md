@@ -118,11 +118,30 @@ flowchart TD
 :::
 ## Example request
 
+::::{tab-set}
+
+:::{tab-item} JSON
+:sync: tabcode-json
+
 ```bash
 curl -X 'GET' \
   '/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
   -H 'accept: application/json'
 ```
+
+:::
+
+:::{tab-item} XML
+:sync: tabcode-xml
+
+```bash
+curl -X 'GET' \
+  '/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
+  -H 'accept: application/xml'
+```
+
+:::
+::::
 
 ## Example 200 response
 
@@ -154,27 +173,27 @@ curl -X 'GET' \
 ```
 
 ```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<results>
-  <total>2</total>
-  <page>1</page>
-  <per_page>5</per_page>
-  <has_next>false</has_next>
-  <has_prev>false</has_prev>
-  <subscriptions>
-    <feed_url>https://example.com/rss1</feed_url>
-    <guid>31740ac6-e39d-49cd-9179-634bcecf4143</guid>
-    <is_subscribed>true</is_subscribed>
-    <guid_changed>2022-09-21T10:25:32.411Z</guid_changed>
-    <new_guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</new_guid>
-  </subscriptions>
-  <subscriptions>
-    <feed_url>https://example.com/rss2</feed_url>
-    <guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
-    <is_subscribed>false</is_subscribed>
-    <subscription_changed>2022-04-24T17:53:21.573Z</subscription_changed>
-  </subscriptions>
-</results>
+<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<total>2</total>
+	<page>1</page>
+	<per_page>5</per_page>
+	<has_next>false</has_next>
+	<has_prev>false</has_prev>
+	<subscription>
+		<feed_url>https://example.com/rss1</feed_url>
+		<guid>31740ac6-e39d-49cd-9179-634bcecf4143</guid>
+		<is_subscribed>true</is_subscribed>
+		<guid_changed>2022-09-21T10:25:32.411Z</guid_changed>
+		<new_guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</new_guid>
+	</subscription>
+	<subscription>
+		<feed_url>https://example.com/rss2</feed_url>
+		<guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
+		<is_subscribed>false</is_subscribed>
+		<subscription_changed>2022-04-24T17:53:21.573Z</subscription_changed>
+	</subscription>
+</subscriptions>
 ```
 
 :::
