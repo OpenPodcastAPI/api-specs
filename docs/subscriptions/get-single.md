@@ -42,6 +42,8 @@ This endpoint returns subscription information relating to a specific subscripti
 
 ## Parameters
 
+The client must send the subscription's `guid` in the path of the request.
+
 ## Server-side behavior
 
 If the subscription entry contains a `new_guid`, the server must return the newest `guid` associated with the entry. For example: if a subscription has received 2 new `guid`s, the server should follow these entries and only return the last one it finds. This ensures the client has the most up-to-date entry for the subscription.
