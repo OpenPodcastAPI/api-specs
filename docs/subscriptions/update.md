@@ -72,7 +72,7 @@ The client must pass the subscription GUID in the query path and add at least on
 
 ## Server-side behavior
 
-On receipt of a PATH request for a subscription, the server must fo the following:
+On receipt of a PATCH request for a subscription, the server must fo the following:
 
 1. If the request contains a `new_feed_url` parameter:
    1. Update the subscription entry's `feed_url` field to the new value
