@@ -150,7 +150,7 @@ Once this is done, the server should asynchronously verify that there isn't a mo
 flowchart TD
    subgraph authority [For each empty GUID]
       fetch(The server fetches the RSS feed and\nparses it) --> rss_guid{Does the RSS field contain a GUID?}
-      rss_guid -->|no| podcast_index{Has the server admin enabled Podcast Index\nsupport?}
+      rss_guid -->|no| podcast_index{Can the server query Podcast Index?}
       podcast_index -->|yes| fetch_response(The server sends the RSS feed URL\nto the /podcast/byfeedurl endpoint)
       fetch_response --> pi_guid{Does the response contain a `podcastGuid` entry?}
       pi_guid & podcast_index -->|no| keep([The server keeps the generated GUID])
