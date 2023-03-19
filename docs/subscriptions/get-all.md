@@ -86,7 +86,7 @@ The client may add the following parameters to their call:
    - DateTime
    - Query
    - No
-   - The date from which the server should return objects. The server only returns entries whose `subscription_changed` or `guid_changed` fields are greater than this parameter
+   - The date from which the server should return objects. The server only returns entries whose `subscription_changed` or `guid_changed` fields are greater than this parameter. Expected in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `page` 
    - Number
    - Query
