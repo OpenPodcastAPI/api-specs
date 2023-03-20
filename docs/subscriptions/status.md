@@ -17,14 +17,13 @@ This endpoint enables clients to query the status of a [deletion](delete.md). Wh
    - Integer
    - Yes
    - The ID of the deletion object
-* - `success`
-   - Boolean
+* - `status`
+   - String
    - Yes
-   - Whether or not the deletion was completed successfully
-* - `complete`
-   - Boolean
-   - Yes
-   - Whether or not the deletion process has finished
+   - A status message indicating the status of the deletion. Available values:
+     * `SUCCESS`
+     * `FAILURE`
+     * `PENDING`
 * - `message`
    - String
    - No
@@ -72,8 +71,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 ```json
 {
   "deletion_id": 25,
-  "success": true,
-  "complete": true,
+  "status": "SUCCESS",
   "message": "Subscription deleted successfully"
 }
 ```
@@ -82,8 +80,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 <?xml version="1.0" encoding="UTF-8"?>
 <deletion>
 	<deletion_id>25</deletion_id>
-	<success>true</success>
-	<complete>true</complete>
+	<status>SUCCESS</status>
 	<message>Subscription deleted successfully</message>
 </deletion>
 ```
@@ -97,8 +94,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 ```json
 {
   "deletion_id": 25,
-  "success": false,
-  "complete": false,
+  "status": "PENDING",
   "message": "Deletion is pending"
 }
 ```
@@ -107,8 +103,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 <?xml version="1.0" encoding="UTF-8"?>
 <deletion>
 	<deletion_id>25</deletion_id>
-	<success>false</success>
-	<complete>false</complete>
+	<status>PENDING</status>
 	<message>Deletion is pending</message>
 </deletion>
 ```
@@ -122,8 +117,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 ```json
 {
   "deletion_id": 25,
-  "success": false,
-  "complete": true,
+  "status": "FAILURE",
   "message": "The deletion process encountered an error and was rolled back"
 }
 ```
@@ -132,8 +126,7 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 <?xml version="1.0" encoding="UTF-8"?>
 <deletion>
 	<deletion_id>25</deletion_id>
-	<success>false</success>
-	<complete>true</complete>
+	<status>FAILURE</status>
 	<message>The deletion process encountered an error and was rolled back</message>
 </deletion>
 ```
