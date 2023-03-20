@@ -139,7 +139,7 @@ If the client doesn't send a `guid` in the subscription payload, the server must
 Once this is done, the server should asynchronously verify that there isn't a more authoritative GUID available. The following flow should be used:
 
 1. The server checks for a more authoritative GUID using the following methods (in order)
-   1. Fetch and parse the RSS feed to search for a `guid` field
+   1. Fetch and parse the RSS feed to search for a [`guid` field in the `podcast` namespace](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#guid).
    2. If the server admin has enabled Podcast Index support, send the RSS feed URL to the [`/podcast/byfeedurl` endpoint](https://podcastindex-org.github.io/docs-api/#get-/podcasts/byfeedurl) and check the response for a `podcastGuid` entry
 2. If a more authoritative `guid` is found, the server must update the subscription entry as follows:
    1. Create a new subscription entry with the new `guid`
