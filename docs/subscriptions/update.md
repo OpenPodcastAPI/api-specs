@@ -4,7 +4,13 @@
 PATCH /subscriptions/{guid}
 ```
 
-This endpoint allows clients to update information about a subscription. It returns the following information:
+This endpoint allows clients to update information about a subscription. The client can update the following information:
+
+* The podcast's GUID
+* The podcast's feed URL
+* An update to the subscription status for the user
+
+This endpoint returns the following information:
 
 :::{list-table}
 :header-rows: 1
