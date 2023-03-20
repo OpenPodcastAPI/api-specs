@@ -124,7 +124,7 @@ paths:
       tags:
         - Subscriptions
       summary: Update a single subscription entry
-      description: Udate information about a single subscription specified in the path
+      description: Update information about a single subscription specified in the path
       operationId: updateSubscription
       parameters:
         - in: path
@@ -295,21 +295,18 @@ components:
             Success:
               value:
                 deletion_id: 25
-                success: true
-                complete: true
+                status: SUCCESS
                 message: Subscription deleted successfully
             Pending:
               value:
                 deletion_id: 25
-                success: false
-                complete: false
+                status: PENDING
                 message: Deletion is pending
             Failure:
               value:
                 deletion_id: 25
-                success: false
-                complete: true
-                message: The deletion process encountered an error and was rolled back
+                status: FAILURE
+                message: The deletion process encountered an error and was rolled backwas rolled back
         application/xml:
           schema:
             $ref: '#/components/schemas/Deletion'
@@ -317,20 +314,17 @@ components:
             Success:
               value:
                 deletion_id: 25
-                success: true
-                complete: true
+                status: SUCCESS
                 message: Subscription deleted successfully
             Pending:
               value:
                 deletion_id: 25
-                success: false
-                complete: false
+                status: PENDING
                 message: Deletion is pending
             Failure:
               value:
                 deletion_id: 25
-                success: false
-                complete: true
+                status: FAILURE
                 message: The deletion process encountered an error and was rolled back
   schemas:
     Error:
@@ -540,21 +534,25 @@ components:
     Deletion:
       xml:
         name: deletion
+      required:
+        - deletion_id
+        - status
       type: object
       properties:
         deletion_id:
           type: number
           format: integer
-        success:
-          type: boolean
-        complete:
-          type: boolean
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+            - PENDING
         message:
           type: string
       example:
         deletion_id: 25
-        success: true
-        complete: true
+        status: SUCCESS
         message: Subscription deleted successfully
   requestBodies:
     FeedArray:
