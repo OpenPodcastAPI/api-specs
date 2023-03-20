@@ -31,7 +31,7 @@ This endpoint enables clients to return all subscription information relating to
    - Whether there is a next page of results that the client can fetch
 * - `has_prev`
    - Boolean
-   - Yes
+   - No
    - Whether there is a previous page of results that the client can fetch
 
 :::
@@ -153,7 +153,6 @@ curl -X 'GET' \
    "page": 1,
    "per_page": 5,
    "has_next": false,
-   "has_prev": false,
    "subscriptions": [
       {
          "feed_url": "https://example.com/rss1",
@@ -179,7 +178,6 @@ curl -X 'GET' \
 	<page>1</page>
 	<per_page>5</per_page>
 	<has_next>false</has_next>
-	<has_prev>false</has_prev>
 	<subscription>
 		<feed_url>https://example.com/rss1</feed_url>
 		<guid>31740ac6-e39d-49cd-9179-634bcecf4143</guid>

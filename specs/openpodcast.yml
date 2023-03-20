@@ -400,6 +400,12 @@ components:
           type: string
           format: date-time
     Subscriptions:
+      required:
+        - total
+        - page
+        - per_page
+        - has_next
+        - subscriptions
       xml:
         name: subscriptions
       type: object
@@ -423,7 +429,6 @@ components:
         page: 1
         per_page: 5
         has_next: false
-        has_prev: false
         subscriptions:
           - feed_url: https://example.com/rss1
             guid: 31740ac6-e39d-49cd-9179-634bcecf4143
