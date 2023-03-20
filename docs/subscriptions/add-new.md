@@ -1,5 +1,8 @@
 # Add a new subscription
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 POST /subscriptions
 ```

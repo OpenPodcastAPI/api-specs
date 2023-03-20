@@ -1,5 +1,8 @@
 # Deletion status endpoint
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 GET /deletions/{id}
 ```

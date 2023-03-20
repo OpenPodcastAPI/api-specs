@@ -1,5 +1,8 @@
 # Update a subscription
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 PATCH /subscriptions/{guid}
 ```
