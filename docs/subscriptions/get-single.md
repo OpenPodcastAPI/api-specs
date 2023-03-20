@@ -1,5 +1,8 @@
 # Get a single subscription
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 GET /subscriptions/{guid}
 ```
