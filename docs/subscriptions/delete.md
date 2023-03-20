@@ -1,5 +1,8 @@
 # Delete a subscription
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 DELETE /subscriptions/{guid}
 ```
