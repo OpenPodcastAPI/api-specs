@@ -1,5 +1,8 @@
 # Get all subscriptions
 
+:::{include} /fragments/core-admonition.md
+:::
+
 ```text
 GET /subscriptions
 ```
