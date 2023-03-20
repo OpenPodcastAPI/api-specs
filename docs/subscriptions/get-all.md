@@ -58,7 +58,7 @@ This endpoint enables clients to return all subscription information relating to
 * - `subscription_changed`
    - Datetime
    - No
-   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+   - The date on which details relating to the subscription last changed. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 * - `guid_changed`
    - Datetime
    - No
