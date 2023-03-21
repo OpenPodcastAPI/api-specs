@@ -7,7 +7,7 @@
 DELETE /subscriptions/{guid}
 ```
 
-This endpoint allows clients to mark a feed as deleted. This prevents the server from updating the feed in the background and prevents the server returning any information such as playback positions relating to the given associated feed.
+This endpoint allows clients to mark a feed as deleted. This prevents the server from updating the feed in the background and prevents the server from returning any information, such as playback positions, related to the given associated feed.
 
 ## Server-side behavior
 
