@@ -1,6 +1,6 @@
 # Add a new subscription
 
-:::{include} /fragments/core-admonition.md
+:::{include} /fragments/core-action-admonition.md
 :::
 
 ```text

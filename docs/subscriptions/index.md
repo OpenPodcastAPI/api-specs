@@ -1,5 +1,8 @@
 # Subscriptions
 
+:::{include} /fragments/core-endpoint-admonition.md
+:::
+
 Subscriptions represent the feeds a user has subscribed to. The object stores essential information about each subscription object and acts as an index that links other activity information together.
 
 ## Database schema

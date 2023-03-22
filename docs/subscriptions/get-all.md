@@ -1,6 +1,6 @@
 # Get all subscriptions
 
-:::{include} /fragments/core-admonition.md
+:::{include} /fragments/core-action-admonition.md
 :::
 
 ```text
