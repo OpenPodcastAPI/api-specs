@@ -1,6 +1,6 @@
 # Get a single subscription
 
-:::{include} /fragments/core-admonition.md
+:::{include} /fragments/core-action-admonition.md
 :::
 
 ```text
