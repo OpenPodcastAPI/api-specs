@@ -1,6 +1,6 @@
 # Delete a subscription
 
-:::{include} /fragments/core-admonition.md
+:::{include} /fragments/core-action-admonition.md
 :::
 
 ```text
