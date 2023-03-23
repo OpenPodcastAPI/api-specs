@@ -7,9 +7,9 @@
 POST /subscriptions
 ```
 
-This endpoint enables clients to add new subscriptions to the system for the authenticated user. It returns the following information:
+This endpoint enables clients to add new subscriptions to the system for the authenticated user. It returns an array of `success` responses for newly added subscriptions, and an array of `failure` responses for subscriptions that couldn't be added.
 
-:::{list-table}
+:::{list-table} Success response
 :header-rows: 1
 
 * - Field
@@ -19,7 +19,7 @@ This endpoint enables clients to add new subscriptions to the system for the aut
 * - `feed_url`
    - String
    - Yes
-   - The URL of the podcast RSS feed
+   - The URL of the podcast RSS feed.
 * - `guid`
    - String
    - Yes
@@ -32,6 +32,24 @@ This endpoint enables clients to add new subscriptions to the system for the aut
    - Datetime
    - Yes
    - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+
+:::
+
+:::{list-table} Failure response
+:header-rows: 1
+
+* - Field
+   - Type
+   - Required?
+   - Description
+* - `feed_url`
+   - String
+   - Yes
+   - The URL of the podcast RSS feed
+* - `message`
+   - String
+   - Yes
+   - A message explaining why the subscription couldn't be added
 
 :::
 
@@ -49,7 +67,7 @@ The client must provide a list of objects containing the following parameters:
 * - `feed_url`
    - String
    - Yes
-   - The URL of the podcast RSS feed
+   - The URL of the podcast RSS feed. The client must provide a protocol (for example: `http` or `https`) and preserve any parameters
 * - `guid`
    - String
    - No
@@ -155,6 +173,7 @@ flowchart TD
       fetch(The server fetches the RSS feed and\nparses it) --> rss_guid{Does the RSS field contain a GUID?}
       rss_guid -->|no| podcast_index{Can the server query Podcast Index?}
       podcast_index -->|yes| fetch_response(The server sends the RSS feed URL\nto the /podcast/byfeedurl endpoint)
+      click fetch_response href "https://podcastindex-org.github.io/docs-api/#get-/podcasts/byfeedurl"
       fetch_response --> pi_guid{Does the response contain a `podcastGuid` entry?}
       pi_guid & podcast_index -->|no| keep([The server keeps the generated GUID])
       pi_guid & rss_guid -->|yes| create(The server creates a new subscription\nentry with the new GUID)
@@ -175,24 +194,21 @@ flowchart TD
 curl --location '/subscriptions' \
 --header 'Content-Type: application/json' \
 --data '{
-   "subscriptions": [
-      {
-         "feed_url": "https://example.com/rss1",
-         "guid": ""
-      },
-      {
-         "feed_url": "https://example.com/rss2",
-         "guid": ""
-      },
-      {
-         "feed_url": "https://example.com/rss3",
-         "guid": ""
-      },
-      {
-         "feed_url": "https://example.com/rss4",
-         "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71"
-      },
-   ]
+  "subscriptions": [
+    {
+      "feed_url": "https://example.com/feed1"
+    },
+    {
+      "feed_url": "https://example.com/feed2"
+    },
+    {
+      "feed_url": "https://example.com/feed3"
+    },
+    {
+      "feed_url": "example.com/feed4",
+      "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71"
+    }
+  ]
 }'
 ```
 
@@ -215,7 +231,7 @@ curl --location '/subscriptions' \
 		<feed_url>https://example.com/feed3</feed_url>
 	</subscription>
 	<subscription>
-		<feed_url>https://example.com/feed4</feed_url>
+		<feed_url>example.com/feed4</feed_url>
 		<guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
 	</subscription>
 </subscriptions>'
@@ -230,7 +246,7 @@ curl --location '/subscriptions' \
 
 ```json
 {
-  "subscriptions": [
+  "success": [
     {
       "feed_url": "https://example.com/rss1",
       "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
@@ -248,12 +264,12 @@ curl --location '/subscriptions' \
       "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
       "is_subscribed": true,
       "subscription_changed": "2023-02-23T14:00:00.000Z"
-    },
+    }
+  ],
+  "failure": [
     {
-      "feed_url": "https://example.com/rss4",
-      "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71",
-      "is_subscribed": true,
-      "subscription_changed": "2023-02-23T14:00:00.000Z"
+      "feed_url": "example.com/rss4",
+      "message": "No protocol present"
     }
   ]
 }
@@ -262,30 +278,28 @@ curl --location '/subscriptions' \
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <subscriptions>
-	<subscription>
+	<success>
 		<feed_url>https://example.com/rss1</feed_url>
 		<guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</guid>
 		<is_subscribed>true</is_subscribed>
 		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-	</subscription>
-	<subscription>
+	</success>
+	<success>
 		<feed_url>https://example.com/rss2</feed_url>
 		<guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
 		<is_subscribed>true</is_subscribed>
 		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-	</subscription>
-	<subscription>
+	</success>
+	<success>
 		<feed_url>https://example.com/rss3</feed_url>
 		<guid>e672c1f4-230d-4ab4-99d3-390a9f835ec1</guid>
 		<is_subscribed>true</is_subscribed>
 		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-	</subscription>
-	<subscription>
-		<feed_url>https://example.com/rss4</feed_url>
-		<guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
-		<is_subscribed>true</is_subscribed>
-		<subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
-	</subscription>
+	</success>
+	<failure>
+		<feed_url>example.com/rss4</feed_url>
+		<message>No protocol present</message>
+	</failure>
 </subscriptions>
 ```
 
