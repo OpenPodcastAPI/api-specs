@@ -83,22 +83,24 @@ The client must pass the subscription GUID in the query path and add at least on
 
 On receipt of a PATCH request for a subscription, the server must do the following:
 
-1. If the request contains a `new_feed_url` parameter:
+1. If the subscription in the request has a `new_guid` specified in the database, follow the `new_guid` chain to find the **latest** version of the subscription
+2. If the request contains a `new_feed_url` parameter:
    1. Update the subscription entry's `feed_url` field to the new value
    2. Update the subscription entry's `subscription_changed` field to the current date
-2. If the request contains a `new_guid` parameter:
+3. If the request contains a `new_guid` parameter:
    1. Check if the GUID is already present in the system
    2. If the GUID is already present, update the subscription entry's `new_guid` field to point to the existing entry
    3. If the GUID isn't already present, create a new subscription entry and update the existing entry's `new_guid` field to point to the newly created entry
    4. Update the subscription entry's `guid_changed` to the current date
-3. If the request contains an `is_subscribed` parameter:
+4. If the request contains an `is_subscribed` parameter:
    1. Update the subscription entry's `is_subscribed` to the new value
    2. Update the subscription entry's `subscription_changed` field to the current date
-4. Return a summary of the changes
+5. Return a summary of the changes
 
 :::{mermaid}
 flowchart TD
-   request([The server receives a PATCH request]) --> check{What parameters are included in the request body?}
+   request([The server receives a PATCH request]) --> resolve(The server checks the <code>new_guid</code> field of the\nsubscription and resolves the latest version of the subscription)
+   resolve --> check{What parameters are included in the request body?}
    check -->|new_feed_url| update_feed(The server updates the entry's feed_url\nto the new value)
    check -->|new_guid| check_guid{Is there an entry with a matching guid?}
    check -->|is_subscribed| update_sub(The server updates the entry's is_subscribed field\nto match the provided value)
