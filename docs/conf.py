@@ -51,3 +51,4 @@ myst_enable_extensions = [
 
 myst_heading_anchors = 3
 myst_enable_checkboxes = True
+mermaid_theme = "neutral"

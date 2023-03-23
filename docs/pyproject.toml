@@ -10,7 +10,7 @@ furo = "==2022.12.7"
 sphinx-copybutton = "==0.5.1"
 sphinx_design = "==0.3.0"
 sphinx_external_toc = "==0.3.1"
-sphinxcontrib-mermaid = "==0.8.1"
+sphinxcontrib-mermaid = { git = "https://github.com/Sporiff/sphinxcontrib-mermaid", rev = "cdn-change" }
 accessible-pygments = "==0.0.3"
 sphinx = "==5.3.0"
 myst-parser = "==1.0.0"
