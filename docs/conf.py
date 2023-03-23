@@ -22,7 +22,7 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.venv']
 root_doc = "index"
 
 # -- Options for HTML output -------------------------------------------------
@@ -51,3 +51,4 @@ myst_enable_extensions = [
 
 myst_heading_anchors = 3
 myst_enable_checkboxes = True
+mermaid_theme = "neutral"
