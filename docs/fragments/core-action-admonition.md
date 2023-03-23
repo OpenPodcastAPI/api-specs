@@ -1,5 +1,6 @@
 ---
 nosearch: true
+orphan: true
 ---
 
 :::{admonition} Core action
