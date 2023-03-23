@@ -109,16 +109,191 @@ If no `since` parameter is provided, the server returns all current subscription
 
 ## Server-side behavior
 
-If the entry contains a `new_guid`, the server must return the newest `guid` associated with the entry. For example: if a subscription has received 2 new `guid`s, the server should follow these entries and only return the last one it finds. This ensures the client has the most up-to-date entry for the subscription.
+If the entry contains a `new_guid`, the server must return the newest `guid` associated with the entry in the response's `new_guid` field. For example: if a subscription has received 2 new `guid`s, the server should return:
+
+* The subscription's `guid` as it was at the date passed in the `since` parameter, or the original entry's `guid` if no `since` parameter is passed
+* The subscription's latest `guid` in the `new_guid` field
+
+This ensures the client has the most up-to-date entry for the subscription.
 
 :::{mermaid}
 flowchart TD
-   request([The client requests information about subscriptions]) --> new_guid{Is the new_guid field populated?}
+   request([The client requests information about subscriptions]) --> new_guid{Is the <code>new_guid</code> field populated?}
    subgraph process [For each subscription]
-      new_guid -->|yes| follow(The server fetches the entry containing the\n new guid entry) --> new_guid
-      new_guid -->|no| return([The server returns the subscription object])
+      new_guid -->|yes| follow(The server fetches the entry containing the\n new <code>guid</code>  entry) --> new_guid
+      new_guid -->|no| return([The server returns the <code>guid</code> entry from the\n<code>since</code> date and adds the latest\nGUID in the <code>new_guid</code> field])
    end
 :::
+
+### Resolution example
+
+This example demonstrates how the server resolves a `new_guid` field for a subscription that has received three GUIDs.  Here is how the data is represented in the database:
+
+:::{list-table}
+:header-rows: 1
+
+* - `feed_url`
+   - `guid` 
+   - `is_subscribed`
+   - `subscription_changed`
+   - `guid_changed`
+   - `new_guid`
+* - https://example.com/rss1
+   - 64c1593b-5a1e-4e89-b8a3-d91501065e80
+   - true
+   - 2022-03-21T18:45:35.513Z
+   - 2022-03-21T19:00:00.000Z
+   - daac3ce5-7b16-4cf0-8294-86ad71944a64
+* - https://example.com/rss1
+   - daac3ce5-7b16-4cf0-8294-86ad71944a64
+   - true
+   - 2022-03-21T18:45:35.513Z
+   - 2022-12-23T10:24:14.670Z
+   - 36a47c4c-4aa3-428a-8132-3712a8422002
+* - https://example.com/rss1
+   - 36a47c4c-4aa3-428a-8132-3712a8422002
+   - true
+   - 2022-03-21T18:45:35.513Z
+   - 2022-12-23T10:24:14.670Z
+   - 
+:::
+
+#### Scenario 1
+
+In this scenario, the client requests all subscriptions and **doesn't** pass a `since` parameter. This means the server passes the **original** GUID in the `guid` field, and the **latest** GUID in the `new_guid`field.
+
+::::{tab-set}
+
+:::{tab-item} JSON
+:sync: tabcode-json
+
+```bash
+curl -X 'GET' \
+  '/subscriptions?page=1&per_page=5' \
+  -H 'accept: application/json'
+```
+
+:::
+
+:::{tab-item} XML
+:sync: tabcode-xml
+
+```bash
+curl -X 'GET' \
+  '/subscriptions?page=1&per_page=5' \
+  -H 'accept: application/xml'
+```
+
+:::
+::::
+
+:::{tab-set-code}
+
+```json
+{
+   "total": 1,
+   "page": 1,
+   "per_page": 5,
+   "has_next": false,
+   "subscriptions": [
+      {
+         "feed_url": "https://example.com/rss1",
+         "guid": "64c1593b-5a1e-4e89-b8a3-d91501065e80",
+         "is_subscribed": true,
+         "guid_changed": "2022-12-23T10:24:14.670Z",
+         "new_guid": "36a47c4c-4aa3-428a-8132-3712a8422002"
+      }
+   ]
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<total>1</total>
+	<page>1</page>
+	<per_page>5</per_page>
+	<has_next>false</has_next>
+	<subscription>
+		<feed_url>https://example.com/rss1</feed_url>
+		<guid>64c1593b-5a1e-4e89-b8a3-d91501065e80</guid>
+		<is_subscribed>true</is_subscribed>
+		<guid_changed>2022-12-23T10:24:14.670Z</guid_changed>
+		<new_guid>36a47c4c-4aa3-428a-8132-3712a8422002</new_guid>
+	</subscription>
+</subscriptions>
+```
+
+:::
+
+#### Scenario 2
+
+In this scenario, the client requests all subscriptions and specifies a `since` date of `2022-05-30T00:00:00.000Z`. Since the first GUID change occurred before this date, and the second GUID change occurred after this date, the server responds with the **second** GUID in the `guid` field, and the **latest** GUID in the `new_guid` field.
+
+::::{tab-set}
+
+:::{tab-item} JSON
+:sync: tabcode-json
+
+```bash
+curl -X 'GET' \
+  '/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
+  -H 'accept: application/json'
+```
+
+:::
+
+:::{tab-item} XML
+:sync: tabcode-xml
+
+```bash
+curl -X 'GET' \
+  '/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
+  -H 'accept: application/xml'
+```
+
+:::
+::::
+
+:::{tab-set-code}
+
+```json
+{
+   "total": 1,
+   "page": 1,
+   "per_page": 5,
+   "has_next": false,
+   "subscriptions": [
+      {
+         "feed_url": "https://example.com/rss1",
+         "guid": "daac3ce5-7b16-4cf0-8294-86ad71944a64",
+         "is_subscribed": true,
+         "guid_changed": "2022-12-23T10:24:14.670Z",
+         "new_guid": "36a47c4c-4aa3-428a-8132-3712a8422002"
+      }
+   ]
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<subscriptions>
+	<total>1</total>
+	<page>1</page>
+	<per_page>5</per_page>
+	<has_next>false</has_next>
+	<subscription>
+		<feed_url>https://example.com/rss1</feed_url>
+		<guid>daac3ce5-7b16-4cf0-8294-86ad71944a64</guid>
+		<is_subscribed>true</is_subscribed>
+		<guid_changed>2022-12-23T10:24:14.670Z</guid_changed>
+		<new_guid>36a47c4c-4aa3-428a-8132-3712a8422002</new_guid>
+	</subscription>
+</subscriptions>
+```
+
+:::
+
 ## Example request
 
 ::::{tab-set}
