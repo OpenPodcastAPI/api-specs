@@ -49,14 +49,19 @@ The client must send the subscription's `guid` in the path of the request.
 
 ## Server-side behavior
 
-If the subscription entry contains a `new_guid`, the server must return the newest `guid` associated with the entry. For example: if a subscription has received 2 new `guid`s, the server should follow these entries and only return the last one it finds. This ensures the client has the most up-to-date entry for the subscription.
+If the entry contains a `new_guid`, the server must return the newest `guid` associated with the entry in the response's `new_guid` field. For example: if a subscription has received 2 new `guid`s, the server should return:
+
+* The subscription's `guid` passed in the request path
+* The subscription's latest `guid` in the `new_guid` field
+
+This ensures the client has the most up-to-date entry for the subscription.
 
 :::{mermaid}
 flowchart TD
    request([The client requests information about a subscription]) --> new_guid{Is the new_guid field populated?}
    subgraph process [For each subscription]
       new_guid -->|yes| follow(The server fetches the entry containing the\n new guid entry) --> new_guid
-      new_guid -->|no| return([The server returns the subscription object])
+      new_guid -->|no| return([The server returns the <code>guid</code> from the request path and adds the latest\nGUID in the <code>new_guid</code> field])
    end
 :::
 
