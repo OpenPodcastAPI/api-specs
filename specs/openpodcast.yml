@@ -380,7 +380,7 @@ components:
         is_subscribed: true
     NewSubscription:
       xml:
-        name: subscription
+        name: success
       required:
         - feed_url
         - guid
@@ -399,6 +399,19 @@ components:
         subscription_changed:
           type: string
           format: date-time
+    FailedSubscription:
+      xml:
+        name: failure
+      required:
+        - feed_url
+        - message
+      type: object
+      properties:
+        feed_url:
+          type: string
+          format: url
+        message:
+          type: string
     Subscriptions:
       required:
         - total
@@ -444,12 +457,16 @@ components:
         name: subscriptions
       type: object
       properties:
-        subscriptions:
+        success:
           type: array
           items:
             $ref: '#/components/schemas/NewSubscription'
+        failure:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedSubscription'
       example:
-        subscriptions:
+        success:
           - feed_url: https://example.com/rss1
             guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
             is_subscribed: true
@@ -462,10 +479,9 @@ components:
             guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
             is_subscribed: true
             subscription_changed: 2023-02-23T14:00:00.000Z
-          - feed_url: https://example.com/rss4
-            guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
+        failure:
+          - feed_url: example.com/rss4
+            message: No protocol present
     FeedArray:
       xml:
         name: subscriptions
@@ -490,7 +506,7 @@ components:
             - feed_url: https://example.com/feed1
             - feed_url: https://example.com/feed2
             - feed_url: https://example.com/feed3
-            - feed_url: https://example.com/feed4
+            - feed_url: example.com/feed4
               guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
     SubscriptionUpdate:
       xml:
