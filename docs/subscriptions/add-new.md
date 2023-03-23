@@ -159,9 +159,7 @@ If the client doesn't send a `guid` in the subscription payload, the server must
 
 Once this is done, the server should asynchronously verify that there isn't a more authoritative GUID available. The following flow should be used:
 
-1. The server checks for a more authoritative GUID using the following methods (in order)
-   1. Fetch and parse the RSS feed to search for a [`guid` field in the `podcast` namespace](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#guid).
-   2. If the server admin has enabled Podcast Index support, send the RSS feed URL to the [`/podcast/byfeedurl` endpoint](https://podcastindex-org.github.io/docs-api/#get-/podcasts/byfeedurl) and check the response for a `podcastGuid` entry
+1. The server fetches and parses the RSS feed to search for a [`guid` field in the `podcast` namespace](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#guid).
 2. If a more authoritative `guid` is found, the server must update the subscription entry as follows:
    1. Create a new subscription entry with the new `guid`
    2. Update the `new_guid` field in the existing entry to point to the new `guid`
@@ -171,13 +169,9 @@ Once this is done, the server should asynchronously verify that there isn't a mo
 flowchart TD
    subgraph authority [For each empty GUID]
       fetch(The server fetches the RSS feed and\nparses it) --> rss_guid{Does the RSS field contain a GUID?}
-      rss_guid -->|no| podcast_index{Can the server query Podcast Index?}
-      podcast_index -->|yes| fetch_response(The server sends the RSS feed URL\nto the /podcast/byfeedurl endpoint)
-      click fetch_response href "https://podcastindex-org.github.io/docs-api/#get-/podcasts/byfeedurl"
-      fetch_response --> pi_guid{Does the response contain a `podcastGuid` entry?}
-      pi_guid & podcast_index -->|no| keep([The server keeps the generated GUID])
-      pi_guid & rss_guid -->|yes| create(The server creates a new subscription\nentry with the new GUID)
-      create --> update([The server updates the existing entry's\nnew_guid and guid_changed fields])
+      rss_guid -->|no| keep([The server keeps the generated GUID])
+      rss_guid -->|yes| create(The server creates a new subscription\nentry with the new GUID)
+      create --> update([The server updates the existing entry's\n<code>new_guid</code> and <code>guid_changed</code> fields])
    end
    subgraph initial [Initial server response]
       payload([The server receives a payload with an empty guid field]) --> generate(The server generates a new GUID and returns it)
