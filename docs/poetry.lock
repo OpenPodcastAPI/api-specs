@@ -41,14 +41,14 @@ files = [
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.11.2"
+version = "4.12.0"
 description = "Screen-scraping library"
 category = "main"
 optional = false
 python-versions = ">=3.6.0"
 files = [
-    {file = "beautifulsoup4-4.11.2-py3-none-any.whl", hash = "sha256:0e79446b10b3ecb499c1556f7e228a53e64a2bfcebd455f370d8927cb5b59e39"},
-    {file = "beautifulsoup4-4.11.2.tar.gz", hash = "sha256:bc4bdda6717de5a2987436fb8d72f45dc90dd856bdfd512a1314ce90349a0106"},
+    {file = "beautifulsoup4-4.12.0-py3-none-any.whl", hash = "sha256:2130a5ad7f513200fae61a17abb5e338ca980fa28c439c0571014bc0217e9591"},
+    {file = "beautifulsoup4-4.12.0.tar.gz", hash = "sha256:c5fceeaec29d09c84970e47c65f2f0efe57872f7cff494c9691a26ec0ff13234"},
 ]
 
 [package.dependencies]
@@ -238,14 +238,14 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "6.0.0"
+version = "6.1.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "importlib_metadata-6.0.0-py3-none-any.whl", hash = "sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad"},
-    {file = "importlib_metadata-6.0.0.tar.gz", hash = "sha256:e354bedeb60efa6affdcc8ae121b73544a7aa74156d047311948f6d711cd378d"},
+    {file = "importlib_metadata-6.1.0-py3-none-any.whl", hash = "sha256:ff80f3b5394912eb1b108fcfd444dc78b7f1f3e16b16188054bd01cb9cb86f09"},
+    {file = "importlib_metadata-6.1.0.tar.gz", hash = "sha256:43ce9281e097583d758c2c708c4376371261a02c34682491a8e98352365aad20"},
 ]
 
 [package.dependencies]
@@ -778,10 +778,14 @@ description = "Mermaid diagrams in yours Sphinx powered docs"
 category = "main"
 optional = false
 python-versions = ">=3.7"
-files = [
-    {file = "sphinxcontrib-mermaid-0.8.1.tar.gz", hash = "sha256:fa3e5325d4ba395336e6137d113f55026b1a03ccd115dc54113d1d871a580466"},
-    {file = "sphinxcontrib_mermaid-0.8.1-py3-none-any.whl", hash = "sha256:15491c24ec78cf1626b1e79e797a9ce87cb7959cf38f955eb72dd5512aeb6ce9"},
-]
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/Sporiff/sphinxcontrib-mermaid"
+reference = "cdn-change"
+resolved_reference = "9700adb5bb91f3cd924974db854dedd66c20e1e9"
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -872,4 +876,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1f8bafc04f2b31e19ee7f51a3983ca97165c7758fc764f2e1a8aea835c6bb8ec"
+content-hash = "d8f254c6ecbe76dee51f98a0a6c0888f29b450f6401464ce7db6d35628685acf"
