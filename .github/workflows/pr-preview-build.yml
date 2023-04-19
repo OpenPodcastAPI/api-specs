@@ -1,0 +1,50 @@
+# This workflow will run on each PR - it will build the project
+# and upload as artifacts for the deploy workflow
+name: Build PR preview
+
+on:
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the branch
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      # Setup Poetry for dependencies
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
+      
+      # Build the site with Poetry
+      - name: Build html
+        run: |
+          cd docs
+          poetry install
+          poetry run make html
+      
+      # Store PR number so that it can be extracted in Deploy
+      - name: Create PR artifact
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+          mv docs/_build/html ./pr/
+      
+      # Upload the preview as an artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pr
+          path: pr/
