@@ -58,9 +58,10 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           # Generate key with e.g. 'ssh-keygen -t ed25519 -C "OPA GH Actions Deploy Key" -f gh-pages'
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }} 
+          # deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }} 
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_dir: ./html
-          external_repository: OpenPodcastAPI/pr-preview
+          external_repository: OpenPodcastAPI/pr-previews
           destination_dir: pr-${{ env.pr }}/
           keep_files: true
         
@@ -74,7 +75,7 @@ jobs:
 
       - name: Create PR comment
         env:
-          preview-repo: 'pr-preview'
+          preview-repo: 'pr-previews'
           preview-branch: 'gh-pages'
           preview-folder: 'pr-${{ env.pr }}'
         uses: marocchino/sticky-pull-request-comment@v2
