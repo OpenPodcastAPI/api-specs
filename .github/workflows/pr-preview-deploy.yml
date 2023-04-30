@@ -13,9 +13,8 @@ concurrency:
   group: preview-${{ github.ref }}
   cancel-in-progress: false
 
-# Sets permissions of the GITHUB_TOKEN to allow writing to the gh-pages branch and writing a pull request comment
+# Sets permissions of the GITHUB_TOKEN to allow writing a pull request comment
 permissions:
-  contents: write
   pull-requests: write
 
 jobs:
@@ -86,4 +85,4 @@ jobs:
             | PR Preview |
             | :---: |
             | :rocket: Deployed preview to https://${{ env.org }}.github.io/${{ env.preview-repo }}/${{ env.preview-folder }} |
-            | on branch [`${{ env.preview-branch }}`](${{ github.server_url }}/${{ github.repository }}/tree/${{ env.preview-branch }}) at ${{ env.datetime }} |
+            | on [`${{ env.preview-repo }}:${{ env.preview-branch }}`](${{ github.server_url }}/${{ env.org }}/${{ env.preview-repo }}/tree/${{ env.preview-branch }}) at ${{ env.datetime }} |
