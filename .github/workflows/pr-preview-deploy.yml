@@ -25,28 +25,14 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     steps:
       # Download PR build artifact from last run
-      # Taken from: https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-      - name: 'Download artifact'
-        uses: actions/github-script@v3.1.0
-        with:
-          script: |
-            var artifacts = await github.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
-            });
-            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "pr"
-            })[0];
-            var download = await github.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-            var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
-      
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          run_id: ${{github.event.workflow_run.id }}
+          name: pr
+          skip_unpack: true
+          
       # Extract artifact, get PR number and store it in env
       - name: Extract artifact and PR number
         run: |
@@ -85,4 +71,4 @@ jobs:
             | PR Preview |
             | :---: |
             | :rocket: Deployed preview to https://${{ env.org }}.github.io/${{ env.preview-repo }}/${{ env.preview-folder }} |
-            | on [`${{ env.preview-repo }}:${{ env.preview-branch }}`](${{ github.server_url }}/${{ env.org }}/${{ env.preview-repo }}/tree/${{ env.preview-branch }}) at ${{ env.datetime }} |
+            | on [`${{ env.preview-repo }}`](${{ github.server_url }}/${{ env.org }}/${{ env.preview-repo }}/tree/${{ env.preview-branch }}/pr-${{ env.pr }}) at ${{ env.datetime }} |
