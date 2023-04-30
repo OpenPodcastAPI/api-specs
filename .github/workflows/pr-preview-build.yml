@@ -44,7 +44,7 @@ jobs:
           mv docs/_build/html ./pr/
       
       # Upload the preview as an artifact
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: pr
           path: pr/
