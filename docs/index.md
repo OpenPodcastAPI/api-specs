@@ -34,8 +34,8 @@ The Open Podcast API initiative builds on open source and open standards. Contri
 
 [Join the chatroom on Matrix](https://matrix.to/#/!ZHdcrdWSgxXRREuJdU:matrix.org) | [Give input in our GitHub discussions](https://github.com/orgs/OpenPodcastAPI/discussions/categories/problem-definitions-solutions) | [Add our monthly meeting to your calendar](https://github.com/orgs/OpenPodcastAPI/discussions/15)
 
-[^gPoddermaintainer] [Call on the gPodder.net repository for a new maintainer](https://github.com/gpodder/mygpo/blob/81e3d13e00e6c3d6db7ee6a22734041bf6fde128/maintainer-needed.md)
-[^APforumGpodderIssues] [Questions about gPodder.net issues on the AntennaPod forum](https://forum.antennapod.org/t/problem-with-gpodder-net/374)
-[^gPodder50x] [Issue in the gPodder.net repository on 502 errors](https://github.com/gpodder/mygpo/issues/527)
-[^APforumGpodderRemoval] [Suggestion on the AntennaPod forum to remove gPodder.net support](https://forum.antennapod.org/t/should-gpodder-net-be-supported-long-term/396)
-[^initialAPIdiscussions] [Initial discussions on the needs for a new podcast synchronisation API](https://github.com/thrillfall/nextcloud-gpodder/discussions/91)
+[^gPoddermaintainer]: [Call on the gPodder.net repository for a new maintainer](https://github.com/gpodder/mygpo/blob/81e3d13e00e6c3d6db7ee6a22734041bf6fde128/maintainer-needed.md)
+[^APforumGpodderIssues]: [Questions about gPodder.net issues on the AntennaPod forum](https://forum.antennapod.org/t/problem-with-gpodder-net/374)
+[^gPodder50x]: [Issue in the gPodder.net repository on 502 errors](https://github.com/gpodder/mygpo/issues/527)
+[^APforumGpodderRemoval]: [Suggestion on the AntennaPod forum to remove gPodder.net support](https://forum.antennapod.org/t/should-gpodder-net-be-supported-long-term/396)
+[^initialAPIdiscussions]: [Initial discussions on the needs for a new podcast synchronisation API](https://github.com/thrillfall/nextcloud-gpodder/discussions/91)
