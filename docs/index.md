@@ -6,7 +6,7 @@ Our goal indirectly serving end-users: providing an easy way to sync subscriptio
 
 ## Supported feature set while specs are 'in progress'
 
-Currently the specifications to synchronise [subscriptions](/docs/subscriptions) has been made available.
+Currently the specifications to synchronise [subscriptions](subscriptions/index.md) has been made available.
 
 We encourage all projects offering podcast listening and/or synchronisation functionality to adopt and implement defined specifications. However, please note that the **specifications are currently in 'in progress'**: breaking changes might occur as initial implementation of these specs might reveal flaws in our theory.
 
