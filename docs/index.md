@@ -4,11 +4,11 @@ Welcome! The Open Podcast API is an initiative aiming to provide a feature-compl
 
 Our goal indirectly serving end-users: providing an easy way to sync subscriptions, listening progress, favourites, queu(s) and more between different apps and online services, and the ability to switch providers without hassle. Our goal for developers: providing reliable, open specifications which are decentralisation-ready and are easy to implement. To reach these goals we're deveveloping these specs in a collaborative way and sharing them in an [OpenAPI](https://spec.openapis.org/oas/latest) format.
 
-## Supported feature set & 'alpha' status
+## Supported feature set while specs are 'in progress'
 
 Currently the specifications to synchronise [subscriptions](/docs/subscriptions) has been made available.
 
-We encourage all projects offering podcast listening and/or synchronisation functionality to adopt and implement defined specifications. However, please note that the **specifications are currently in 'alpha' state**: breaking changes might occur as initial implementation of these specs might reveal flaws in our theory.
+We encourage all projects offering podcast listening and/or synchronisation functionality to adopt and implement defined specifications. However, please note that the **specifications are currently in 'in progress'**: breaking changes might occur as initial implementation of these specs might reveal flaws in our theory.
 
 First next on the roadmap are specifications for authentication and basic episode status synchronisation.
 
