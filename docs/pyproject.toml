@@ -6,7 +6,7 @@ authors = ["Open Podcast API team"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-furo = "==2022.12.7"
+furo = "==2023.5.20"
 sphinx-copybutton = "==0.5.1"
 sphinx_design = "==0.3.0"
 sphinx_external_toc = "==0.3.1"
