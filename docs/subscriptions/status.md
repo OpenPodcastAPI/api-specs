@@ -12,25 +12,25 @@ This endpoint enables clients to query the status of a [deletion](delete.md). Wh
 :::{list-table} Deletion status parameters
 :header-rows: 1
 
-* - Parameter
-   - Type
-   - Required?
-   - Description
-* - `deletion_id`
-   - Integer
-   - Yes
-   - The ID of the deletion object
-* - `status`
-   - String
-   - Yes
-   - A status message indicating the status of the deletion. Available values:
-     * `SUCCESS`
-     * `FAILURE`
-     * `PENDING`
-* - `message`
-   - String
-   - No
-   - A status message indicating the current status of the deletion, or any errors that were encountered
+-  -  Parameter
+   -  Type
+   -  Required?
+   -  Description
+-  -  `deletion_id`
+   -  Integer
+   -  Yes
+   -  The ID of the deletion object
+-  -  `status`
+   -  String
+   -  Yes
+   -  A status message indicating the status of the deletion. Available values:
+      -  `SUCCESS`
+      -  `FAILURE`
+      -  `PENDING`
+-  -  `message`
+   -  String
+   -  No
+   -  A status message indicating the current status of the deletion, or any errors that were encountered
 
 :::
 
@@ -65,7 +65,7 @@ curl -X 'GET' \
 
 ## Example 200 response
 
-The server must send a  `200 (Success)` if it can fetch a status object without issue. This response must contain information about the `deletion_id` passed in the query path.
+The server must send a `200 (Success)` if it can fetch a status object without issue. This response must contain information about the `deletion_id` passed in the query path.
 
 ### Successful deletion
 
@@ -73,9 +73,9 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 
 ```json
 {
-  "deletion_id": 25,
-  "status": "SUCCESS",
-  "message": "Subscription deleted successfully"
+   "deletion_id": 25,
+   "status": "SUCCESS",
+   "message": "Subscription deleted successfully"
 }
 ```
 
@@ -96,9 +96,9 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 
 ```json
 {
-  "deletion_id": 25,
-  "status": "PENDING",
-  "message": "Deletion is pending"
+   "deletion_id": 25,
+   "status": "PENDING",
+   "message": "Deletion is pending"
 }
 ```
 
@@ -119,9 +119,9 @@ The server must send a  `200 (Success)` if it can fetch a status object without 
 
 ```json
 {
-  "deletion_id": 25,
-  "status": "FAILURE",
-  "message": "The deletion process encountered an error and was rolled back"
+   "deletion_id": 25,
+   "status": "FAILURE",
+   "message": "The deletion process encountered an error and was rolled back"
 }
 ```
 

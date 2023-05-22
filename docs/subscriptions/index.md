@@ -10,52 +10,52 @@ Subscriptions represent the feeds a user has subscribed to. The object stores es
 ::: {list-table}
 :header-rows: 1
 
-* - Field
-  - Type
-  - Nullable?
-  - Description
-* - `feed_url`
-   - String
-   - No
-   - The URL of the podcast RSS feed
-* - `guid` 
-   - String<UUID>
-   - No
-   - The globally unique ID of the podcast
-* - `is_subscribed`
-  - Boolean
-  - No
-  - Whether the user is subscribed to the podcast or not
-* - `subscription_changed`
-   - Datetime
-   - No
-   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
-* - `guid_changed`
-   - Datetime
-   - No
-   - The date on which the podcast's `guid` or `new_guid` was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
-* - `new_guid`
-   - String<UUID>
-   - Yes
-   - The new GUID associated with the podcast
-* - `is_deleted`
-   - Boolean
-   - Yes
-   - Whether data associated with the subscription has been [deleted](delete.md) by the user. This field is used to determine whether a `410 (Gone)` response should be returned
+-  -  Field
+   -  Type
+   -  Nullable?
+   -  Description
+-  -  `feed_url`
+   -  String
+   -  No
+   -  The URL of the podcast RSS feed
+-  -  `guid`
+   -  String<UUID>
+   -  No
+   -  The globally unique ID of the podcast
+-  -  `is_subscribed`
+   -  Boolean
+   -  No
+   -  Whether the user is subscribed to the podcast or not
+-  -  `subscription_changed`
+   -  Datetime
+   -  No
+   -  The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+-  -  `guid_changed`
+   -  Datetime
+   -  No
+   -  The date on which the podcast's `guid` or `new_guid` was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+-  -  `new_guid`
+   -  String<UUID>
+   -  Yes
+   -  The new GUID associated with the podcast
+-  -  `deleted`
+   -  Datetime
+   -  Yes
+   -  The date on which data associated with the subscription was [deleted](delete.md) by the user. This field is used to determine whether a `410 (Gone)` response should be returned
 
 :::
 
 :::{mermaid}
-classDiagram 
-   class subscription{
-         String feed_url
-         String guid
-         Boolean is_subscribed
-         Datetime subscription_changed
-         Datetime guid_changed
-         String new_guid
-         Boolean is_deleted
-      }
+classDiagram
+class subscription{
+String feed_url
+String guid
+Boolean is_subscribed
+Datetime subscription_changed
+Datetime guid_changed
+String new_guid
+Datetime deleted
+}
 :::
 
 ## API endpoint
