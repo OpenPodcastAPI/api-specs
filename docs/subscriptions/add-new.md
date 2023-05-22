@@ -12,44 +12,44 @@ This endpoint enables clients to add new subscriptions to the system for the aut
 :::{list-table} Success response
 :header-rows: 1
 
-* - Field
-   - Type
-   - Required?
-   - Description
-* - `feed_url`
-   - String
-   - Yes
-   - The URL of the podcast RSS feed.
-* - `guid`
-   - String
-   - Yes
-   - The globally unique ID of the podcast
-* - `is_subscribed`
-   - Boolean
-   - Yes
-   - Whether the user is subscribed to the podcast or not
-* - `subscription_changed`
-   - Datetime
-   - Yes
-   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
+-  -  Field
+   -  Type
+   -  Required?
+   -  Description
+-  -  `feed_url`
+   -  String
+   -  Yes
+   -  The URL of the podcast RSS feed.
+-  -  `guid`
+   -  String
+   -  Yes
+   -  The globally unique ID of the podcast
+-  -  `is_subscribed`
+   -  Boolean
+   -  Yes
+   -  Whether the user is subscribed to the podcast or not
+-  -  `subscription_changed`
+   -  Datetime
+   -  Yes
+   -  The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html)
 
 :::
 
 :::{list-table} Failure response
 :header-rows: 1
 
-* - Field
-   - Type
-   - Required?
-   - Description
-* - `feed_url`
-   - String
-   - Yes
-   - The URL of the podcast RSS feed
-* - `message`
-   - String
-   - Yes
-   - A message explaining why the subscription couldn't be added
+-  -  Field
+   -  Type
+   -  Required?
+   -  Description
+-  -  `feed_url`
+   -  String
+   -  Yes
+   -  The URL of the podcast RSS feed
+-  -  `message`
+   -  String
+   -  Yes
+   -  A message explaining why the subscription couldn't be added
 
 :::
 
@@ -60,18 +60,18 @@ The client must provide a list of objects containing the following parameters:
 :::{list-table}
 :header-rows: 1
 
-* - Field
-   - Type
-   - Required?
-   - Description
-* - `feed_url`
-   - String
-   - Yes
-   - The URL of the podcast RSS feed. The client must provide a protocol (for example: `http` or `https`) and preserve any parameters
-* - `guid`
-   - String
-   - No
-   - The GUID found in the podcast RSS feed
+-  -  Field
+   -  Type
+   -  Required?
+   -  Description
+-  -  `feed_url`
+   -  String
+   -  Yes
+   -  The URL of the podcast RSS feed. The client must provide a protocol (for example: `http` or `https`) and preserve any parameters
+-  -  `guid`
+   -  String
+   -  No
+   -  The GUID found in the podcast RSS feed
 
 :::
 
@@ -85,18 +85,18 @@ If a client passes a `guid` this is treated as authoritative by the server. The 
 {
    "subscriptions": [
       {
-         "feed_url": "https://example.com/rss1",
+         "feed_url": "https://example.com/rss1"
       },
       {
-         "feed_url": "https://example.com/rss2",
+         "feed_url": "https://example.com/rss2"
       },
       {
-         "feed_url": "https://example.com/rss3",
+         "feed_url": "https://example.com/rss3"
       },
       {
          "feed_url": "https://example.com/rss4",
          "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71"
-      },
+      }
    ]
 }
 ```
@@ -129,25 +129,25 @@ When new feeds are posted to the server, the server must return a success respon
 1. The client sends a payload to the server
 2. For each object in the payload, the server does the following:
    1. Checks if there's a `guid` entry in the payload
-      * If a `guid` is present, the server stores the `guid` for later use
-      * If no `guid` is present, the server generates a `guid` for later use
+      -  If a `guid` is present, the server stores the `guid` for later use
+      -  If no `guid` is present, the server generates a `guid` for later use
    2. Checks to see if there is an existing entry with the same `guid` or `feed_url`
-      * If an existing entry is found, the server sets the `is_subscribed` field to `true` and updates the `subscription_changed` date to the current date
-      * If no existing entry is found, the server creates a new subscription entry
+      -  If an existing entry is found, the server sets the `is_subscribed` field to `true` and updates the `subscription_changed` date to the current date. If the `deleted` field is populated, the field is set to `NULL` to show that the subscription is active
+      -  If no existing entry is found, the server creates a new subscription entry
 3. The server returns a success payload containing the subscription information for each object in the request payload.
 
 :::{mermaid}
 flowchart TB
-   post([The client posts a subscription payload]) --> process{Does the payload contain\n a GUID?}
-   subgraph each [For each object]
-      process -->|yes| store_guid(The server stores the GUID\nfor the feed)
-      process -->|no| generate_guid(The server generates a GUID\nfor the feed)
-      store_guid & generate_guid --> search_entries[[The server checks for existing\nentries with the same URL or GUID]]
-      search_entries --> found{Was an existing subscription entry found?}
-      found -->|yes| resubscribe(The server updates the is_subscribed field\nto true and updates the subscription_changed date\nto the current date)
-      found -->|no| create(The server creates a new subscription entry)
-   end
-   resubscribe & create --> return([The server returns a success payload])
+post([The client posts a subscription payload]) --> process{Does the payload contain\n a GUID?}
+subgraph each [For each object]
+process -->|yes| store_guid(The server stores the GUID\nfor the feed)
+process -->|no| generate_guid(The server generates a GUID\nfor the feed)
+store_guid & generate_guid --> search_entries[[The server checks for existing\nentries with the same URL or GUID]]
+search_entries --> found{Was an existing subscription entry found?}
+found -->|yes| resubscribe(The server updates the is_subscribed field\nto true, updates the subscription_changed date\nto the current date and sets\nthe deleted field to NULL)
+found -->|no| create(The server creates a new subscription entry)
+end
+resubscribe & create --> return([The server returns a success payload])
 :::
 
 ### Subscription GUID update
@@ -167,15 +167,15 @@ Once this is done, the server should asynchronously verify that there isn't a mo
 
 :::{mermaid}
 flowchart TD
-   subgraph authority [For each empty GUID]
-      fetch(The server fetches the RSS feed and\nparses it) --> rss_guid{Does the RSS field contain a GUID?}
-      rss_guid -->|no| keep([The server keeps the generated GUID])
-      rss_guid -->|yes| create(The server creates a new subscription\nentry with the new GUID)
-      create --> update([The server updates the existing entry's\n<code>new_guid</code> and <code>guid_changed</code> fields])
-   end
-   subgraph initial [Initial server response]
-      payload([The server receives a payload with an empty guid field]) --> generate(The server generates a new GUID and returns it)
-   end
+subgraph authority [For each empty GUID]
+fetch(The server fetches the RSS feed and\nparses it) --> rss_guid{Does the RSS field contain a GUID?}
+rss_guid -->|no| keep([The server keeps the generated GUID])
+rss_guid -->|yes| create(The server creates a new subscription\nentry with the new GUID)
+create --> update([The server updates the existing entry's\n<code>new_guid</code> and <code>guid_changed</code> fields])
+end
+subgraph initial [Initial server response]
+payload([The server receives a payload with an empty guid field]) --> generate(The server generates a new GUID and returns it)
+end
 :::
 
 ## Example request
@@ -240,32 +240,32 @@ curl --location '/subscriptions' \
 
 ```json
 {
-  "success": [
-    {
-      "feed_url": "https://example.com/rss1",
-      "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
-      "is_subscribed": true,
-      "subscription_changed": "2023-02-23T14:00:00.000Z"
-    },
-    {
-      "feed_url": "https://example.com/rss2",
-      "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
-      "is_subscribed": true,
-      "subscription_changed": "2023-02-23T14:00:00.000Z"
-    },
-    {
-      "feed_url": "https://example.com/rss3",
-      "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
-      "is_subscribed": true,
-      "subscription_changed": "2023-02-23T14:00:00.000Z"
-    }
-  ],
-  "failure": [
-    {
-      "feed_url": "example.com/rss4",
-      "message": "No protocol present"
-    }
-  ]
+   "success": [
+      {
+         "feed_url": "https://example.com/rss1",
+         "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
+         "is_subscribed": true,
+         "subscription_changed": "2023-02-23T14:00:00.000Z"
+      },
+      {
+         "feed_url": "https://example.com/rss2",
+         "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
+         "is_subscribed": true,
+         "subscription_changed": "2023-02-23T14:00:00.000Z"
+      },
+      {
+         "feed_url": "https://example.com/rss3",
+         "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
+         "is_subscribed": true,
+         "subscription_changed": "2023-02-23T14:00:00.000Z"
+      }
+   ],
+   "failure": [
+      {
+         "feed_url": "example.com/rss4",
+         "message": "No protocol present"
+      }
+   ]
 }
 ```
 

@@ -9,39 +9,40 @@ PATCH /subscriptions/{guid}
 
 This endpoint allows clients to update information about a subscription. The client can update the following information:
 
-* The podcast's GUID
-* The podcast's feed URL
-* An update to the subscription status for the user
+-  The podcast's GUID
+-  The podcast's feed URL
+-  An update to the subscription status for the user
 
 This endpoint returns the following information:
 
 :::{list-table}
 :header-rows: 1
 
-* - Field
-   - Type
-   - Required?
-   - Description
-* - `new_feed_url`
-   - String
-   - No
-   - The URL of the podcast RSS feed. Only returned if the `feed_url` field was updated by the request
-* - `is_subscribed`
-   - Boolean
-   - No
-   - Whether the user is subscribed to the podcast or not. Only returned if the `is_subscribed` field was updated by the request
-* - `subscription_changed`
-   - Datetime
-   - No
-   - The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `is_subscribed` field was updated by the request
-* - `guid_changed`
-   - Datetime
-   - No
-   - The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `guid` field was updated by the request
-* - `new_guid`
-   - String<UUID>
-   - No
-   - The new GUID associated with the podcast. Only returned if the `guid` field was updated by the request
+-  -  Field
+   -  Type
+   -  Required?
+   -  Description
+-  -  `new_feed_url`
+   -  String
+   -  No
+   -  The URL of the podcast RSS feed. Only returned if the `feed_url` field was updated by the request
+-  -  `is_subscribed`
+   -  Boolean
+   -  No
+   -  Whether the user is subscribed to the podcast or not. Only returned if the `is_subscribed` field was updated by the request
+-  -  `subscription_changed`
+   -  Datetime
+   -  No
+   -  The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `is_subscribed` field was updated by the request
+-  -  `guid_changed`
+   -  Datetime
+   -  No
+   -  The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `guid` field was updated by the request
+-  -  `new_guid`
+   -  String<UUID>
+   -  No
+   -  The new GUID associated with the podcast. Only returned if the `guid` field was updated by the request
+
 :::
 
 ## Parameters
@@ -51,31 +52,31 @@ The client must pass the subscription GUID in the query path and add at least on
 :::{list-table}
 :header-rows: 1
 
-* - Parameter
-   - Type
-   - In
-   - Required?
-   - Description
-* - `guid`
-   - String
-   - Query
-   - Yes
-   - The GUID of the subscription object that needs to be updated
-* - `new_feed_url`
-   - String
-   - Body
-   - No
-   - The URL of the new RSS feed for the subscription
-* - `new_guid`
-   - String <UUID>
-   - Body
-   - No
-   - The new GUID of the podcast
-* - `is_subscribed`
-   - Boolean
-   - Body
-   - No
-   - Whether the user is subscribed to the podcast or not
+-  -  Parameter
+   -  Type
+   -  In
+   -  Required?
+   -  Description
+-  -  `guid`
+   -  String
+   -  Query
+   -  Yes
+   -  The GUID of the subscription object that needs to be updated
+-  -  `new_feed_url`
+   -  String
+   -  Body
+   -  No
+   -  The URL of the new RSS feed for the subscription
+-  -  `new_guid`
+   -  String <UUID>
+   -  Body
+   -  No
+   -  The new GUID of the podcast
+-  -  `is_subscribed`
+   -  Boolean
+   -  Body
+   -  No
+   -  Whether the user is subscribed to the podcast or not
 
 :::
 
@@ -99,16 +100,16 @@ On receipt of a PATCH request for a subscription, the server must do the followi
 
 :::{mermaid}
 flowchart TD
-   request([The server receives a PATCH request]) --> resolve(The server checks the <code>new_guid</code> field of the\nsubscription and resolves the latest version of the subscription)
-   resolve --> check{What parameters are included in the request body?}
-   check -->|new_feed_url| update_feed(The server updates the entry's feed_url\nto the new value)
-   check -->|new_guid| check_guid{Is there an entry with a matching guid?}
-   check -->|is_subscribed| update_sub(The server updates the entry's is_subscribed field\nto match the provided value)
-   update_feed --> feed_date(The server updates the entry's subscription_changed\nto the current date)
-   check_guid -->|yes| match_guid(The server updates the entry's new_guid field to point to\nthe existing entry)
-   check_guid -->|no| no_match_guid(The server creates a new subscription entry\nwith the provided guid and updates the\nentry's new_guid field to point to the newly created entry)
-   update_sub --> sub_date(The server updates the entry's subscription_changed\nto the current date)
-   feed_date & sub_date & match_guid & no_match_guid --> return([The server returns the updated subscription information])
+request([The server receives a PATCH request]) --> resolve(The server checks the <code>new_guid</code> field of the\nsubscription and resolves the latest version of the subscription)
+resolve --> check{What parameters are included in the request body?}
+check -->|new_feed_url| update_feed(The server updates the entry's feed_url\nto the new value)
+check -->|new_guid| check_guid{Is there an entry with a matching guid?}
+check -->|is_subscribed| update_sub(The server updates the entry's is_subscribed field\nto match the provided value)
+update_feed --> feed_date(The server updates the entry's subscription_changed\nto the current date)
+check_guid -->|yes| match_guid(The server updates the entry's new_guid field to point to\nthe existing entry)
+check_guid -->|no| no_match_guid(The server creates a new subscription entry\nwith the provided guid and updates the\nentry's new_guid field to point to the newly created entry)
+update_sub --> sub_date(The server updates the entry's subscription_changed\nto the current date)
+feed_date & sub_date & match_guid & no_match_guid --> return([The server returns the updated subscription information])
 :::
 
 ## Example request
@@ -151,11 +152,11 @@ curl --location --request PATCH '/subscriptions/2d8bb39b-8d34-48d4-b223-a0d01eb2
 
 ```json
 {
-  "new_feed_url": "https://example.com/rss5",
-  "is_subscribed": false,
-  "subscription_changed": "2023-02-23T14:41:00.000Z",
-  "guid_changed": "2023-02-23T14:41:00.000Z",
-  "new_guid": "965fcecf-ce04-482b-b57c-3119b866cc61"
+   "new_feed_url": "https://example.com/rss5",
+   "is_subscribed": false,
+   "subscription_changed": "2023-02-23T14:41:00.000Z",
+   "guid_changed": "2023-02-23T14:41:00.000Z",
+   "new_guid": "965fcecf-ce04-482b-b57c-3119b866cc61"
 }
 ```
 

@@ -20,26 +20,26 @@ To ensure that `DELETE` requests are handled asynchronously, the server must res
 :::{list-table} Deletion status parameters
 :header-rows: 1
 
-* - Parameter
-   - Type
-   - Required?
-   - Description
-* - `id`
-   - Integer
-   - Yes
-   - The ID of the deletion object
-* - `success`
-   - Boolean
-   - Yes
-   - Whether or not the deletion was completed successfully
-* - `complete`
-   - Boolean
-   - Yes
-   - Whether or not the deletion process has finished
-* - `message`
-   - String
-   - No
-   - A status message indicating the current status of the deletion, or any errors that were encountered
+-  -  Parameter
+   -  Type
+   -  Required?
+   -  Description
+-  -  `id`
+   -  Integer
+   -  Yes
+   -  The ID of the deletion object
+-  -  `success`
+   -  Boolean
+   -  Yes
+   -  Whether or not the deletion was completed successfully
+-  -  `complete`
+   -  Boolean
+   -  Yes
+   -  Whether or not the deletion process has finished
+-  -  `message`
+   -  String
+   -  No
+   -  A status message indicating the current status of the deletion, or any errors that were encountered
 
 :::
 
@@ -49,32 +49,32 @@ The following flow must be followed:
 2. The server creates a new deletion status object and returns the `deletion_id` in a `202 (Accepted)` response
 3. The server attempts to perform a cascade delete on all related items
    1. If a failure occurs at any point in the process, all transactions are rolled back and the status object is updated to show the following:
-      * `complete`: Must be true
-      * `success`: Must be `false`
-      * `message`: Should be updated to contain a meaningful error message
+      -  `complete`: Must be true
+      -  `success`: Must be `false`
+      -  `message`: Should be updated to contain a meaningful error message
    2. If all deletions are successful, the status object is updated to show the following:
-      * `complete`: Must be true
-      * `success`: Must be `true`
-      * `message`: Should be updated to contain a success message
+      -  `complete`: Must be true
+      -  `success`: Must be `true`
+      -  `message`: Should be updated to contain a success message
 
 If the client attempts to [fetch a deleted subscription](get-single.md), the server must respond with a `410 (Gone)` status code to indicate the object and its associated data have been deleted.
 
 :::{mermaid}
 sequenceDiagram
-   Client ->> Web server: DELETE request
-   Web server ->> Server: Forward request
-   Server -->> Web server: deletion_id
-   Web server -->> Client: 202 with deletion_id
-   par Server to Database
-      Server ->> Database: Cascade delete
-      Database ->> Server: Report status
-   end
-   Client ->> Web server: GET status
-   Web server ->> Server: Forward request
-   Server -->> Client: Deletion status
-   Client ->> Web server: GET deleted resource
-   Web server ->> Server: Forward request
-   Server --> Client: 410 (Gone)
+Client ->> Web server: DELETE request
+Web server ->> Server: Forward request
+Server -->> Web server: deletion_id
+Web server -->> Client: 202 with deletion_id
+par Server to Database
+Server ->> Database: Cascade delete
+Database ->> Server: Report status
+end
+Client ->> Web server: GET status
+Web server ->> Server: Forward request
+Server -->> Client: Deletion status
+Client ->> Web server: GET deleted resource
+Web server ->> Server: Forward request
+Server --> Client: 410 (Gone)
 :::
 
 ## Example request
@@ -90,8 +90,8 @@ curl --location --request DELETE \
 
 ```json
 {
-  "deletion_id": 25,
-  "message": "Deletion request was received and will be processed"
+   "deletion_id": 25,
+   "message": "Deletion request was received and will be processed"
 }
 ```
 
