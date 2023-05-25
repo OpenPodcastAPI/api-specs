@@ -28,14 +28,14 @@ This endpoint enables clients to return all subscription information relating to
    -  Number
    -  Yes
    -  The number of results returned per page
--  -  `has_next`
-   -  Boolean
-   -  Yes
-   -  Whether there is a next page of results that the client can fetch
--  -  `has_prev`
-   -  Boolean
+-  -  `next`
+   -  String
    -  No
-   -  Whether there is a previous page of results that the client can fetch
+   -  The URL for the next page of results
+-  -  `previous`
+   -  String
+   -  No
+   -  The URL for the previous page of results
 
 :::
 
@@ -203,7 +203,6 @@ curl -X 'GET' \
    "total": 1,
    "page": 1,
    "per_page": 5,
-   "has_next": false,
    "subscriptions": [
       {
          "feed_url": "https://example.com/rss1",
@@ -222,7 +221,6 @@ curl -X 'GET' \
 	<total>1</total>
 	<page>1</page>
 	<per_page>5</per_page>
-	<has_next>false</has_next>
 	<subscription>
 		<feed_url>https://example.com/rss1</feed_url>
 		<guid>64c1593b-5a1e-4e89-b8a3-d91501065e80</guid>
@@ -271,7 +269,6 @@ curl -X 'GET' \
    "total": 1,
    "page": 1,
    "per_page": 5,
-   "has_next": false,
    "subscriptions": [
       {
          "feed_url": "https://example.com/rss1",
@@ -290,7 +287,6 @@ curl -X 'GET' \
 	<total>1</total>
 	<page>1</page>
 	<per_page>5</per_page>
-	<has_next>false</has_next>
 	<subscription>
 		<feed_url>https://example.com/rss1</feed_url>
 		<guid>daac3ce5-7b16-4cf0-8294-86ad71944a64</guid>
@@ -339,7 +335,6 @@ curl -X 'GET' \
    "total": 2,
    "page": 1,
    "per_page": 5,
-   "has_next": false,
    "subscriptions": [
       {
          "feed_url": "https://example.com/rss1",
@@ -364,7 +359,6 @@ curl -X 'GET' \
 	<total>2</total>
 	<page>1</page>
 	<per_page>5</per_page>
-	<has_next>false</has_next>
 	<subscription>
 		<feed_url>https://example.com/rss1</feed_url>
 		<guid>31740ac6-e39d-49cd-9179-634bcecf4143</guid>
