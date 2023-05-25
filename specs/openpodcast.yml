@@ -50,10 +50,6 @@ paths:
                 $ref: '#/components/schemas/Subscriptions'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
       security:
         - podcast_auth:
             - read:subscriptions
@@ -77,8 +73,6 @@ paths:
                 $ref: '#/components/schemas/NewSubscriptions'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '405':
           $ref: '#/components/responses/ValidationException'
       security:
@@ -374,6 +368,9 @@ components:
         guid_changed:
           type: string
           format: date-time
+        deleted:
+          type: string
+          format: date-time
       example:
         feed_url: https://example.com/feed2
         guid: 968cb508-803c-493c-8ff2-9e397dadb83c
@@ -417,7 +414,6 @@ components:
         - total
         - page
         - per_page
-        - has_next
         - subscriptions
       xml:
         name: subscriptions
@@ -429,10 +425,12 @@ components:
           type: number
         per_page:
           type: number
-        has_next:
-          type: boolean
-        has_prev:
-          type: boolean
+        next:
+          type: string
+          format: url
+        previous:
+          type: string
+          format: url
         subscriptions:
           type: array
           items:
@@ -441,7 +439,6 @@ components:
         total: 2
         page: 1
         per_page: 5
-        has_next: false
         subscriptions:
           - feed_url: https://example.com/rss1
             guid: 31740ac6-e39d-49cd-9179-634bcecf4143
@@ -452,6 +449,7 @@ components:
             guid: 968cb508-803c-493c-8ff2-9e397dadb83c
             is_subscribed: false
             subscription_changed: 2022-04-24T17:53:21.573Z
+            deleted: 2022-04-24T17:53:21.573Z
     NewSubscriptions:
       xml:
         name: subscriptions
