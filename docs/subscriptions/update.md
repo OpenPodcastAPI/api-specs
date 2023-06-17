@@ -33,7 +33,7 @@ This endpoint returns the following information:
 -  -  `subscription_changed`
    -  Datetime
    -  No
-   -  The date on which the `is_subscribed` or `feed_url` fields were last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `is_subscribed` field was updated by the request
+   -  The date on which the `is_subscribed` or `feed_url` field was last updated. Presented in [ISO 8601 format](https://www.iso.org/iso-8601-date-and-time-format.html). Only returned if the `is_subscribed` field was updated by the request
 -  -  `guid_changed`
    -  Datetime
    -  No
