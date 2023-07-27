@@ -8,7 +8,7 @@ authors = ["Open Podcast API team"]
 python = "^3.9"
 furo = "==2022.12.7"
 sphinx-copybutton = "==0.5.2"
-sphinx_design = "==0.4.1"
+sphinx_design = "==0.5.0"
 sphinx_external_toc = "==0.3.1"
 sphinxcontrib-mermaid = { git = "https://github.com/Sporiff/sphinxcontrib-mermaid", rev = "cdn-change" }
 accessible-pygments = "==0.0.4"
