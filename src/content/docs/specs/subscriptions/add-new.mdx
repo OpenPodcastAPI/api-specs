@@ -1,0 +1,244 @@
+---
+title: Add a new subscription
+description: Add a new subscription
+sidebar:
+  order: 2
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<CoreAction />
+
+```
+POST /subscriptions
+```
+
+This endpoint enables clients to add new subscriptions to the system for the authenticated user. It returns an array of `success` responses for newly added subscriptions, and an array of `failure` responses for subscriptions that couldn't be added.
+
+| Field                  | Type     | Required? | Description                                                                                  |
+| ---------------------- | -------- | --------- | -------------------------------------------------------------------------------------------- |
+| `feed_url`             | String   | Yes       | The URL of the podcast RSS feed                                                              |
+| `guid`                 | String   | Yes       | The globally unique ID of the podcast                                                        |
+| `is_subscribed`        | Boolean  | Yes       | Whether the user is subscribed to the podcast                                                |
+| `subscription_changed` | Datetime | Yes       | The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format] |
+
+## Request parameters
+
+The client must provide a list of objects containing the following parameters:
+
+| Field      | Type   | Required? | Description                                                                                                                      |
+| ---------- | ------ | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `feed_url` | String | Yes       | The URL of the podcast RSS feed. The client must provide a protocol (for example: `http` or `https`) and preserve any parameters |
+| `guid`     | String | No        | The GUID found in the podcast RSS feed                                                                                           |
+
+:::caution[Important]
+If a client passes a `guid` this is treated as authoritative by the server. The client may pass a `guid` **only** if it is parsed from the podcast RSS feed.
+:::
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```json
+      {
+         "subscriptions": [
+            {
+               "feed_url": "https://example.com/rss1"
+            },
+            {
+               "feed_url": "https://example.com/rss2"
+            },
+            {
+               "feed_url": "https://example.com/rss3"
+            },
+            {
+               "feed_url": "https://example.com/rss4",
+               "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71"
+            }
+         ]
+      }
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <subscriptions>
+         <subscription>
+            <feed_url>https://example.com/feed1</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>https://example.com/feed2</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>https://example.com/feed3</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>https://example.com/feed4</feed_url>
+            <guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+         </subscription>
+      </subscriptions>
+      ```
+
+   </TabItem>
+</Tabs>
+
+## Server-side behavior
+
+When new feeds are posted to the server, the server must return a success response to the client immediately to acknowledge the request. To ensure that data can be returned immediately, the following flow must be followed:
+
+1. The client sends a payload to the server
+2. For each object in the payload, the server does the following:
+   1. Checks if there's a `guid` entry in the payload
+      - If a `guid` is present, the server stores the `guid` for later use
+      - If no `guid` is present, the server generates a `guid` for later use
+   2. Checks to see if there is an existing entry with the same `guid` or `feed_url`
+      - If an existing entry is found, the server sets the `is_subscribed` field to `true` and updates the `subscription_changed` date to the current date. If the `deleted` field is populated, the field is set to `NULL` to show that the subscription is active
+      - If no existing entry is found, the server creates a new subscription entry
+3. The server returns a success payload containing the subscription information for each object in the request payload.
+
+![A flowchart diagram of the process](@assets/diagrams/subscriptions/add_new.svg)
+
+### Subscription GUID update
+
+If the client doesn't send a `guid` in the subscription payload, the server must create one immediately to ensure the following:
+
+1. Each entry has an associated `guid`
+2. The client receives a success response as quickly as possible
+
+Once this is done, the server should asynchronously verify that there isn't a more authoritative GUID available. The following flow should be used:
+
+1. The server fetches and parses the RSS feed to search for a [`guid` field in the `podcast` namespace](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#guid).
+2. If a more authoritative `guid` is found, the server must update the subscription entry as follows:
+   1. Create a new subscription entry with the new `guid`
+   2. Update the `new_guid` field in the existing entry to point to the new `guid`
+   3. Update the `guid_changed` field in the existing entry to the current date
+
+![A diagram of the GUID update process](@assets/diagrams/subscriptions/guid_update.svg)
+
+## Example request
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```sh
+      curl --location '/subscriptions' \
+      --header 'Content-Type: application/json' \
+      --data '{
+      "subscriptions": [
+         {
+            "feed_url": "https://example.com/feed1"
+         },
+         {
+            "feed_url": "https://example.com/feed2"
+         },
+         {
+            "feed_url": "https://example.com/feed3"
+         },
+         {
+            "feed_url": "example.com/feed4",
+            "guid": "2d8bb39b-8d34-48d4-b223-a0d01eb27d71"
+         }
+      ]
+      }'
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```sh
+      curl --location '/subscriptions' \
+      --header 'Content-Type: application/xml' \
+      --data '<?xml version="1.0" encoding="UTF-8"?>
+      <subscriptions>
+         <subscription>
+            <feed_url>https://example.com/feed1</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>https://example.com/feed2</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>https://example.com/feed3</feed_url>
+         </subscription>
+         <subscription>
+            <feed_url>example.com/feed4</feed_url>
+            <guid>2d8bb39b-8d34-48d4-b223-a0d01eb27d71</guid>
+         </subscription>
+      </subscriptions>'
+      ```
+
+   </TabItem>
+</Tabs>
+
+## Example 200 response
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```json
+      {
+         "success": [
+            {
+               "feed_url": "https://example.com/rss1",
+               "guid": "8d1f8f09-4f50-4327-9a63-639bfb1cbd98",
+               "is_subscribed": true,
+               "subscription_changed": "2023-02-23T14:00:00.000Z"
+            },
+            {
+               "feed_url": "https://example.com/rss2",
+               "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
+               "is_subscribed": true,
+               "subscription_changed": "2023-02-23T14:00:00.000Z"
+            },
+            {
+               "feed_url": "https://example.com/rss3",
+               "guid": "e672c1f4-230d-4ab4-99d3-390a9f835ec1",
+               "is_subscribed": true,
+               "subscription_changed": "2023-02-23T14:00:00.000Z"
+            }
+         ],
+         "failure": [
+            {
+               "feed_url": "example.com/rss4",
+               "message": "No protocol present"
+            }
+         ]
+      }
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <subscriptions>
+         <success>
+            <feed_url>https://example.com/rss1</feed_url>
+            <guid>8d1f8f09-4f50-4327-9a63-639bfb1cbd98</guid>
+            <is_subscribed>true</is_subscribed>
+            <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+         </success>
+         <success>
+            <feed_url>https://example.com/rss2</feed_url>
+            <guid>968cb508-803c-493c-8ff2-9e397dadb83c</guid>
+            <is_subscribed>true</is_subscribed>
+            <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+         </success>
+         <success>
+            <feed_url>https://example.com/rss3</feed_url>
+            <guid>e672c1f4-230d-4ab4-99d3-390a9f835ec1</guid>
+            <is_subscribed>true</is_subscribed>
+            <subscription_changed>2023-02-23T14:00:00.000Z</subscription_changed>
+         </success>
+         <failure>
+            <feed_url>example.com/rss4</feed_url>
+            <message>No protocol present</message>
+         </failure>
+      </subscriptions>
+      ```
+
+   </TabItem>
+</Tabs>
+
+[ISO 8601 format]: https://www.iso.org/iso-8601-date-and-time-format.html

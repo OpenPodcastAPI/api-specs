@@ -14,7 +14,7 @@ indent_style = space
 indent_size = 4
 
 # MD files
-[*.md]
+[*.{md, mdx}]
 indent_style = space
 indent_size = 3
 trim_trailing_whitespace = false
