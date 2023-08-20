@@ -1,0 +1,19 @@
+{
+  "name": "api-specs-astro",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.7.2",
+    "astro": "^2.10.5",
+    "astro-auto-import": "^0.3.1",
+    "remark-definition-list": "^1.2.0",
+    "sharp": "^0.32.3"
+  }
+}

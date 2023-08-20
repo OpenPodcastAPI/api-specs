@@ -1,0 +1,38 @@
+---
+title: Project overview
+description: An introduction to the Open Podcast API project
+sidebar:
+   order: 1
+---
+
+## Background
+
+The Open Podcast API project is inspired by and builds upon the [gPodder API](https://gpoddernet.readthedocs.io/en/latest/api/index.html). In the summer of 2019, the creator of gPodder announced they were stepping down and the community took over.[^gPoddermaintainer] Unfortunately, about a year later the project entered 'basic maintenance mode' due to shifting priorities of key contributors. The limited availability of volunteers combined with gPodder.net's popularity among end-users meant that people started to see server errors while synchronizing or creating an account.[^APforumGpodderIssues] [^gPodder50x] Attempts to establish contact and collaborate on improving the situation didn't work out as hoped. Given the situation, AntennaPod contributors started discussing whether gPodder.net support should be removed[^APforumGpodderRemoval] or whether it could be forked. They concluded that the best solution would be to create a new API spec with a broad range of contributors to allow users to switch servers (avoiding major loads on a single server or project), to provide an opportunity to more easily go beyond the existing gPodder.net API specs, and to enable developers to address some technical issues with the API specs.
+
+The initial discussions on GitHub led to a meeting in October 2022 with contributors from [AntennaPod](https://github.com/AntennaPod/AntennaPod/), [Funkwhale](https://dev.funkwhale.audio/), [Kasts](https://invent.kde.org/multimedia/kasts), [Podfriend](https://github.com/MartinMouritzen/Podfriend) and the [gPodder app for Nextcloud](https://github.com/thrillfall/nextcloud-gpodder).[^initialAPIdiscussions] A few months later, the first of the recurring meetings took place to start developing the specification.
+
+## Supported features
+
+:::caution[Important]
+All specifications are currently 'in progress'. Breaking changes can occur as we implement specifications and address issues.
+:::
+
+The specification for [synchronizing subscriptions](/specs/subscriptions) is already available. We encourage all interested projects offering podcast listening and/or synchronization functionality to adopt and implement defined specifications.
+
+## Core and optional functionality
+
+To ensure that the end-user experience is consistent across implemenetations, the specifications mark endpoints and features as **Core** (required) and **Optional**.
+
+**Core**
+: The feature or endpoint must be supported by all clients and servers.
+
+**Optional**
+: The feature or endpoint is considered to be additional functionality. Clients and servers may optionally support any combination of these features. Any project implementing **Optional** functionality should inform users about what is supported.
+
+**Core** features are determined during the specification process. They are subject to change, although a change is unlikely.
+
+[^gPoddermaintainer]: [Call on the gPodder.net repository for a new maintainer](https://github.com/gpodder/mygpo/blob/81e3d13e00e6c3d6db7ee6a22734041bf6fde128/maintainer-needed.md)
+[^APforumGpodderIssues]: [Questions about gPodder.net issues on the AntennaPod forum](https://forum.antennapod.org/t/problem-with-gpodder-net/374)
+[^gPodder50x]: [Issue in the gPodder.net repository on 502 errors](https://github.com/gpodder/mygpo/issues/527)
+[^APforumGpodderRemoval]: [Suggestion on the AntennaPod forum to remove gPodder.net support](https://forum.antennapod.org/t/should-gpodder-net-be-supported-long-term/396)
+[^initialAPIdiscussions]: [Initial discussions on the needs for a new podcast synchronisation API](https://github.com/thrillfall/nextcloud-gpodder/discussions/91)
