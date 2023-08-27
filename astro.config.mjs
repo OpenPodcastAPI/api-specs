@@ -45,6 +45,13 @@ export default defineConfig({
               link: "specs",
             },
             {
+              label: "Versioning",
+              collapsed: true,
+              autogenerate: {
+                directory: "specs/versioning",
+              },
+            },
+            {
               label: "Subscriptions",
               collapsed: true,
               autogenerate: {

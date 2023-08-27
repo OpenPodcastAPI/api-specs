@@ -1,0 +1,86 @@
+---
+title: Get supported versions
+description: Query a server for its supported versions
+sidebar:
+  order: 2
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```
+GET /versions
+```
+
+This endpoint returns an array of versions supported by the server. This informs the client what **core** features are supported. The array MUST contain an entry for each **major** version supported by the server.
+
+Versions follow the following format:
+
+```
+v{major_version}.{minor_version}
+```
+
+:::note
+The `minor_version` MUST reflect the **highest** minor version supported by the server.
+:::
+
+| Field      | Type            | Required? | Description                  |
+| ---------- | --------------- | --------- | ---------------------------- |
+| `versions` | Array\<String\> | Yes       | A list of supported versions |
+
+## Client behavior
+
+Clients SHOULD use the version number to adjust their behavior. For example, if the client is built with support for **v1.4** of the spec, and the server supports up to **v1.2**, the client should modify its calls to ensure they are compatible with **v1.2**.
+
+## Server behavior
+
+Servers MUST respond with all fields, including deprecated fields, to ensure that older clients can interpret the response properly.
+
+## Example request
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```console
+      $ curl -X 'GET' \
+      '/versions' \
+      -H 'accept: application/json'
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```console
+      $ curl -X 'GET' \
+      '/versions' \
+      -H 'accept: application/xml'
+      ```
+
+   </TabItem>
+</Tabs>
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```json
+      [
+         "v1.1",
+         "v2.0"
+      ]
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <versions>
+         <version>v1.1</version>
+         <version>v2.0</version>
+      </versions>
+      ```
+
+   </TabItem>
+
+</Tabs>
