@@ -1,0 +1,96 @@
+---
+title: Get supported capabilities
+description: Query a server for its supported capabilities
+sidebar:
+  order: 3
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```
+GET /{major_version}/capabilities
+```
+
+This endpoint informs clients of all capabilities supported by the server. This information MUST inform the client of any supported **optional** features as well as any configuration options associated with them.
+
+Each capability is returned as an **object** containing key-value pairs representing the capability's settings. Clients SHOULD use this information to adjust their behavior.
+
+## Parameters
+
+| Field           | Type   | In   | Required? | Description                                                                                                                      |
+| --------------- | ------ | ---- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `major_version` | String | Path | Yes       | The **major** version that the client wants to target. <br /> The server MUST return all supported features for **each** major version. |
+
+## Client behavior
+
+Clients SHOULD inform the user which features are supported by the server. Clients MAY also display information about relevant settings.
+
+## Server behavior
+
+The server MUST respond with all supported **optional** features and any associated settings. If a feature isn't enabled, the server MUST NOT include it in the response.
+
+## Example request
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```console
+      $ curl -X 'GET' \
+      '/v1/capabilities' \
+      -H 'accept: application/json'
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```console
+      $ curl -X 'GET' \
+      '/v1/capabilities' \
+      -H 'accept: application/xml'
+      ```
+
+   </TabItem>
+</Tabs>
+
+<Tabs>
+   <TabItem label="JSON">
+
+      ```json
+      {
+         "capabilities": {
+            "queue_sync": {
+               "max_queues": 5
+            },
+            "store_shows": {},
+            "store_episodes": {
+               "allow": true,
+               "upload_quota": 500
+            }
+         }
+      }
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <root>
+         <capabilities>
+            <queue_sync>
+               <max_queues>5</max_queues>
+            </queue_sync>
+            <store_shows>
+            </store_shows>
+            <store_episodes>
+               <allow>true</allow>
+               <upload_quota>500</upload_quota>
+            </store_episodes>
+         </capabilities>
+      </root>
+      ```
+
+   </TabItem>
+</Tabs>
