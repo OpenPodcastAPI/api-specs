@@ -45,8 +45,8 @@ jobs:
           # Generate key with e.g. 'ssh-keygen -t ed25519 -C "OPA GH Actions Deploy Key" -f gh-pages'
           # deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }} 
           personal_token: ${{ secrets.PR_DEPLOY_TOKEN }}
-          publish_dir: ./html
-          external_repository: OpenPodcastAPI/pr-previews
+          publish_dir: ./dist
+          external_repository: JonOfUs/pr-previews
           destination_dir: pr-${{ env.pr }}/
           keep_files: true
         

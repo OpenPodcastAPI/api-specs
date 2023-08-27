@@ -26,22 +26,23 @@ jobs:
         uses: actions/checkout@v3
       
       # Setup Poetry for dependencies
-      - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
       
-      # Build the site with Poetry
+      # Build the site with Starlight
       - name: Build html
         run: |
-          cd docs
-          poetry install
-          poetry run make html
+          npm install
+          npm run build
       
       # Store PR number so that it can be extracted in Deploy
       - name: Create PR artifact
         run: |
           mkdir -p ./pr
           echo ${{ github.event.number }} > ./pr/NR
-          mv docs/_build/html ./pr/
+          mv dist ./pr/
       
       # Upload the preview as an artifact
       - uses: actions/upload-artifact@v3
