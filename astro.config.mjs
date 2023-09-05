@@ -5,10 +5,17 @@ import {
 	remarkDefinitionList,
 	defListHastHandlers,
 } from "remark-definition-list";
+import astroExpressiveCode from "astro-expressive-code";
+import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
+		astroExpressiveCode({
+			plugins: [
+				pluginCollapsibleSections()
+			]
+		}),
 		AutoImport({
 			imports: [
 				{ "@astrojs/starlight/components": ["Card", "CardGrid", "LinkCard", "Tabs", "TabItem"] }
