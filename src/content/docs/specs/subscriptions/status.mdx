@@ -9,8 +9,8 @@ import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-GET /deletions/{id}
+```http title="Endpoint"
+GET /v1/deletions/{id}
 ```
 
 This endpoint enables clients to query the status of a [deletion](/specs/subscriptions/delete). When a client sends a `DELETE` request, the server must respond with a `deletion_id` that can be used with this endpoint to check whether a deletion has been successfully actioned.
@@ -30,18 +30,18 @@ The client must send the deletion's `id` in the path of the request.
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl -X 'GET' \
-      '/deletions/25' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/deletions/25' \
       -H 'accept: application/json'
       ```
 
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl -X 'GET' \
-      '/deletions/25' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/deletions/25' \
       -H 'accept: application/xml'
       ```
 
@@ -57,7 +57,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
 <Tabs>
    <TabItem label="JSON">
 
-      ```json
+      ```json {3}
       {
          "deletion_id": 25,
          "status": "SUCCESS",
@@ -68,7 +68,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
    </TabItem>
    <TabItem label="XML">
 
-      ```xml
+      ```xml {3}
       <?xml version="1.0" encoding="UTF-8"?>
       <deletion>
          <deletion_id>25</deletion_id>
@@ -85,7 +85,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
 <Tabs>
    <TabItem label="JSON">
 
-      ```json
+      ```json {3}
       {
          "deletion_id": 25,
          "status": "PENDING",
@@ -96,7 +96,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
    </TabItem>
    <TabItem label="XML">
 
-      ```xml
+      ```xml {3}
       <?xml version="1.0" encoding="UTF-8"?>
       <deletion>
          <deletion_id>25</deletion_id>
@@ -113,7 +113,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
 <Tabs>
    <TabItem label="JSON">
 
-      ```json
+      ```json {3}
       {
          "deletion_id": 25,
          "status": "FAILURE",
@@ -124,7 +124,7 @@ The server must send a `200 (Success)` if it can fetch a status object without i
    </TabItem>
    <TabItem label="XML">
 
-      ```xml
+      ```xml {3}
       <?xml version="1.0" encoding="UTF-8"?>
       <deletion>
          <deletion_id>25</deletion_id>
