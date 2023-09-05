@@ -31,6 +31,9 @@ export default defineConfig({
 				label: "Project overview",
 				link: "overview"
 			}, {
+					label: "Project information",
+					link: "info"
+				}, {
 					label: "Specifications",
 					items: [
 						{
