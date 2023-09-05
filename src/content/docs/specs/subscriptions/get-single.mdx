@@ -9,8 +9,8 @@ import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-GET /subscriptions/{guid}
+```http title="Endpoint"
+GET /v1/subscriptions/{guid}
 ```
 
 This endpoint returns subscription information relating to a specific subscription for the authenticated user. It returns the following information:
@@ -49,18 +49,18 @@ The client should update its local subscription data to match the information re
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions/968cb508-803c-493c-8ff2-9e397dadb83c' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions/968cb508-803c-493c-8ff2-9e397dadb83c' \
       -H 'accept: application/json'
       ```
 
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions/968cb508-803c-493c-8ff2-9e397dadb83c' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions/968cb508-803c-493c-8ff2-9e397dadb83c' \
       -H 'accept: application/xml'
       ```
 
@@ -74,9 +74,9 @@ The client should update its local subscription data to match the information re
 
       ```json
       {
-      "feed_url": "https://example.com/feed2",
-      "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
-      "is_subscribed": true
+         "feed_url": "https://example.com/feed2",
+         "guid": "968cb508-803c-493c-8ff2-9e397dadb83c",
+         "is_subscribed": true
       }
       ```
 
@@ -104,8 +104,8 @@ If a subscription has been [deleted](/specs/subscriptions/delete), the server mu
 
       ```json
       {
-      "code": 410,
-      "message": "Subscription has been deleted"
+         "code": 410,
+         "message": "Subscription has been deleted"
       }
       ```
 

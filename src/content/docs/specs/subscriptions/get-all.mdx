@@ -9,8 +9,8 @@ import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-GET /subscriptions
+```http title="Endpoint"
+GET /v1/subscriptions
 ```
 
 This endpoint enables clients to return all subscription information relating to the authenticated user. It returns pagination information and an array of `subscriptions`.
@@ -85,18 +85,18 @@ In this scenario, the client requests all subscriptions and **doesn't** pass a `
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?page=1&per_page=5' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions?page=1&per_page=5' \
       -H 'accept: application/json'
       ```
 
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?page=1&per_page=5' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions?page=1&per_page=5' \
       -H 'accept: application/xml'
       ```
 
@@ -106,7 +106,7 @@ In this scenario, the client requests all subscriptions and **doesn't** pass a `
 <Tabs>
    <TabItem label="JSON">
 
-      ```json
+      ```json {8, 11} collapse={2-4}
       {
       "total": 1,
       "page": 1,
@@ -126,7 +126,7 @@ In this scenario, the client requests all subscriptions and **doesn't** pass a `
    </TabItem>
    <TabItem label="XML">
 
-      ```xml
+      ```xml {8, 11} collapse={3-5}
       <?xml version="1.0" encoding="UTF-8"?>
       <subscriptions>
          <total>1</total>
@@ -152,18 +152,18 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
+      ```console "since=2022-05-30T00%3A00%3A00.000Z"
+      $ curl -X 'GET' \
+      '/v1/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
       -H 'accept: application/json'
       ```
 
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
+      ```console "since=2022-05-30T00%3A00%3A00.000Z"
+      $ curl -X 'GET' \
+      '/v1/subscriptions?since=2022-05-30T00%3A00%3A00.000Z&page=1&per_page=5' \
       -H 'accept: application/xml'
       ```
 
@@ -173,7 +173,7 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
 <Tabs>
    <TabItem label="JSON">
 
-      ```json
+      ```json {8, 11} collapse={2-4}
       {
          "total": 1,
          "page": 1,
@@ -193,7 +193,7 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
    </TabItem>
    <TabItem label="XML">
 
-      ```xml
+      ```xml {8, 11} collapse={3-5}
       <?xml version="1.0" encoding="UTF-8"?>
       <subscriptions>
          <total>1</total>
@@ -217,18 +217,18 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
       -H 'accept: application/json'
       ```
 
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl -X 'GET' \
-      '/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
+      ```console
+      $ curl -X 'GET' \
+      '/v1/subscriptions?since=2022-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
       -H 'accept: application/xml'
       ```
 

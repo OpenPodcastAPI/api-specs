@@ -9,8 +9,8 @@ import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-DELETE /subscriptions/{guid}
+```http title="Endpoint"
+DELETE /v1/subscriptions/{guid}
 ```
 
 This endpoint allows clients to mark a feed as deleted. This prevents the server from updating the feed in the background and prevents the server from returning any information, such as playback positions, related to the given associated feed.
@@ -50,9 +50,9 @@ If the client attempts to [fetch a deleted subscription](/specs/subscriptions/ge
 
 ## Example request
 
-```sh
-curl --location --request DELETE \
-   '/subscriptions/2d8bb39b-8d34-48d4-b223-a0d01eb27d71'
+```console
+$ curl --location --request DELETE \
+'/v1/subscriptions/2d8bb39b-8d34-48d4-b223-a0d01eb27d71'
 ```
 
 ## Example 202 response

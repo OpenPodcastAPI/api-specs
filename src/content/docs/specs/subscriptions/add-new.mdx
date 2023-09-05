@@ -9,8 +9,8 @@ import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-POST /subscriptions
+```http title="Endpoint"
+POST /v1/subscriptions
 ```
 
 This endpoint enables clients to add new subscriptions to the system for the authenticated user. It returns an array of `success` responses for newly added subscriptions, and an array of `failure` responses for subscriptions that couldn't be added.
@@ -121,8 +121,8 @@ Once this is done, the server should asynchronously verify that there isn't a mo
 <Tabs>
    <TabItem label="JSON">
 
-      ```sh
-      curl --location '/subscriptions' \
+      ```console
+      $ curl --location '/subscriptions' \
       --header 'Content-Type: application/json' \
       --data '{
       "subscriptions": [
@@ -146,8 +146,8 @@ Once this is done, the server should asynchronously verify that there isn't a mo
    </TabItem>
    <TabItem label="XML">
 
-      ```sh
-      curl --location '/subscriptions' \
+      ```console
+      $ curl --location '/subscriptions' \
       --header 'Content-Type: application/xml' \
       --data '<?xml version="1.0" encoding="UTF-8"?>
       <subscriptions>
