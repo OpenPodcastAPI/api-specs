@@ -3,23 +3,20 @@ title: Get supported versions
 description: Query a server for its supported versions
 sidebar:
   order: 2
+  badge:
+   text: GET
+   variant: success
 ---
 
 import CoreAction from "@partials/_core-action.mdx";
 
 <CoreAction />
 
-```
-GET /versions
+```http title="Endpoint"
+GET /v1/versions
 ```
 
 This endpoint returns an array of versions supported by the server. This informs the client what **core** features are supported. The array MUST contain an entry for each **major** version supported by the server.
-
-Versions follow the following format:
-
-```
-v{major_version}.{minor_version}
-```
 
 :::note
 The `minor_version` MUST reflect the **highest** minor version supported by the server.
@@ -44,7 +41,7 @@ Servers MUST respond with all fields, including deprecated fields, to ensure tha
 
       ```console
       $ curl -X 'GET' \
-      '/versions' \
+      '/v1/versions' \
       -H 'accept: application/json'
       ```
 
@@ -53,7 +50,7 @@ Servers MUST respond with all fields, including deprecated fields, to ensure tha
 
       ```console
       $ curl -X 'GET' \
-      '/versions' \
+      '/v1/versions' \
       -H 'accept: application/xml'
       ```
 
@@ -64,10 +61,16 @@ Servers MUST respond with all fields, including deprecated fields, to ensure tha
    <TabItem label="JSON">
 
       ```json
-      [
-         "v1.1",
-         "v2.0"
-      ]
+      {
+         "versions": {
+            "v1": {
+               "minor": 6
+            },
+            "v2": {
+               "minor": 0
+            }
+         }
+      }
       ```
 
    </TabItem>
