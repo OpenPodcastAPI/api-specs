@@ -10,7 +10,7 @@ tags:
   - name: Versions
     description: All actions relating to supported versions and capabilities
 paths:
-  /subscriptions:
+  /v1/subscriptions:
     get:
       tags:
         - Subscriptions
@@ -80,7 +80,7 @@ paths:
       security:
         - podcast_auth:
             - write:subscriptions
-  /subscriptions/{guid}:
+  /v1/subscriptions/{guid}:
     get:
       tags:
         - Subscriptions
@@ -177,7 +177,7 @@ paths:
       security:
         - podcast_auth:
             - write:subscriptions
-  /deletions/{id}:
+  /v1/deletions/{id}:
     get:
       tags:
         - Subscriptions
@@ -228,24 +228,13 @@ paths:
       security:
         - podcast_auth:
             - read:versions
-  /{major_version}/capabilities:
+  /v1/capabilities:
     get:
       tags:
         - Versions
       summary: Retrieve a list of supported capabilities
       description: Retrieve a list of each supported capabilties from the server
       operationId: getCapabilities
-      parameters:
-        - in: path
-          name: major_version
-          schema:
-            type: string
-          required: true
-          examples:
-            v1:
-              value: 'v1'
-            v2:
-              value: 'v2'
       responses:
         '200':
           description: Successful operation
@@ -638,17 +627,18 @@ components:
       type: object
       xml:
         name: versions
-      properties:
-        versions:
-          type: array
-          items:
-            xml:
-              name: version
-            type: string
-            description: "The supported version numbers"
-          example:
-            - "v1.1"
-            - "v2.0"
+      additionalProperties:
+        $ref: "#/components/schemas/Version"
+      example:
+        v1: 6
+        v2: 0
+    Version:
+      xml:
+        name: version
+        attribute: true
+      type: number
+      format: integer
+
     Capabilities:
       type: object
       xml:
