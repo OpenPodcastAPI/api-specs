@@ -8,9 +8,26 @@ sidebar:
    order: 1
 ---
 
+:::caution[Important]
+All specifications are currently 'in progress'. Breaking changes can occur as we implement specifications and address issues.
+:::
+
+Below you can find the specifications which are already available. We encourage all interested projects offering podcast listening and/or synchronization functionality to adopt and implement defined specifications. We also welcome feedback on these sepcifications.
+
+## Core and optional functionality
+
+To ensure that the end-user experience is consistent across implemenetations, the specifications mark endpoints and features as **Core** (required) and **Optional**.
+
+**Core**
+: The feature or endpoint must be supported by all clients and servers.
+
+**Optional**
+: The feature or endpoint is considered to be additional functionality. Clients and servers may optionally support any combination of these features. Any project implementing **Optional** functionality should inform users about what is supported.
+
+Which features a server supports will be exposed through a Capabilities endpoint.
+
 ## Core endpoints
 
 <CardGrid>
-   <LinkCard title="Versioning" description="Specs relating to API versioning" href="/specs/versioning" />
    <LinkCard title="Subscriptions" description="Specs relating to managing subscriptions" href="/specs/subscriptions" />
 </CardGrid>
