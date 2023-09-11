@@ -29,29 +29,26 @@ export default defineConfig({
 			},
 			sidebar: [{
 				label: "Project overview",
-				link: "overview"
+				link: "about"
 			}, {
-					label: "Project information",
-					link: "info"
-				}, {
-					label: "Specifications",
-					items: [
-						{
-							label: "Introduction",
-							link: "specs"
-						},
-						{
-							label: "Subscriptions",
-							collapsed: true,
-							autogenerate: {
-								directory: "specs/subscriptions"
-							}
-						}]
-				},
-				{
-					label: "API explorer",
-					link: "rapidoc.html"
-				}]
+				label: "Specifications",
+				items: [
+					{
+						label: "Introduction",
+						link: "specs"
+					},
+					{
+						label: "Subscriptions",
+						collapsed: true,
+						autogenerate: {
+							directory: "specs/subscriptions"
+						}
+					}]
+			},
+			{
+				label: "API explorer",
+				link: "rapidoc.html"
+			}]
 		})],
 	// Process images with sharp: https://docs.astro.build/en/guides/assets/#using-sharp
 	image: {
