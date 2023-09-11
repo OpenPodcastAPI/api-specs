@@ -25,7 +25,7 @@ This endpoint returns the following information:
 | ---------------------- | -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `new_feed_url`         | String         | No        | The URL of the podcast RSS feed. Only returned if the `feed_url` field was updated by the request                                                                   |
 | `is_subscribed`        | Boolean        | No        | Whether the user is subscribed to the podcast or not. Only returned if the `is_subscribed` field was updated by the request                                         |
-| `subscription_changed` | Datetime       | No        | The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format]. Only returned if the `is_subscribed` field was updated by the request |
+| `subscription_changed` | Datetime       | No        | The date on which the `is_subscribed`or `feed_url` field was last updated. Presented in [ISO 8601 format]. Only returned if the `is_subscribed` field was updated by the request |
 | `guid_changed`         | Datetime       | No        | The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format]. Only returned if the `guid` field was updated by the request                 |
 | `new_guid`             | String\<UUID\> | No        | The new GUID associated with the podcast. Only returned if the `guid` field was updated by the request                                                              |
 
