@@ -5,22 +5,10 @@ import {
 	remarkDefinitionList,
 	defListHastHandlers,
 } from "remark-definition-list";
-import astroExpressiveCode from "astro-expressive-code";
-import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
-		astroExpressiveCode({
-			plugins: [
-				pluginCollapsibleSections()
-			]
-		}),
-		AutoImport({
-			imports: [
-				{ "@astrojs/starlight/components": ["Card", "CardGrid", "LinkCard", "Tabs", "TabItem"] }
-			]
-		}),
 		starlight({
 			title: "Open Podcast API",
 			favicon: "favicon.ico",
@@ -49,6 +37,11 @@ export default defineConfig({
 				label: "API explorer",
 				link: "rapidoc.html"
 			}]
+		}),
+		AutoImport({
+			imports: [
+				{ "@astrojs/starlight/components": ["Card", "CardGrid", "LinkCard", "Tabs", "TabItem"] }
+			]
 		})],
 	// Process images with sharp: https://docs.astro.build/en/guides/assets/#using-sharp
 	image: {
