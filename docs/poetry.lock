@@ -784,8 +784,8 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/Sporiff/sphinxcontrib-mermaid"
-reference = "cdn-change"
-resolved_reference = "2da5f9823d21917bfe4d52dba107d4f22cbb0220"
+reference = "45ce6fbccf606793064b2f2410be19ba3d7089d0"
+resolved_reference = "45ce6fbccf606793064b2f2410be19ba3d7089d0"
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -877,4 +877,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "dc544511cefbf5288c1e17a0bda86726b8f4bbf1502bfbb25267611bfc2bc3d0"
+content-hash = "5ac28b4d0bb11278dd00a5e10688d9c25ce524bc7e61885b05a5be63b3887f60"
