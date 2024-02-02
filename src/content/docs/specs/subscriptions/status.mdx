@@ -13,17 +13,17 @@ import CoreAction from "@partials/_core-action.mdx";
 GET /v1/deletions/{id}
 ```
 
-This endpoint enables clients to query the status of a [deletion](/specs/subscriptions/delete). When a client sends a `DELETE` request, the server must respond with a `deletion_id` that can be used with this endpoint to check whether a deletion has been successfully actioned.
+This endpoint enables clients to query the status of a [deletion](/specs/subscriptions/delete). When a client sends a `DELETE` request, the server MUST respond with a `deletion_id` that can be used with this endpoint to check whether a deletion has been successfully actioned.
 
-| Parameter | Type | Required? | Description |
-| --- | --- | --- | --- |
-| `deletion_id` | Integer | Yes | The ID of the deletion object |
-| `status` | String | Yes | A status message indicating the status of the deletion. Available values: `SUCCESS` | `FAILURE` | `PENDING` |
-| `message` | String | No | A status message indicating the current status of the deletion, or any errors that were encountered |
+| Parameter     | Type    | Required? | Description                                                                                         |
+| ------------- | ------- | --------- | --------------------------------------------------------------------------------------------------- | --------- | --------- |
+| `deletion_id` | Integer | Yes       | The ID of the deletion object                                                                       |
+| `status`      | String  | Yes       | A status message indicating the status of the deletion. Available values: `SUCCESS`                 | `FAILURE` | `PENDING` |
+| `message`     | String  | No        | A status message indicating the current status of the deletion, or any errors that were encountered |
 
 ## Parameters
 
-The client must send the deletion's `id` in the path of the request.
+The client MUST send the deletion's `id` in the path of the request.
 
 ## Example request
 
@@ -50,7 +50,7 @@ The client must send the deletion's `id` in the path of the request.
 
 ## Example 200 response
 
-The server must send a `200 (Success)` if it can fetch a status object without issue. This response must contain information about the `deletion_id` passed in the query path.
+The server MUST send a `200 (Success)` if it can fetch a status object without issue. This response MUST contain information about the `deletion_id` passed in the query path.
 
 ### Successful deletion
 

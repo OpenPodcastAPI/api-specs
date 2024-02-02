@@ -27,11 +27,11 @@ This endpoint returns subscription information relating to a specific subscripti
 
 ## Parameters
 
-The client must send the subscription's `guid` in the path of the request.
+The client MUST send the subscription's `guid` in the path of the request.
 
 ## Server-side behavior
 
-If the entry contains a `new_guid`, the server must return the newest `guid` associated with the entry in the response's `new_guid` field. For example: if a subscription has received 2 new `guid`s, the server should return:
+If the entry contains a `new_guid`, the server MUST return the newest `guid` associated with the entry in the response's `new_guid` field. For example: if a subscription has received 2 new `guid`s, the server MUST return:
 
 - The subscription's `guid` passed in the request path
 - The subscription's latest `guid` in the `new_guid` field
@@ -42,7 +42,7 @@ This ensures the client has the most up-to-date entry for the subscription.
 
 ## Client behavior
 
-The client should update its local subscription data to match the information returned in the response. On receipt of a deleted subscription, the client should present the user with the option to remove their local data or [send their local data to the server](/specs/subscriptions/add-new) to reinstate the subscription details.
+The client SHOULD update its local subscription data to match the information returned in the response. On receipt of a deleted subscription, the client SHOULD present the user with the option to remove their local data or [send their local data to the server](/specs/subscriptions/add-new) to reinstate the subscription details.
 
 ## Example request
 
