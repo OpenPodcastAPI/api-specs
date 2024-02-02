@@ -13,7 +13,7 @@ import CoreAction from "@partials/_core-action.mdx";
 PATCH /v1/subscriptions/{guid}
 ```
 
-This endpoint allows clients to update information about a subscription. The client can update the following information:
+This endpoint allows clients to update information about a subscription. The client MAY update the following information:
 
 - The podcast's GUID
 - The podcast's feed URL
@@ -21,17 +21,17 @@ This endpoint allows clients to update information about a subscription. The cli
 
 This endpoint returns the following information:
 
-| Field                  | Type           | Required? | Description                                                                                                                                                         |
-| ---------------------- | -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `new_feed_url`         | String         | No        | The URL of the podcast RSS feed. Only returned if the `feed_url` field was updated by the request                                                                   |
-| `is_subscribed`        | Boolean        | No        | Whether the user is subscribed to the podcast or not. Only returned if the `is_subscribed` field was updated by the request                                         |
+| Field                  | Type           | Required? | Description                                                                                                                                                                      |
+| ---------------------- | -------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `new_feed_url`         | String         | No        | The URL of the podcast RSS feed. Only returned if the `feed_url` field was updated by the request                                                                                |
+| `is_subscribed`        | Boolean        | No        | Whether the user is subscribed to the podcast or not. Only returned if the `is_subscribed` field was updated by the request                                                      |
 | `subscription_changed` | Datetime       | No        | The date on which the `is_subscribed`or `feed_url` field was last updated. Presented in [ISO 8601 format]. Only returned if the `is_subscribed` field was updated by the request |
-| `guid_changed`         | Datetime       | No        | The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format]. Only returned if the `guid` field was updated by the request                 |
-| `new_guid`             | String\<UUID\> | No        | The new GUID associated with the podcast. Only returned if the `guid` field was updated by the request                                                              |
+| `guid_changed`         | Datetime       | No        | The date on which the podcast's GUID was last updated. Presented in [ISO 8601 format]. Only returned if the `guid` field was updated by the request                              |
+| `new_guid`             | String\<UUID\> | No        | The new GUID associated with the podcast. Only returned if the `guid` field was updated by the request                                                                           |
 
 ## Parameters
 
-The client must pass the subscription GUID in the query path and add at least one field update in the request body.
+The client MUST pass the subscription GUID in the query path and add at least one field update in the request body.
 
 | Parameter       | Type            | In    | Required? | Description                                                  |
 | --------------- | --------------- | ----- | --------- | ------------------------------------------------------------ |
@@ -42,7 +42,7 @@ The client must pass the subscription GUID in the query path and add at least on
 
 ## Server-side behavior
 
-On receipt of a PATCH request for a subscription, the server must do the following:
+On receipt of a PATCH request for a subscription, the server MUST do the following:
 
 1. If the subscription in the request has a `new_guid` specified in the database, follow the `new_guid` chain to find the **latest** version of the subscription
 2. If the request contains a `new_feed_url` parameter:

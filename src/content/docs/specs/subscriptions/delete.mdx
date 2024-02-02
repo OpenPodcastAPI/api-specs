@@ -18,10 +18,10 @@ This endpoint allows clients to mark a feed as deleted. This prevents the server
 ## Server-side behavior
 
 :::caution[Important]
-The server must enact all cascade deletions using ACID transactions. If the deletion process fails at any point in the transaction, **all** transactions must be rolled back to maintain integrity.
+The server MUST enact all cascade deletions using ACID transactions. If the deletion process fails at any point in the transaction, **all** transactions MUST be rolled back to maintain integrity.
 :::
 
-To ensure that `DELETE` requests are handled asynchronously, the server must respond to deletion requests immediately with a `202 (Accepted)` status containing a `deletion_id`. This ID must correspond to a status object on the server containing details of the deletion process. The client must be able to [query the status of a deletion](/specs/subscriptions/status) to check its progress.
+To ensure that `DELETE` requests are handled asynchronously, the server MUST respond to deletion requests immediately with a `202 (Accepted)` status containing a `deletion_id`. This ID MUST correspond to a status object on the server containing details of the deletion process. The client MUST be able to [query the status of a deletion](/specs/subscriptions/status) to check its progress.
 
 | Parameter  | Type    | Required? | Description                                                                                         |
 | ---------- | ------- | --------- | --------------------------------------------------------------------------------------------------- |
@@ -30,7 +30,7 @@ To ensure that `DELETE` requests are handled asynchronously, the server must res
 | `complete` | Boolean | Yes       | Whether or not the deletion process has finished                                                    |
 | `message`  | String  | No        | A status message indicating the current status of the deletion, or any errors that were encountered |
 
-The following flow must be followed:
+The following flow MUST be followed:
 
 1. The client sends a `DELETE` request for a subscription object
 2. The server creates a new deletion status object and returns the `deletion_id` in a `202 (Accepted)` response
@@ -44,7 +44,7 @@ The following flow must be followed:
       - `success`: Must be `true`
       - `message`: Should be updated to contain a success message
 
-If the client attempts to [fetch a deleted subscription](/specs/subscriptions/get-all), the server must respond with a `410 (Gone)` status code to indicate the object and its associated data have been deleted.
+If the client attempts to [fetch a deleted subscription](/specs/subscriptions/get-all), the server MUST respond with a `410 (Gone)` status code to indicate the object and its associated data have been deleted.
 
 ![A diagram of the deletion process](@assets/diagrams/subscriptions/delete_subscription.svg)
 

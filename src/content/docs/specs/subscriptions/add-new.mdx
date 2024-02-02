@@ -24,7 +24,7 @@ This endpoint enables clients to add new subscriptions to the system for the aut
 
 ## Request parameters
 
-The client must provide a list of objects containing the following parameters:
+The client MUST provide a list of objects containing the following parameters:
 
 | Field      | Type   | Required? | Description                                                                                                                      |
 | ---------- | ------ | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,7 +32,7 @@ The client must provide a list of objects containing the following parameters:
 | `guid`     | String | No        | The GUID found in the podcast RSS feed                                                                                           |
 
 :::caution[Important]
-If a client passes a `guid` this is treated as authoritative by the server. The client may pass a `guid` **only** if it is parsed from the podcast RSS feed.
+If a client passes a `guid` this MUST be treated as authoritative by the server. The client MAY pass a `guid` **only** if it is parsed from the podcast RSS feed.
 :::
 
 <Tabs>
@@ -85,7 +85,7 @@ If a client passes a `guid` this is treated as authoritative by the server. The 
 
 ## Server-side behavior
 
-When new feeds are posted to the server, the server must return a success response to the client immediately to acknowledge the request. To ensure that data can be returned immediately, the following flow must be followed:
+When new feeds are posted to the server, the server MUST return a success response to the client immediately to acknowledge the request. To ensure that data can be returned immediately, the following flow MUST be followed:
 
 1. The client sends a payload to the server
 2. For each object in the payload, the server does the following:
@@ -101,12 +101,12 @@ When new feeds are posted to the server, the server must return a success respon
 
 ### Subscription GUID update
 
-If the client doesn't send a `guid` in the subscription payload, the server must create one immediately to ensure the following:
+If the client doesn't send a `guid` in the subscription payload, the server MUST create one immediately to ensure the following:
 
 1. Each entry has an associated `guid`
 2. The client receives a success response as quickly as possible
 
-Once this is done, the server should asynchronously verify that there isn't a more authoritative GUID available. The following flow should be used:
+Once this is done, the server SHOULD asynchronously verify that there isn't a more authoritative GUID available. The following flow should be used:
 
 1. The server fetches and parses the RSS feed to search for a [`guid` field in the `podcast` namespace](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#guid).
 2. If a more authoritative `guid` is found, the server must update the subscription entry as follows:
