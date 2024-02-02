@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram id="JHoPUf4goLhMdm1mtsOj" name="Page-1">
+        <mxGraphModel dx="1186" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="9" value="" style="edgeStyle=none;html=1;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="1" source="3" target="5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="The client requests&lt;br&gt;information about subscriptions" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_2;whiteSpace=wrap;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+                    <mxGeometry x="328" y="40" width="195" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="For each subscription" style="swimlane;fillColor=#fa6800;fontColor=#000000;strokeColor=#C73500;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="160" width="520" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Is the new_guid field populated?" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="4">
+                    <mxGeometry x="163" y="40" width="200" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="The server fetches the entry containing the guid" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#fa6800;fontColor=#000000;strokeColor=#C73500;" vertex="1" parent="4">
+                    <mxGeometry x="40" y="280" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="The server returns the&lt;br&gt;guid entry from the since&lt;br&gt;date and adds the latest&lt;br&gt;GUID in the new_guid field" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" vertex="1" parent="4">
+                    <mxGeometry x="320" y="260" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.11;exitY=0.595;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="4" source="5" target="6">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="190" y="160" as="sourcePoint"/>
+                        <mxPoint x="180" y="230" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="80" y="240"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="13" value="Yes" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="12">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="4" source="6" target="5">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="530" y="230" as="sourcePoint"/>
+                        <mxPoint x="580" y="180" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="240" y="280"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="16" value="" style="endArrow=classic;html=1;exitX=0.91;exitY=0.595;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="4" source="5" target="7">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="340" y="190" as="sourcePoint"/>
+                        <mxPoint x="440" y="190" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="17" value="No" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="16">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
