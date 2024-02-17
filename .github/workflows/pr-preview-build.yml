@@ -27,7 +27,7 @@ jobs:
       
       # Setup Poetry for dependencies
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       
       # Build the site with Poetry
       - name: Build html
