@@ -40,7 +40,7 @@ jobs:
           echo "pr=$(cat ./NR)" >> $GITHUB_ENV
       
       - name: Deploy preview          
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           # Generate key with e.g. 'ssh-keygen -t ed25519 -C "OPA GH Actions Deploy Key" -f gh-pages'
           # deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }} 
