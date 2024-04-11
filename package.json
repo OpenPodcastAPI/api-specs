@@ -10,10 +10,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.17.2",
-    "astro": "^4.3.1",
+    "@astrojs/starlight": "^0.21.5",
+    "astro": "^4.6.0",
     "astro-auto-import": "^0.4.2",
     "remark-definition-list": "^2.0.0",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.3",
+    "starlight-openapi": "^0.6.0"
   }
 }
