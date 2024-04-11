@@ -97,7 +97,7 @@ When new feeds are posted to the server, the server MUST return a success respon
       - If no existing entry is found, the server creates a new subscription entry
 3. The server returns a success payload containing the subscription information for each object in the request payload.
 
-![A flowchart diagram of the process](@assets/diagrams/subscriptions/add_new.svg)
+![A flowchart diagram of the process](@assets/diagrams/subscriptions/add_new.png)
 
 ### Subscription GUID update
 
@@ -114,7 +114,7 @@ Once this is done, the server SHOULD asynchronously verify that there isn't a mo
    2. Update the `new_guid` field in the existing entry to point to the new `guid`
    3. Update the `guid_changed` field in the existing entry to the current date
 
-![A diagram of the GUID update process](@assets/diagrams/subscriptions/guid_update.svg)
+![A diagram of the GUID update process](@assets/diagrams/subscriptions/guid_update.png)
 
 ## Example request
 
