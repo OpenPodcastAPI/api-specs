@@ -5,6 +5,7 @@ import {
   remarkDefinitionList,
   defListHastHandlers,
 } from "remark-definition-list";
+import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,6 +19,15 @@ export default defineConfig({
       social: {
         github: "https://github.com/OpenPodcastApi/api-specs",
       },
+      plugins: [
+        starlightOpenAPI([
+          {
+            base: "/explorer",
+            label: "API explorer",
+            schema: "./schema.yml",
+          }
+        ])
+      ],
       sidebar: [
         {
           label: "Project overview",
@@ -43,10 +53,7 @@ export default defineConfig({
             },
           ],
         },
-        {
-          label: "API explorer",
-          link: "rapidoc.html",
-        },
+        ...openAPISidebarGroups,
       ],
     }),
     AutoImport({
