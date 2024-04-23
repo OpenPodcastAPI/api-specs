@@ -12,9 +12,6 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Open Podcast API",
-      components: {
-        Sidebar: "./src/components/Sidebar.astro",
-      },
       favicon: "favicon.ico",
       social: {
         github: "https://github.com/OpenPodcastApi/api-specs",
@@ -74,6 +71,7 @@ export default defineConfig({
             "TabItem",
           ],
         },
+        "src/components/NetlifyCallout.astro"
       ],
     }),
   ],
