@@ -1,7 +1,17 @@
-# OpenPodcast API specification
+# Open Podcast API specification
 
-The OpenPodcast API is an attempt to expand upon the podcast synchronization features offered by [gPodder](https://gpodder.net). This repository holds the draft specifications for the proposed endpoints and how they handle the relationship between server and client.
+The Open Podcast API is an attempt to expand upon the podcast synchronization features offered by [gPodder](https://gpodder.net). This repository holds the draft specifications for the proposed endpoints and how they handle the relationship between server and client.
 
-For more details, please [see our website](https://openpodcastapi.org).
+For more details and the API specs, please [see our website](https://openpodcastapi.org).
+
+Get a glimpse of the most recent discussions via [our meeting notes](https://github.com/orgs/OpenPodcastAPI/discussions/35?sort=new).
 
 To get involved, [join our Matrix channel](https://matrix.to/#/!ZHdcrdWSgxXRREuJdU:matrix.org).
+
+## The team
+
+This list attempts to list the full cast that makes the Open Podcast API work; including contributions and discussions during our meetings and on the Open Podcast API Github repo. It is expected to become more incomplete over time, possibly contains duplicates, and is likely in error. But please submit a PR if you see a chance to improve the situation.
+
+| Name | Known for |
+| ---- | --------- |
+[@Keunes](https://mastodon.social/@keunes/) (aka Koen) | [AntennaPod](https://antennapod.org/) (master of communication and issue creation), initial outreach to get OPA off the ground and - currently - OPA meeting reminders
