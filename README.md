@@ -16,3 +16,4 @@ This list attempts to list the full cast that makes the Open Podcast API work; i
 | ---- | --------- |
 | [@Keunes](https://mastodon.social/@keunes/) (aka Koen) | [AntennaPod](https://antennapod.org/) (master of communication and issue creation), initial outreach to get OPA off the ground and - currently - OPA meeting reminders
 | [@JonOfUs](https://github.com/JonOfUs) (aka Jonathan) | [Nextcloud-Gpodder](https://github.com/thrillfall/nextcloud-gpodder) (co-maintainer), OPA specification development and some OPA infrastructure administration
+| [@mogwai](https://fosstodon.org/@mogwai) (aka Bart) | [Kasts](https://invent.kde.org/multimedia/kasts) (developer), OPA specification development from podcast client perspective
