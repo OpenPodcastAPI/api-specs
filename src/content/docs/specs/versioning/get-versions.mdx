@@ -4,8 +4,8 @@ description: Query a server for its supported versions
 sidebar:
   order: 2
   badge:
-   text: GET
-   variant: success
+    text: GET
+    variant: success
 ---
 
 import CoreAction from "@partials/_core-action.mdx";
@@ -36,7 +36,7 @@ Servers MUST respond with all fields, including deprecated fields, to ensure tha
 
 ## Example request
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```console
@@ -57,7 +57,7 @@ Servers MUST respond with all fields, including deprecated fields, to ensure tha
    </TabItem>
 </Tabs>
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```json
