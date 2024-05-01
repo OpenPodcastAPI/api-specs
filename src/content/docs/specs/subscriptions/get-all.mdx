@@ -85,7 +85,7 @@ This example demonstrates how the server resolves a `new_guid` field for a subsc
 
 In this scenario, the client requests all subscriptions and **doesn't** pass a `since` parameter. This means the server passes the **original** GUID in the `guid` field, and the **latest** GUID in the `new_guid`field.
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```console
@@ -106,7 +106,7 @@ In this scenario, the client requests all subscriptions and **doesn't** pass a `
    </TabItem>
 </Tabs>
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```json {8, 11} collapse={2-4}
@@ -152,7 +152,7 @@ In this scenario, the client requests all subscriptions and **doesn't** pass a `
 
 In this scenario, the client requests all subscriptions and specifies a `since` date of `2022-05-30T00:00:00.000Z`. Since the first GUID change occurred before this date, and the second GUID change occurred after this date, the server responds with the **second** GUID in the `guid` field, and the **latest** GUID in the `new_guid` field.
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```console "since=2022-05-30T00%3A00%3A00.000Z"
@@ -173,7 +173,7 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
    </TabItem>
 </Tabs>
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```json {8, 11} collapse={2-4}
@@ -217,7 +217,7 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
 
 ## Example request
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```console
@@ -240,7 +240,7 @@ In this scenario, the client requests all subscriptions and specifies a `since` 
 
 ## Example 200 response
 
-<Tabs>
+<Tabs syncKey="accepts">
    <TabItem label="JSON">
 
       ```json
