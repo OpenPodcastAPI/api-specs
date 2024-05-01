@@ -17,6 +17,8 @@ hero:
       variant: secondary
 ---
 
+import netlifyLogo from "@assets/sponsor-contributor logos/logo-netlify-small-fullcolor-dynamicmode.svg";
+
 The Open Podcast API is an initiative aiming to provide a feature-complete synchronization API specification for podcast (web) apps and user-focused servers.
 
 ## Our goals
@@ -46,10 +48,12 @@ We invite all projects and individuals to join us in developing these specificat
   <LinkCard title="Add our monthly meeting to your calendar" href="https://github.com/orgs/OpenPodcastAPI/discussions/15" />
 </CardGrid>
 
-<NetlifyCallout title="Powered by">
+<SponsorCallout
+  title="Website powered by"
+  sponsorName="Netlify"
+  logo={netlifyLogo}
+  website="https://www.netlify.com"
+  >
 
-Netlify is the essential platform for the delivery of exceptional and dynamic web experiences, without limitations.
-
-[Learn about Netlify](https://www.netlify.com/)
-
-</NetlifyCallout>
+Netlify is the most popular way to build, deploy and scale modern web applications.
+</SponsorCallout>
