@@ -13,6 +13,12 @@
         "digest"
       ],
       "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "*astro*"
+      ],
+      "groupName": "Astro"
     }
   ]
 }
