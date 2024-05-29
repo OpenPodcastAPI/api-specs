@@ -16,7 +16,7 @@
     },
     {
       "matchPackagePatterns": [
-        "*astro*"
+        "astro"
       ],
       "groupName": "Astro"
     }
