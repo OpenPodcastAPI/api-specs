@@ -67,6 +67,13 @@ export default defineConfig({
                 }
               }],
             },
+            {
+              label: "Episodes",
+              collapsed: true,
+              autogenerate: {
+                directory: "specs/episodes",
+              },
+            },
           ],
         },
 	...openAPISidebarGroups,
