@@ -48,6 +48,13 @@ export default defineConfig({
                 directory: "specs/subscriptions",
               },
             },
+            {
+              label: "Episodes",
+              collapsed: true,
+              autogenerate: {
+                directory: "specs/episodes",
+              },
+            },
           ],
         },
         ...openAPISidebarGroups,
