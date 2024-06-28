@@ -8,11 +8,6 @@ sidebar:
 ---
 
 import CoreEndpoint from "@partials/_core-endpoint.mdx";
-import { Badge } from '@astrojs/starlight/components';
-
-// Create a custom badge that includes text, is based on the 'success' badge and we call 'optional'
-// https://starlight.astro.build/guides/overriding-components/
-
 
 <CoreEndpoint />
 
@@ -54,9 +49,9 @@ TODO: Describe or reference to information about episode matching and deduplicat
 | ----------------------------------- | -------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `playback_position`                 | Integer        | Yes/No?   | The most recent playback position                                                                                                              |
 | `played_status`                     | Boolean        | No        | Whether the episode has ben (marked as)                                                                                                        |
-| `new_status` <Badge: optional />      | Boolean        | Yes       | Whether the user (manually) interacted with the episode.<br />_Example:_ In AntennaPod this is used to indicate whether an episode is in the Inbox |
-| `download_status` <Badge: optional /> | Boolean        | Yes       | Whether the episode is downloaded on the client. For further details, see below.
-| `favorite_status` <Badge: optional /> | Boolean        | Yes       | Whether the episode has been favorited by the user
+| `new_status` <BadgeOptional />      | Boolean        | Yes       | Whether the user (manually) interacted with the episode.<br />_Example:_ In AntennaPod this is used to indicate whether an episode is in the Inbox |
+| `download_status` <BadgeOptional /> | Boolean        | Yes       | Whether the episode is downloaded on the client. For further details, see below.
+| `favorite_status` <BadgeOptional /> | Boolean        | Yes       | Whether the episode has been favorited by the user
 
 :::note[Potential future fields]
 - Bookmarks: timed bookmarks of this episode with optinally a description text. Related to AntennaPod feature request [#1946](https://github.com/AntennaPod/AntennaPod/issues/1946).

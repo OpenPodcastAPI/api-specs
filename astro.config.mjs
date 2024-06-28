@@ -43,6 +43,10 @@ export default defineConfig({
             },
             {
               label: "Subscriptions",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
               collapsed: true,
               autogenerate: {
                 directory: "specs/subscriptions",
@@ -50,6 +54,10 @@ export default defineConfig({
             },
             {
               label: "Episodes",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
               collapsed: true,
               autogenerate: {
                 directory: "specs/episodes",
@@ -71,7 +79,9 @@ export default defineConfig({
             "TabItem",
           ],
         },
-        "src/components/SponsorCallout.astro"
+        "src/components/SponsorCallout.astro",
+        "src/components/BadgeOptional.astro",
+        "src/components/BadgeCore.astro"
       ],
     }),
   ],
