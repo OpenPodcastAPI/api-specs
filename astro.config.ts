@@ -69,6 +69,10 @@ export default defineConfig({
             },
             {
               label: "Episodes",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
               collapsed: true,
               autogenerate: {
                 directory: "specs/episodes",
