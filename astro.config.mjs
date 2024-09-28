@@ -71,7 +71,7 @@ export default defineConfig({
             "TabItem",
           ],
         },
-        "src/components/NetlifyCallout.astro"
+        "src/components/SponsorCallout.astro"
       ],
     }),
   ],
