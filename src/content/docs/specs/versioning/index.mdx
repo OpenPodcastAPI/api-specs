@@ -1,0 +1,25 @@
+---
+title: API versioning
+description: Details about how the API is versioned
+prev: false
+sidebar:
+  label: Versioning
+  order: 1
+---
+
+The Open Podcast API is subject to change over time. To ensure backwards compatibility and effective communication of server capabilities, the API specification MUST be versioned in a consistent way.
+
+The specification follows the [Semantic versioning model](https://semver.org/). Each version of the specification MUST adhere to the following rules:
+
+**Major** versions
+: A major version update indicates that a breaking change has occurred. This is reserved for the deprecation, addition, or renaming of **core** capabilities.
+
+**Minor** versions
+: A minor version update indicates that a new **optional** feature has been added or that a **core** feature has received a non-breaking change. This can include the deprecation or addition of parameters or behaviors.
+
+**Patch** versions
+: A patch version update indicates that a small non-breaking change has been made to clarify a feature or address an issue with wording.
+
+## Backwards compatibility
+
+To maintain backwards compatibility between **minor** versions, no parameters nor endpoints may be removed without a **major** version change. Fields may be deprecated in favor of new behaviors, but when queried by an older client the server MUST respond with a compatible response.
