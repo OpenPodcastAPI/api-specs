@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.28.2",
-    "astro": "^4.15.9",
+    "astro": "^4.15.11",
     "astro-auto-import": "^0.4.2",
     "remark-definition-list": "^2.0.0",
     "sharp": "^0.33.5",
