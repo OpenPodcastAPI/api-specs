@@ -7,8 +7,10 @@ info:
 tags:
   - name: Subscriptions
     description: All actions relating to subscription management
+  - name: Versions
+    description: All actions relating to supported versions and capabilities
 paths:
-  /subscriptions:
+  /v1/subscriptions:
     get:
       tags:
         - Subscriptions
@@ -78,7 +80,7 @@ paths:
       security:
         - podcast_auth:
             - write:subscriptions
-  /subscriptions/{guid}:
+  /v1/subscriptions/{guid}:
     get:
       tags:
         - Subscriptions
@@ -175,7 +177,7 @@ paths:
       security:
         - podcast_auth:
             - write:subscriptions
-  /deletions/{id}:
+  /v1/deletions/{id}:
     get:
       tags:
         - Subscriptions
@@ -202,6 +204,54 @@ paths:
       security:
         - podcast_auth:
             - read:subscriptions
+  /versions:
+    get:
+      tags:
+        - Versions
+      summary: Retrieve a list of supported versions
+      description: Retrieve a list of each supported major/minor version of the API from the server
+      operationId: getVersions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionArray'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VersionArray'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - podcast_auth:
+            - read:versions
+  /v1/capabilities:
+    get:
+      tags:
+        - Versions
+      summary: Retrieve a list of supported capabilities
+      description: Retrieve a list of each supported capabilties from the server
+      operationId: getCapabilities
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capabilities'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Capabilities'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - podcast_auth:
+            - read:versions
 components:
   responses:
     Unauthorized:
@@ -573,6 +623,38 @@ components:
         deletion_id: 25
         status: SUCCESS
         message: Subscription deleted successfully
+    VersionArray:
+      type: object
+      xml:
+        name: versions
+      additionalProperties:
+        $ref: "#/components/schemas/Version"
+      example:
+        v1: 6
+        v2: 0
+    Version:
+      xml:
+        name: version
+        attribute: true
+      type: number
+      format: integer
+
+    Capabilities:
+      type: object
+      xml:
+        name: root
+      properties:
+        capabilities:
+          type: object
+          additionalProperties:
+            type: object
+          example:
+            queue_sync:
+              max_queues: 5
+            store_shows: {}
+            store_episodes:
+              allow: true
+              upload_quota: 500
   requestBodies:
     FeedArray:
       description: An array of feeds the user wants to subscribe to
@@ -601,6 +683,8 @@ components:
           scopes:
             write:subscriptions: modify subscription information for your account
             read:subscriptions: read your subscription information
+            read:versions: read supported server versions
+            read:capabilities: read supported server capabilities
     api_key:
       type: apiKey
       name: api_key
