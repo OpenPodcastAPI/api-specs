@@ -11,4 +11,5 @@ jobs:
       uses: lycheeverse/lychee-action@v2.0.2
       with:
         fail: true
+        args: --verbose --no-progress --exclude gpodder\.net './**/*.md' './**/*.html' './**/*.rst'
 
