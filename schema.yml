@@ -7,6 +7,8 @@ info:
 tags:
   - name: Subscriptions
     description: All actions relating to subscription management
+  - name: Episodes
+    description: All actions relating to episode management
 paths:
   /subscriptions:
     get:
@@ -199,6 +201,51 @@ paths:
           $ref: '#/components/responses/NotFound'
         '405':
           $ref: '#/components/responses/ValidationException'
+      security:
+        - podcast_auth:
+            - read:subscriptions
+  /episodes:
+    get:
+      tags:
+        - Episodes
+      summary: Retrieve all episodes for the authenticated user
+      description: Retrieve all episodes that has changed for the authenticated user since the provided timestamp
+      operationId: getEpisodes
+      parameters:
+        - in: query
+          name: since
+          schema:
+            type: string
+            format: date-time
+          required: false
+          example:
+            '2022-04-23T18:25:43.511Z'
+        - in: query
+          name: page
+          schema:
+            type: number
+          required: false
+          example:
+            1
+        - in: query
+          name: per_page
+          schema:
+            type: number
+          required: false
+          example:
+            5
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episodes'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Episodes'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
       security:
         - podcast_auth:
             - read:subscriptions
@@ -550,6 +597,167 @@ components:
         subscription_changed: 2023-02-23T14:41:00.000Z
         guid_changed: 2023-02-23T14:41:00.000Z
         new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
+    Episode:
+      xml:
+        name: episode
+      required:
+        - podcast_guid
+        - sync_id
+        - episode_guid
+        - title
+        - publish_date
+        - enclosure_url
+        - episode_url
+      type: object
+      properties:
+        podcast_guid:
+          type: string
+          format: guid
+        sync_id:
+          type: string
+          format: guid
+        episode_guid:
+          type: string
+        title:
+          type: string
+        publish_date:
+          type: string
+          format: date-time
+        enclosure_url:
+          type: string
+          format: url
+        episode_url:
+          type: string
+          format: url
+        playback_position:
+          value:
+            type: number
+            format: integer
+          timestamp:
+            type: string
+            format: date-time
+        played_status:
+          value:
+            type: boolean
+          timestamp:
+            type: string
+            format: date-time
+        new_status:
+          value:
+            type: boolean
+          timestamp:
+            type: string
+            format: date-time
+        download_status:
+          value:
+            type: boolean
+          timestamp:
+            type: string
+            format: date-time
+        favorite_status:
+          value:
+            type: boolean
+          timestamp:
+            type: string
+            format: date-time
+      example:
+        podcast_guid: 31740ac6-e39d-49cd-9179-634bcecf4143
+        sync_id: cff3ea32-4215-4f98-bc23-5358d1f35b55
+        episode_guid: https://example.com/podcast/episode-5-the-history-of-RSS
+        title: The history of RSS
+        publish_date: 2022-04-24T17:53:21.573Z
+        enclosure_url: https://example.com/podcast/episode-5-the-history-of-RSS.mp3
+        episode_url: https://example.com/podcast/episode-5-the-history-of-RSS
+        playback_position:
+          value: 0
+          timestamp: 2024-11-02T13:19
+        played_status:
+          value: true
+          timestamp: 2024-11-02T13:19
+        new_status:
+          value: false
+          timestamp: 2024-10-30T17:31
+        download_status:
+          value: false
+          timestamp: 2024-11-02T13:19
+        favorite_status:
+          value: false
+          timestamp: 2024-11-02T13:19
+    Episodes:
+      required:
+        - total
+        - page
+        - per_page
+        - episodes
+      xml:
+        name: episodes
+      type: object
+      properties:
+        total:
+          type: number
+        page:
+          type: number
+        per_page:
+          type: number
+        next:
+          type: string
+          format: url
+        previous:
+          type: string
+          format: url
+        episodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+      example:
+        total: 2
+        page: 1
+        per_page: 5
+        episodes:
+          - podcast_guid: 31740ac6-e39d-49cd-9179-634bcecf4143
+            sync_id: cff3ea32-4215-4f98-bc23-5358d1f35b55
+            episode_guid: https://example.com/podcast/episode-5-the-history-of-RSS
+            title: The history of RSS
+            publish_date: 2022-04-24T17:53:21.573Z
+            enclosure_url: https://example.com/podcast/episode-5-the-history-of-RSS.mp3
+            episode_url: https://example.com/podcast/episode-5-the-history-of-RSS
+            playback_position:
+              value: 0
+              timestamp: 2024-11-02T13:19
+            played_status:
+              value: true
+              timestamp: 2024-11-02T13:19
+            new_status:
+              value: false
+              timestamp: 2024-10-30T17:31
+            download_status:
+              value: false
+              timestamp: 2024-11-02T13:19
+            favorite_status:
+              value: false
+              timestamp: 2024-11-02T13:19
+          - podcast_guid: 9d6786c9-ed48-470d-acbe-e593547f4b5b
+            sync_id: 5773f457-e71b-417d-8ea8-f07c38a03a3e
+            episode_guid: 01999e25-08cd-4f29-a61e-6ca459b40d27
+            title: Walk with the weatherman
+            publish_date: 2022-04-27T19:35:20.000Z
+            enclosure_url: https://op3.dev/e/https://podcasts.example2.net/audio/@digitalcitizen/49-walk-with-the-weatherman.mp3
+            episode_url: https://podcasts.example2.net/@digitalcitizen/episodes/49-walk-with-the-weatherman
+            playback_position:
+              value: 2100
+              timestamp: 2024-11-01T17:38
+            played_status:
+              value: false
+              timestamp: 2024-04-28T09:20
+            new_status:
+              value: false
+              timestamp: 2024-11-01T17:02
+            download_status:
+              value: true
+              timestamp: 2024-11-01T17:02
+            favorite_status:
+              value: false
+              timestamp: 2024-04-28T09:20
     Deletion:
       xml:
         name: deletion
@@ -599,8 +807,8 @@ components:
         implicit:
           authorizationUrl: https://test.openpodcastapi.com/oauth/authorize
           scopes:
-            write:subscriptions: modify subscription information for your account
-            read:subscriptions: read your subscription information
+            write:subscriptions: modify subscription information & related episodes for your account
+            read:subscriptions: read your subscription information & related episodes
     api_key:
       type: apiKey
       name: api_key
