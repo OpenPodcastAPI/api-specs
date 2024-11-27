@@ -15,6 +15,6 @@
     "astro-auto-import": "^0.4.4",
     "remark-definition-list": "^2.0.0",
     "sharp": "^0.33.5",
-    "starlight-openapi": "^0.8.1"
+    "starlight-openapi": "^0.8.3"
   }
 }
