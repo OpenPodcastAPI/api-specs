@@ -13,9 +13,13 @@ export default defineConfig({
     starlight({
       title: "Open Podcast API",
       favicon: "favicon.ico",
-      social: {
-        github: "https://github.com/OpenPodcastApi/api-specs",
-      },
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/OpenPodcastApi/api-specs",
+        },
+      ],
       plugins: [
         starlightOpenAPI([
           {
