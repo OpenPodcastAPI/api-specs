@@ -16,9 +16,13 @@ export default defineConfig({
       customCss: [
         './src/styles/custom.css',
       ],
-      social: {
-        github: "https://github.com/OpenPodcastApi/api-specs",
-      },
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/OpenPodcastApi/api-specs",
+        },
+      ],
       plugins: [
         starlightOpenAPI([
           {
