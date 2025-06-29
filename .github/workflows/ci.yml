@@ -11,4 +11,3 @@ jobs:
       uses: lycheeverse/lychee-action@v2.4.1
       with:
         fail: true
-
