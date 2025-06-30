@@ -1,0 +1,146 @@
+---
+title: Episodes endpoint
+description: An endpoint for syncing episodes between devices.
+prev: "Subscriptions: Deletion status endpoint"
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import CoreEndpoint from "@partials/_core-endpoint.mdx";
+
+<CoreEndpoint />
+
+The episodes endpoint allows synchronising user-generated episode metadata. As the RSS feed is the authoritative source of truth, episode metadata such as title are only synchronised in some cases for episode identification and matching.
+
+Clients can query the endpoint by specifying the datetime from which they want to fetch changes to ensure they only fetch information that is relevant to them since their last sync.
+
+## Important data fields
+
+We distinguish two types of data fields: _identifier fields_ (used to identify and match episodes) and _data fields_ (used to synchronise users' interaction with episodes).
+
+:::note[Tombstoning]
+Servers SHOULD hold all previous `guid` and `feed_url` field data with a link to the succeeding data (such that a path of values can be followed) or with a link to the most recent data. This enables the server to handle situations in which clients submit old data. For example:
+
+- A user finds a podcast, whose URL had changed, and adds the old URL in the app. Because the client doesn't have the old URL in its database, it recognizes the podcast as **new** and POSTs the `feed_url` to the `/subscriptions` endpoint. If the user is already subscribed to the podcast (with the current feed URL) this would lead to a duplicate subscription.
+- A user has a device that they didn't use for a very long time. In that time, a podcaster added a GUID in their feed, leading to updated data in this field. When the client connects to the server again to pull all episode changes since the last connection, it retrieves episodes with their current subscription `guid`. The client won't recognize the subscription and fail to update the status of episodes.
+  :::
+
+### Identifier fields
+
+| Field                            | Type            | Nullable? | Description                                                                                                                                                                                     |
+| -------------------------------- | --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `podcast_guid`                   | String \<UUID\> | No        | The globally unique ID of the podcast                                                                                                                                                           |
+| `sync_id`                        | String \<UUID\> | No        | The synchronisation ID of the episode, MUST globally unique across the server and its clients [K-NL: and what about users - do users' episodes share the same `sync_id`s? It would make sense but at the same time user 1 might use a client X which does deduplication in a different way than client Y and so the two users would get different deduplication results, and thus their episodes in the server's database couldn't be merged.]                                                                                                       |
+| `temporary_id` <BadgeOptional /> | String          | Yes       | The ID used by the client when sending new episode information to the server, to make episode identification easier when receiving a response                                                   |
+| `episode_guid`                   | String \<UUID\> | Yes       | The globally unique ID of the episode, as present in the RSS feed ([`guid` tag](https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt))                                       |
+| `title`                          | String          | Yes       | The title of the episode, as present in the RSS feed (`title` tag)                                                                                                                              |
+| `publish_date`                   | Datetime        | Yes       | The date of publishing of the episode, as present in the RSS feed ([`pubDate` tag](https://www.rssboard.org/rss-specification#ltpubdategtSubelementOfLtitemgt)). Presented in [ISO 8601 format] |
+| `enclosure_url`                  | String          | Yes       | The media file of the episode, as present in the RSS feed ([`enclosure` tag](https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt))                                     |
+| `episode_url`                    | String          | Yes       | The (webpage) URL of the episode, as present in the RSS feed (`link`tag)                                                                                                                        |
+
+### Data fields
+
+| Field                               | Type           | Nullable? | Description                                                                                                                                        |
+| ----------------------------------- | -------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `playback_position`                 | Integer        | Yes/No?   | The most recent playback position                                                                                                                  |
+| `played_status`                     | Boolean        | No        | Whether the episode has ben (marked as)                                                                                                            |
+| `new_status` <BadgeOptional />      | Boolean        | Yes       | Whether the user (manually) interacted with the episode.<br />_Example:_ In AntennaPod this is used to indicate whether an episode is in the Inbox |
+| `download_status` <BadgeOptional /> | Boolean        | Yes       | Whether the episode is downloaded on the client. For further details, see below.
+| `favorite_status` <BadgeOptional /> | Boolean        | Yes       | Whether the episode has been favorited by the user
+
+:::note[Potential future fields]
+- Bookmarks: timed bookmarks of this episode with optinally a description text. Related to AntennaPod feature request [#1946](https://github.com/AntennaPod/AntennaPod/issues/1946).
+- Is ignored: whether the episode has been marked as not interesting. Related to AntennaPod feature request [#5237](https://github.com/AntennaPod/AntennaPod/issues/5237).
+- Tags: labels applied to this episode. Related to Kasts feature request // Can we add a URL as reference?
+- Queues: the queues this episode is in, although it might be covered through a dedicated `queues` andpoint.
+:::
+
+## Implementation details
+### Deduplication
+
+When fetching a feed, several scenarios could lead to duplicated episdes if not matched correctly. To ensure that in these cases episode must be matched and deduplicated to ensure their data is still synced. For details on this topic, please see [Episode matching & deduplication](matching-deduplication).
+
+### Download status
+
+The `download_status` is a _declaration of intent_, not an indication of the current status. If a user downloads an episode on client A, this client passes on this value to the server and thereby to other clients. Client B can then:
+* download immediately
+* download later (e.g. as soon as a WiFi connection is availalbe)
+
+It is up to the implementers whether this applies both to automatic and manual downloads, or only to manual downloads.
+
+While an optional field, if `download_status` is supported both by the server and the client, the client is expected to respect this field value. If the client may not download due to space limitations or won't download at all, then it should not declare support for this field.
+
+:::note[Discussion details]
+See meeting notes from [2024-02-27](https://pad.funkwhale.audio/s/88C5eXrRq)
+:::
+
+## Timestamping changes to resolve field conflicts
+
+To prevent unresolvable conflicts at field level, apps are expected to record timestamps. These MUST be the _time at which a field value was changed in the client_ (by the user or system). More recent values take presedence. The time of sending by the client or processing by the client should _not_ be sent.
+
+:::note[Example]
+Scenario:
+1. User plays first quarter of an episode on client A, which is offline.
+2. User skips first quarter and starts playback until halfway through the episode on client B, which is offline.
+3. Client B comes online and synchronises changes.
+4. Client A comes online and synchronises changes.
+
+In this case, the changes made on client B should take presedence, as they were made later in time than the changes on client A, even though client A most recently synchronised its data.
+:::
+
+To enable this, all _data fields_ are nested objects with a `value` and a `timestamp` field:
+
+<Tabs syncKey="accepts">
+  <TabItem label="JSON">
+
+    ```json {8, 11} collapse={2-4}
+      {
+        "played_status": {
+          "value": true,
+          "timestamp": "2024-06-19T15:46"
+        }
+      }
+    ```
+
+  </TabItem>
+  <TabItem label="XML">
+
+    ```xml {8, 11} collapse={3-5}
+    <?xml version="1.0" encoding="UTF-8"?>
+      <played_status>
+        <value>true</value>
+        <timestamp>2024-06-19T15:46</timestamp>
+      </played_status>
+    ```
+
+  </TabItem>
+</Tabs>
+
+Timestamps are recorded in [ISO 8601 format]. When a new episode is created, timestamps are set to current time.
+
+:::note[Discussion details]
+See meeting notes from [2024-02-27](https://pad.funkwhale.audio/s/6mWuDexgz#Data-timestamps)
+
+**Important open discussion point:**
+
+Sending back & forth timestamps is not needed if client always first pulls before push, and assuming that the client stores the timestamps of these changes locally. Maybe we should note this as a requirement, rather than submitting the timestamps.
+Kasts, for example, keeps a log of changes which is wiped on each sync, and always has the timestamp of latest sync.
+
+Does this still work, though, with the scenario laid out above, where clients don't sync in order of changes being applied (but in order coming online)?
+
+:::
+
+
+:::note[Tombstoning]
+[K-NL: This is copied from the subscriptions endpoint, and should probably be moved to a 'general principles' page that applies to all endpoints. 'Pull first, post later' should go there as well.]
+
+[K-NL: We should probably also use Tombstoning for [remote item](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/remote-item.md) episodes. While they can be merged at server side, if a client doesn't support 'remote items' (and just have the same episode twice in the database - would they, or would this episode tag just be skipped?) then they must still have a way to POST and GET data about that duplicate episode. For this purpose, episode tombstones should probably also keep their own `sync_id`s, so that clients can still use it as it were a normal (and not a tombstoned) episode.]
+
+Servers SHOULD hold all previous `guid` and `feed_url` field data with a link to the succeeding data (such that a path of values can be followed) or with a link to the most recent data. This enables the server to handle situations in which clients submit old data. For example:
+
+- A user finds a podcast, whose URL had changed, and adds the old URL in the app. Because the client doesn't have the old URL in its database, it recognizes the podcast as **new** and POSTs the `feed_url` to the `/subscriptions` endpoint. If the user is already subscribed to the podcast (with the current feed URL) this would lead to a duplicate subscription.
+- A user has a device that they didn't use for a very long time. In that time, a podcaster added a GUID in their feed, leading to updated data in this field. When the client connects to the server again to pull all episode changes since the last connection, it retrieves episodes with their current subscription `guid`. The client won't recognize the subscription and fail to update the status of episodes.
+  :::
+
+[ISO 8601 format]: https://www.iso.org/iso-8601-date-and-time-format.html
