@@ -22,34 +22,31 @@ paths:
             type: string
             format: date-time
           required: false
-          example:
-            '2022-04-23T18:25:43.511Z'
+          example: "2022-04-23T18:25:43.511Z"
         - in: query
           name: page
           schema:
             type: number
           required: false
-          example:
-            1
+          example: 1
         - in: query
           name: per_page
           schema:
             type: number
           required: false
-          example:
-            5
+          example: 5
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscriptions'
+                $ref: "#/components/schemas/Subscriptions"
             application/xml:
               schema:
-                $ref: '#/components/schemas/Subscriptions'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/Subscriptions"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
       security:
         - podcast_auth:
             - read:subscriptions
@@ -60,21 +57,21 @@ paths:
       description: Add one or more new subscriptions for the authenticated user by passing an array of feed URLs in the request body
       operationId: addSubscription
       requestBody:
-        $ref: '#/components/requestBodies/FeedArray'
+        $ref: "#/components/requestBodies/FeedArray"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewSubscriptions'
+                $ref: "#/components/schemas/NewSubscriptions"
             application/xml:
               schema:
-                $ref: '#/components/schemas/NewSubscriptions'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '405':
-          $ref: '#/components/responses/ValidationException'
+                $ref: "#/components/schemas/NewSubscriptions"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "405":
+          $ref: "#/components/responses/ValidationException"
       security:
         - podcast_auth:
             - write:subscriptions
@@ -94,23 +91,23 @@ paths:
           required: true
           example: 968cb508-803c-493c-8ff2-9e397dadb83c
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscription'
+                $ref: "#/components/schemas/Subscription"
             application/xml:
               schema:
-                $ref: '#/components/schemas/Subscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-        '410':
-          $ref: '#/components/responses/Gone'
+                $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/ValidationException"
+        "410":
+          $ref: "#/components/responses/Gone"
       security:
         - podcast_auth:
             - read:subscriptions
@@ -129,23 +126,23 @@ paths:
           required: true
           example: 968cb508-803c-493c-8ff2-9e397dadb83c
       requestBody:
-        $ref: '#/components/requestBodies/PatchedSubscription'
+        $ref: "#/components/requestBodies/PatchedSubscription"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PatchedSubscription'
+                $ref: "#/components/schemas/PatchedSubscription"
             application/xml:
               schema:
-                $ref: '#/components/schemas/PatchedSubscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
+                $ref: "#/components/schemas/PatchedSubscription"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/ValidationException"
       security:
         - podcast_auth:
             - write:subscriptions
@@ -164,14 +161,14 @@ paths:
           required: true
           example: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
       responses:
-        '202':
-          $ref: '#/components/responses/DeletionReceived'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
+        "202":
+          $ref: "#/components/responses/DeletionReceived"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/ValidationException"
       security:
         - podcast_auth:
             - write:subscriptions
@@ -191,14 +188,14 @@ paths:
           required: true
           example: 25
       responses:
-        '200':
-          $ref: '#/components/responses/DeletionResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
+        "200":
+          $ref: "#/components/responses/DeletionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/ValidationException"
       security:
         - podcast_auth:
             - read:subscriptions
@@ -223,13 +220,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 401
             message: User not authorized
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 401
             message: User not authorized
@@ -238,13 +235,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 404
             message: Resource not found
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 404
             message: Resource not found
@@ -253,13 +250,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 405
             message: Input could not be validated
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 405
             message: Input could not be validated
@@ -268,13 +265,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 410
             message: Subscription has been deleted
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 410
             message: Subscription has been deleted
@@ -283,13 +280,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Success'
+            $ref: "#/components/schemas/Success"
           example:
             deletion_id: 25
             message: Deletion request was received and will be processed
         application/xml:
           schema:
-            $ref: '#/components/schemas/Success'
+            $ref: "#/components/schemas/Success"
           example:
             deletion_id: 25
             message: Deletion request was received and will be processed
@@ -298,7 +295,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Deletion'
+            $ref: "#/components/schemas/Deletion"
           examples:
             Success:
               value:
@@ -317,7 +314,7 @@ components:
                 message: The deletion process encountered an error and was rolled backwas rolled back
         application/xml:
           schema:
-            $ref: '#/components/schemas/Deletion'
+            $ref: "#/components/schemas/Deletion"
           examples:
             Success:
               value:
@@ -448,7 +445,7 @@ components:
         subscriptions:
           type: array
           items:
-            $ref: '#/components/schemas/Subscription'
+            $ref: "#/components/schemas/Subscription"
       example:
         total: 2
         page: 1
@@ -472,11 +469,11 @@ components:
         success:
           type: array
           items:
-            $ref: '#/components/schemas/NewSubscription'
+            $ref: "#/components/schemas/NewSubscription"
         failure:
           type: array
           items:
-            $ref: '#/components/schemas/FailedSubscription'
+            $ref: "#/components/schemas/FailedSubscription"
       example:
         success:
           - feed_url: https://example.com/rss1
@@ -601,44 +598,53 @@ components:
               type: object
               required:
                 - status
+                - root
               properties:
                 status:
                   type: string
                   enum: [STABLE, UNSTABLE, DEPRECATED]
+                root:
+                  type: string
           example:
             urn:opa:core:
-              "0.1.0":
-                status: STABLE
-              "1.0.0":
-                status: UNSTABLE
               "0.0.1":
                 status: DEPRECATED
+                root: "/api/v0"
+              "1.0.0":
+                status: STABLE
+                root: "/api/v1"
+              "2.0.0":
+                status: UNSTABLE
+                root: "/api/v2"
             urn:opa:extra:playcount:
-              "0.1.0":
-                status: STABLE
-              "1.0.0":
-                status: UNSTABLE
               "0.0.1":
                 status: DEPRECATED
+                root: "/api/v0/playcount"
+              "1.0.0":
+                status: STABLE
+                root: "/api/v1/playcount"
+              "2.0.0":
+                status: UNSTABLE
+                root: "/api/v2/playcount"
   requestBodies:
     FeedArray:
       description: An array of feeds the user wants to subscribe to
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/FeedArray'
+            $ref: "#/components/schemas/FeedArray"
         application/xml:
           schema:
-            $ref: '#/components/schemas/FeedArray'
+            $ref: "#/components/schemas/FeedArray"
     PatchedSubscription:
       description: A request containing new information to update an existing subscription with
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
+            $ref: "#/components/schemas/SubscriptionUpdate"
         application/xml:
           schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
+            $ref: "#/components/schemas/SubscriptionUpdate"
   securitySchemes:
     podcast_auth:
       type: oauth2
