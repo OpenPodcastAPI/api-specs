@@ -1,0 +1,53 @@
+---
+title: Get capabilities
+description: An endpoint for querying server capabilities
+next: false
+sidebar:
+  order: 2
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```http title="Endpoint"
+GET /v1/capabilities
+```
+
+The capabilities endpoint exposes details about the features a server supports. Capabilities are scoped by `urn` and MUST contain the following:
+
+- Each supported version of the feature.
+- The `status` of the feature version: `STABLE` | `UNSTABLE` | `DEPRECATED`.
+
+Each `capabilities` response MUST contain a `urn:opa:core` object that lists the versions of the Open Podcast API the server supports. Additional capabilities MAY be returned as separate `urn` objects with supported versions.
+
+## Example 200 response
+
+```json
+{
+  "capabilities": {
+    "urn:opa:core": {
+      "0.1.0": {
+        "status": "STABLE"
+      },
+      "1.0.0": {
+        "status": "UNSTABLE"
+      },
+      "0.0.1": {
+        "status": "DEPRECATED"
+      }
+    },
+    "urn:opa:extra:playcount": {
+      "0.1.0": {
+        "status": "STABLE"
+      },
+      "1.0.0": {
+        "status": "UNSTABLE"
+      },
+      "0.0.1": {
+        "status": "DEPRECATED"
+      }
+    }
+  }
+}
+```

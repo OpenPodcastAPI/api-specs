@@ -202,6 +202,20 @@ paths:
       security:
         - podcast_auth:
             - read:subscriptions
+  /capabilities:
+    get:
+      tags:
+        - Capabilities
+      summary: Retrieve server capabilities
+      description: Returns a summary of features and core specification versions supported by the server.
+      operationId: getCapabilities
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capabilities"
 components:
   responses:
     Unauthorized:
@@ -573,6 +587,39 @@ components:
         deletion_id: 25
         status: SUCCESS
         message: Subscription deleted successfully
+    Capabilities:
+      type: object
+      properties:
+        capabilities:
+          type: object
+          description: |
+            The features supported by the server. The first object MUST be "urn:opa:core".
+          additionalProperties:
+            type: object
+            description: A map of versions for a specific feature.
+            additionalProperties:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [STABLE, UNSTABLE, DEPRECATED]
+          example:
+            urn:opa:core:
+              "0.1.0":
+                status: STABLE
+              "1.0.0":
+                status: UNSTABLE
+              "0.0.1":
+                status: DEPRECATED
+            urn:opa:extra:playcount:
+              "0.1.0":
+                status: STABLE
+              "1.0.0":
+                status: UNSTABLE
+              "0.0.1":
+                status: DEPRECATED
   requestBodies:
     FeedArray:
       description: An array of feeds the user wants to subscribe to
