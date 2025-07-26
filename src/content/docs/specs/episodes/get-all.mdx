@@ -1,0 +1,262 @@
+---
+title: Get all episodes
+description: Get all episodes for a user
+sidebar:
+  order: 3
+  badge:
+    text: Core
+    variant: caution
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```http title="Endpoint"
+GET /v1/episodes
+```
+
+This endpoint enables clients to return all episode information relating to the authenticated user. It returns pagination information and an array of `episodes`.
+
+While supported, this endpoint is expected to be used rarely in practice. More often, episodes are retrieved per queue (TBD) or per subscription (TBD).
+
+## Response fields
+
+### Metadata
+
+| Field      | Type   | Required? | Description                                      |
+| ---------- | ------ | --------- | ------------------------------------------------ |
+| `total`    | Number | Yes       | The total number of objects returned by the call |
+| `page`     | Number | Yes       | The number of the page returned in the call      |
+| `per_page` | Number | Yes       | The number of results returned per page          |
+| `next`     | String | No        | The URL for the next page of results             |
+| `previous` | String | No        | The URL for the previous page of results         |
+
+### Episode fields
+
+| Group      | Field                               | Type            | Required? | Description                                                                                                                                                                                     |
+| ---------- | ----------------------------------- | --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identifier | `podcast_guid`                      | String \<UUID\> | Yes       | The globally unique ID of the parent podcast                                                                                                                                                    |
+| Identifier | `sync_id`                           | String \<UUID\> | Yes       | The synchronisation ID of the episode, globally unique at the server and its clients                                                                                                            |
+| Identifier | `episode_guid`                      | String \<UUID\> | Yes       | The globally unique ID of the episode, as present in the RSS feed ([`guid` tag](https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt))                                       |
+| Identifier | `title`                             | String          | Yes       | The title of the episode, as present in the RSS feed (`title` tag)                                                                                                                              |
+| Identifier | `publish_date`                      | Datetime        | Yes       | The date of publishing of the episode, as present in the RSS feed ([`pubDate` tag](https://www.rssboard.org/rss-specification#ltpubdategtSubelementOfLtitemgt)). Presented in [ISO 8601 format] |
+| Identifier | `enclosure_url`                     | String          | Yes       | The media file of the episode, as present in the RSS feed ([`enclosure` tag](https://www.rssboard.org/rss-specification#ltenclosuregtSubelementOfLtitemgt))                                     |
+| Identifier | `episode_url`                       | String          | Yes       | The (webpage) URL of the episode, as present in the RSS feed (`link`tag)                                                                                                                        |
+| Data       | `playback_position`                 | Integer         | ??YES/NO??| The most recent playback position in seconds                                                                                                       |
+| Data       | `played_status`                     | Boolean         | No        | Whether the episode has been (marked as such)                                                                                                            |
+| Data       | `new_status` <BadgeOptional />      | Boolean         | No        | Whether the user (manually) interacted with the episode.<br />_Example:_ In AntennaPod this is used to indicate whether an episode is in the Inbox |
+| Data       | `download_status` <BadgeOptional /> | Boolean         | No        | Whether the episode is downloaded on the client. For further details, see below.                                                                   |
+| Data       | `favorite_status` <BadgeOptional /> | Boolean         | No        | Whether the episode has been favorited by the user                                                                                                 |
+
+The server can ignore the other identifier fields, if it found an episode based on the `podcast_guid` and the `sync_id`.
+
+:::note[Why all idenifiers are required]
+
+Assume client A has refreshed a feed locally, and client B hasn't done so yet. In order for client B to do episode matching with what it receives from the server, it would need to have more data than just the `sync_id`. In this scenario, how does the server know whether client B has already refreshed the feed and is aware of the episode or not (i.e. whether it can rely on `sync_id` alone or needs to send more information)? The server cannot know, thus a 'conversation' between server and client would be needed:
+* `S` "here's a new episode with podcast_guid x and sync_id y"
+* `C` "I don't recognise this one - tell me more!"
+* `S` "Ok, here's all information you can use for episode matching: …"
+
+To avoid such conversation, and as the sending of all matching data involves only a few bytes, all identifiers are sent always.
+
+:::
+
+Remember that each of the data fields MUST have both a 'value' and a 'timestamp'.
+
+:::note[Discussion details]
+See meeting notes from [2024-06-19](https://pad.funkwhale.audio/s/I3F_C2NbQ#GET-episode-information)
+:::
+
+## Parameters
+
+The client MAY add the following parameters to their call:
+
+| Field      | Type     | In    | Required? | Description                                                                                                                                                                                                            |
+| ---------- | -------- | ----- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `since`    | DateTime | Query | No        | The date from which the server should return objects. The server only returns entries whose `timestamp` data for any of the fields are greater than this parameter. Expected in [ISO 8601 format] |
+| `page`     | Number   | Query | No        | The page of results to be returned by the server. Defaults to `1` if not present                                                                                                                                       |
+| `per_page` | Number   | Query | No        | The number of results to return in each call. Defaults to `50` if not present                                                                                                                                          |
+
+:::note
+If no `since` parameter is provided, the server MUST return all current subscription information.
+:::
+
+## Server-side behavior
+
+No particular behavior expected.
+
+## Client behavior
+
+The client SHOULD update its local episode data to match the information returned in the response.
+
+## Example request
+
+<Tabs syncKey="accepts">
+   <TabItem label="JSON">
+
+      ```console
+      $ curl -X 'GET' \
+      '/v1/episodes?since=2024-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
+      -H 'accept: application/json'
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```console
+      $ curl -X 'GET' \
+      '/v1/episodes?since=2024-04-23T18%3A25%3A34.511Z&page=1&per_page=5' \
+      -H 'accept: application/xml'
+      ```
+
+   </TabItem>
+</Tabs>
+
+## Example 200 response
+
+<Tabs syncKey="accepts">
+   <TabItem label="JSON">
+
+      ```json
+      {
+         "total": 2,
+         "page": 1,
+         "per_page": 5,
+         "episodes": [
+            {
+               "podcast_guid": "31740ac6-e39d-49cd-9179-634bcecf4143",
+               "sync_id": "cff3ea32-4215-4f98-bc23-5358d1f35b55",
+               "episode_guid": "https://example.com/podcast/episode-5-the-history-of-RSS",
+               "title": "The history of RSS",
+               "publish_date": "2022-04-24T17:53:21.573Z",
+               "enclosure_url": "https://example.com/podcast/episode-5-the-history-of-RSS.mp3",
+               "episode_url": "https://example.com/podcast/episode-5-the-history-of-RSS",
+               "playback_position": {
+                  "value": 0,
+                  "timestamp": "2024-11-02T13:19"
+               },
+               "played_status": {
+                  "value": true,
+                  "timestamp": "2024-11-02T13:19"
+               },
+               "new_status": {
+                  "value": false,
+                  "timestamp": "2024-10-30T17:31"
+               },
+               "download_status": {
+                  "value": false,
+                  "timestamp": "2024-11-02T13:19"
+               },
+               "favorite_status": {
+                  "value": false,
+                  "timestamp": "2024-11-02T13:19"
+               }
+            },
+            {
+               "podcast_guid": "9d6786c9-ed48-470d-acbe-e593547f4b5b",
+               "sync_id": "5773f457-e71b-417d-8ea8-f07c38a03a3e",
+               "episode_guid": "01999e25-08cd-4f29-a61e-6ca459b40d27",
+               "title": "Walk with the weatherman",
+               "publish_date": "2022-04-27T19:35:20.000Z",
+               "enclosure_url": "https://op3.dev/e/https://podcasts.example2.net/audio/@digitalcitizen/49-walk-with-the-weatherman.mp3",
+               "episode_url": "https://podcasts.example2.net/@digitalcitizen/episodes/49-walk-with-the-weatherman",
+               "playback_position": {
+                  "value": 2100,
+                  "timestamp": "2024-11-01T17:38"
+               },
+               "played_status": {
+                  "value": false,
+                  "timestamp": "2024-04-28T09:20"
+               },
+               "new_status": {
+                  "value": false,
+                  "timestamp": "2024-11-01T17:02"
+               },
+               "download_status": {
+                  "value": true,
+                  "timestamp": "2024-11-01T17:02"
+               },
+               "favorite_status": {
+                  "value": false,
+                  "timestamp": "2024-04-28T09:20"
+               }
+            }
+         ]
+      }
+      ```
+
+   </TabItem>
+   <TabItem label="XML">
+
+      ```xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <episodes>
+         <total>2</total>
+         <page>1</page>
+         <per_page>5</per_page>
+         <episode>
+               <podcast_guid>31740ac6-e39d-49cd-9179-634bcecf4143</podcast_guid>
+               <sync_id>cff3ea32-4215-4f98-bc23-5358d1f35b55</sync_id>
+               <episode_guid>https://example.com/podcast/episode-5-the-history-of-RSS</episode_guid>
+               <title>The history of RSS</title>
+               <publish_date>2022-04-24T17:53:21.573Z</publish_date>
+               <enclosure_url>https://example.com/podcast/episode-5-the-history-of-RSS.mp3</enclosure_url>
+               <episode_url>https://example.com/podcast/episode-5-the-history-of-RSS</episode_url>
+               <playback_position>
+                  <value>0</value>
+                  <timestamp>2024-11-02T13:19</timestamp>
+               </playback_position>
+               <played_status>
+                  <value>true</value>
+                  <timestamp>2024-11-02T13:19</timestamp>
+               </played_status>
+               <new_status>
+                  <value>false</value>
+                  <timestamp>2024-10-30T17:31</timestamp>
+               </new_status>
+               <download_status>
+                  <value>false</value>
+                  <timestamp>2024-11-02T13:19</timestamp>
+               </download_status>
+               <favorite_status>
+                  <value>false</value>
+                  <timestamp>2024-11-02T13:19</timestamp>
+               </favorite_status>
+         </episode>
+         <episode>
+               <podcast_guid>9d6786c9-ed48-470d-acbe-e593547f4b5b</podcast_guid>
+               <sync_id>5773f457-e71b-417d-8ea8-f07c38a03a3e</sync_id>
+               <episode_guid>01999e25-08cd-4f29-a61e-6ca459b40d27</episode_guid>
+               <title>Walk with the weatherman</title>
+               <publish_date>2022-04-27T19:35:20.000Z</publish_date>
+               <enclosure_url>https://op3.dev/e/https://podcasts.example2.net/audio/@digitalcitizen/49-walk-with-the-weatherman.mp3</enclosure_url>
+               <episode_url>https://podcasts.example2.net/@digitalcitizen/episodes/49-walk-with-the-weatherman</episode_url>
+               <playback_position>
+                  <value>2100</value>
+                  <timestamp>2024-11-01T17:38</timestamp>
+               </playback_position>
+               <played_status>
+                  <value>false</value>
+                  <timestamp>2024-04-28T09:20</timestamp>
+               </played_status>
+               <new_status>
+                  <value>false</value>
+                  <timestamp>2024-11-01T17:02</timestamp>
+               </new_status>
+               <download_status>
+                  <value>true</value>
+                  <timestamp>2024-11-01T17:02</timestamp>
+               </download_status>
+               <favorite_status>
+                  <value>false</value>
+                  <timestamp>2024-04-28T09:20</timestamp>
+               </favorite_status>
+         </episode>
+      </episodes>
+      ```
+
+   </TabItem>
+</Tabs>
+
+[ISO 8601 format]: https://www.iso.org/iso-8601-date-and-time-format.html
