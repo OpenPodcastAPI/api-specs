@@ -17,7 +17,9 @@ Clients are responsible for parsing or calculating the GUID of feeds and episode
 
 Feed GUID values MUST be created in accordance with the [Podcast Index's methodology](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/guid.md). If a feed already has a valid UUIDv5 `guid` tag, the client MUST pass this value to the server when submitting the feed. If the feed doesn't have a valid `guid` tag, the client MUST:
 
-1. Generate a UUIDv5 `guid` value using the feed URL and the `podcast` namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
+1. Generate a UUIDv5 `guid` value using:
+   - The feed URL with the protocol scheme and trailing slashes stripped off.
+   - The `podcast` namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
 1. Pass the calculated value to the server when submitting a subscription.
 
 This process ensures that any feed not currently registered with the Podcast Index is identified by the exact same GUID it would receive if it were updated to the Podcasting 2.0 specification.
@@ -39,8 +41,9 @@ Here is a simple example of how to calculate the GUID for a feed from its feed U
       static final NameBasedGenerator generator = Generators.nameBasedGenerator(podcastNamespace);
 
       public static UUID calculateFeedId(String feedUrl) {
-          final UUID feedUuid = UUID.fromString(feedUrl);
-          return generator.generate(feedUrl);
+          final String sanitizedFeedUrl = feedUrl.replaceFirst("^[a-zA-Z]+://", "").replaceAll("/+$", "");
+          final UUID feedUuid = UUID.fromString(sanitizedFeedUrl);
+          return generator.generate(feedUuid);
       }
   }
   ```
@@ -50,10 +53,12 @@ Here is a simple example of how to calculate the GUID for a feed from its feed U
 
   ```py
   import uuid
+  import re
   
   def calculate_uuid(feed_url):
     PODCAST_NAMESPACE = uuid.UUID("ead4c236-bf58-58c6-a2c6-a6b28d128cb6")
-    return uuid.uuid5(PODCAST_NAMESPACE, feed_url)
+    sanitized_feed_url = re.sub(r'^[a-zA-Z]+://', '', url).rstrip('/')
+    return uuid.uuid5(PODCAST_NAMESPACE, sanitized_feed_url)
   ```
   
   </TabItem>
@@ -65,6 +70,7 @@ Here is a simple example of how to calculate the GUID for a feed from its feed U
   const PODCAST_NAMESPACE = "ead4c236-bf58-58c6-a2c6-a6b28d128cb6";
 
   function calculateUuid(feedUrl: string): string {
+    const sanitizedFeedUrl = feedUrl.replace(/^[a-zA-Z]+:\/\//, "").replace(/\/+$/, "");
     return uuidv5(feedUrl, PODCAST_NAMESPACE);
   }
   ```
