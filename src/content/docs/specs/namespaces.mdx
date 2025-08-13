@@ -1,0 +1,199 @@
+---
+title: UUID namespaces
+description: Instructions for calculating UUIDs using namespaces
+next: false
+prev: false
+tableOfContents: true
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+The Open Podcast API uses [UUIDv5 values](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-5) as identifiers for entities. This value is known as a GUID (Globally Unique Identifier). Each GUID value MUST be calculated using the appropriate namespace and methodology to prevent duplication.
+
+Clients are responsible for parsing or calculating the GUID of feeds and episodes. The server stores this information, but does not calculate it.
+
+## Feed identifiers
+
+Feed GUID values MUST be created in accordance with the [Podcast Index's methodology](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/guid.md). If a feed already has a valid UUIDv5 `guid` tag, the client MUST pass this value to the server when submitting the feed. If the feed doesn't have a valid `guid` tag, the client MUST:
+
+1. Generate a UUIDv5 `guid` value using the feed URL and the `podcast` namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
+1. Pass the calculated value to the server when submitting a subscription.
+
+This process ensures that any feed not currently registered with the Podcast Index is identified by the exact same GUID it would receive if it were updated to the Podcasting 2.0 specification.
+
+### Example
+
+Here is a simple example of how to calculate the GUID for a feed from its feed URL.
+
+<Tabs>
+  <TabItem label="Java">
+
+  ```java
+  import java.util.UUID;
+  import com.fasterxml.uuid.Generators;
+  import com.fasterxml.uuid.impl.NameBasedGenerator;
+
+  public class UuidCalculator {
+      static final UUID podcastNamespace = UUID.fromString("ead4c236-bf58-58c6-a2c6-a6b28d128cb6");
+      static final NameBasedGenerator generator = Generators.nameBasedGenerator(podcastNamespace);
+
+      public static UUID calculateFeedId(String feedUrl) {
+          final UUID feedUuid = UUID.fromString(feedUrl);
+          return generator.generate(feedUrl);
+      }
+  }
+  ```
+  
+  </TabItem>
+  <TabItem label="Python">
+
+  ```py
+  import uuid
+  
+  def calculate_uuid(feed_url):
+    PODCAST_NAMESPACE = uuid.UUID("ead4c236-bf58-58c6-a2c6-a6b28d128cb6")
+    return uuid.uuid5(PODCAST_NAMESPACE, feed_url)
+  ```
+  
+  </TabItem>
+  <TabItem label="Typescript">
+
+  ```ts
+  import { v5 as uuidv5 } from "uuid";
+
+  const PODCAST_NAMESPACE = "ead4c236-bf58-58c6-a2c6-a6b28d128cb6";
+
+  function calculateUuid(feedUrl: string): string {
+    return uuidv5(feedUrl, PODCAST_NAMESPACE);
+  }
+  ```
+
+  </TabItem>
+</Tabs>
+
+Running the above example with the feed URL `"podnews.net/rss"` will yield `9b024349-ccf0-5f69-a609-6b82873eab3c`.
+
+## Episode identifiers
+
+In the best-case scenario, podcast episodes are also identified by a case-sensitive string `guid`. This value MUST be unique on a per-feed basis. Some feeds do not supply `guid` values for episodes. In this case, the client must make use of other data points to create GUIDs for episodes. Each client MUST follow the same process. This ensures that clients calculate the same GUID for each episode.
+
+To calculate the GUID for a podcast episode:
+
+1. Calculate the feed UUID and store it as the namespace.
+1. If a `guid` value is present in the episode section:
+   1. Strip leading and trailing whitespace from the `guid` value.
+   1. Convert the `guid` to lowercase.
+   1. Create a new UUIDv5 value using the modified `guid` and the feed namespace.
+1. If a `guid` value is NOT present in the episode section:
+   1. Concatenate the `title`, `enclosure_url`, and `publish_date` as a single string.
+   1. Strip leading and trailing whitespace from the resulting string and convert to lowercase.
+   1. Create a new UUIDv5 value using the concatenated values and the feed namespace.
+
+### Example
+
+Here is a simple example of how to calculate the episode GUID using the `guid` tag.
+
+<Tabs>
+  <TabItem label="Java">
+
+  ```java
+  import java.util.UUID;
+  import com.fasterxml.uuid.Generators;
+  import com.fasterxml.uuid.impl.NameBasedGenerator;
+
+  public class UuidCalculator {
+
+      public static UUID calculateEpisodeGuid(String guid, UUID feedUuid) {
+        final String sanitizedInput = guid.strip().toLowerCase();
+        final NameBasedGenerator generator = Generators.nameBasedGenerator(feedUuid);
+        return generator.generate(sanitizedInput);
+      }
+  }
+  ```
+  
+  </TabItem>
+  <TabItem label="Python">
+
+  ```py
+  import uuid
+
+  def calculate_episode_guid_from_guid(guid, feed_uuid):
+    normalized_input = guid.strip().lower()
+    namespace = uuid.UUID(feed_uuid)
+    return uuid.uuid5(namespace, normalized_input)
+  ```
+    
+  </TabItem>
+  <TabItem label="Typescript">
+
+  ```ts
+  import { v5 as uuidv5 } from "uuid";
+
+  function calculateEpisodeGuidFromGuid(guid: string, feedUuid: string): string {
+    const normalizedInput = guid.trim().toLowerCase();
+    return uuidv5(normalizedInput, feedUuid);
+  }
+  ```
+  
+  </TabItem>
+</Tabs>
+
+Running the above example with the GUID `"https://example.com/episode_3.mp3"` and the feed UUID `9b024349-ccf0-5f69-a609-6b82873eab3c` will yield `66932137-05d2-5594-8b01-e84e025340ea`.
+
+Here is how to calculate the episode GUID using normalized metadata.
+
+<Tabs>
+  <TabItem label="Java">
+
+  ```java
+  import java.util.UUID;
+  import com.fasterxml.uuid.Generators;
+  import com.fasterxml.uuid.impl.NameBasedGenerator;
+
+  public class UuidCalculator {
+
+      public static UUID calculateEpisodeGuid(String title, String enclosureUrl, String publishDate, UUID feedUuid) {
+        final String sanitizedInput = (title + enclosureUrl + publishDate).strip();
+        final NameBasedGenerator generator = Generators.nameBasedGenerator(feedUuid);
+        return generator.generate(sanitizedInput);
+      }
+  }
+  ```
+  
+  </TabItem>
+  <TabItem label="Python">
+
+  ```py
+  import uuid
+
+  def calculate_episode_guid_from_metadata(title, enclosure_url, publish_date, feed_uuid):
+    normalized_input = (title + enclosure_url + publish_date).strip().lower()
+    namespace = uuid.UUID(feed_uuid)
+    return uuid.uuid5(namespace, normalized_input)
+  ```
+    
+  </TabItem>
+  <TabItem label="Typescript">
+
+  ```ts
+  import { v5 as uuidv5 } from "uuid";
+
+  function calculateEpisodeGuidFromMetadata(title: string, enclosureUrl: string, publishDate: string, feedUuid: string): string {
+    const normalizedInput = (title + enclosureUrl + publishDate).trim().toLowerCase();
+    return uuidv5(normalizedInput, feedUuid);
+  }
+  ```
+  
+  </TabItem>
+</Tabs>
+
+Running the above example with the feed UUID `9b024349-ccf0-5f69-a609-6b82873eab3c` and the following metadata:
+
+- `title`: `"Episode 3"`
+- `enclosureUrl`: `"https://example.com/episode_3.mp3"`
+- `publishDate`: `"Fri, 21 Apr 2023 18:56:30 -0500"`
+
+Will yield `09ee3d1e-8a74-5581-b692-c7136a6210b0`.
+
