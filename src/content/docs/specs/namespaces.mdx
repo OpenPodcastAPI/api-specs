@@ -8,6 +8,7 @@ sidebar:
   order: 2
 ---
 
+
 The Open Podcast API uses [UUIDv5 values](https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-5) as identifiers for entities. This value is known as a GUID (Globally Unique Identifier). Each GUID value MUST be calculated using the appropriate namespace and methodology to prevent duplication.
 
 Clients are responsible for parsing or calculating the GUID of feeds and episodes. The server stores this information, but does not calculate it.
@@ -82,7 +83,6 @@ To calculate the GUID for a podcast episode:
 1. Calculate the feed UUID and store it as the namespace.
 1. If a `guid` value is present in the episode section:
    1. Strip leading and trailing whitespace from the `guid` value.
-   1. Convert the `guid` to lowercase.
    1. Create a new UUIDv5 value using the modified `guid` and the feed namespace.
 1. If a `guid` value is NOT present in the episode section:
    1. Concatenate the `title`, `enclosure_url`, and `publish_date` as a single string.
@@ -104,7 +104,7 @@ Here is a simple example of how to calculate the episode GUID using the `guid` t
   public class UuidCalculator {
 
       public static UUID calculateEpisodeGuid(String guid, UUID feedUuid) {
-        final String sanitizedInput = guid.strip().toLowerCase();
+        final String sanitizedInput = guid.strip();
         final NameBasedGenerator generator = Generators.nameBasedGenerator(feedUuid);
         return generator.generate(sanitizedInput);
       }
@@ -118,7 +118,7 @@ Here is a simple example of how to calculate the episode GUID using the `guid` t
   import uuid
 
   def calculate_episode_guid_from_guid(guid, feed_uuid):
-    normalized_input = guid.strip().lower()
+    normalized_input = guid.strip()
     namespace = uuid.UUID(feed_uuid)
     return uuid.uuid5(namespace, normalized_input)
   ```
@@ -130,7 +130,7 @@ Here is a simple example of how to calculate the episode GUID using the `guid` t
   import { v5 as uuidv5 } from "uuid";
 
   function calculateEpisodeGuidFromGuid(guid: string, feedUuid: string): string {
-    const normalizedInput = guid.trim().toLowerCase();
+    const normalizedInput = guid.trim();
     return uuidv5(normalizedInput, feedUuid);
   }
   ```
