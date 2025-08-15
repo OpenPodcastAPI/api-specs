@@ -10,7 +10,7 @@
     "astro": "astro"
   },  "dependencies": {
     "@astrojs/starlight": "^0.35.2",
-    "astro": "^5.12.9",
+    "astro": "^5.13.2",
     "astro-auto-import": "^0.4.4",
     "remark-definition-list": "^2.0.0",
     "sharp": "^0.34.3",
