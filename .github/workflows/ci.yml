@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: Lychee Broken Link Checker
-      uses: lycheeverse/lychee-action@v2.5.0
+      uses: lycheeverse/lychee-action@v2.6.1
       with:
         fail: true
