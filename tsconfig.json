@@ -4,15 +4,10 @@
     "baseUrl": ".",
     "allowImportingTsExtensions": true,
     "paths": {
-      "@partials/*": [
-        "src/content/docs/partials/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@assets/*": [
-        "src/assets/*"
-      ]
+      "@partials/*": ["src/content/docs/partials/*"],
+      "@components/*": ["src/components/*"],
+      "@assets/*": ["src/assets/*"],
+      "@plugins/*": ["plugins/*"]
     }
   }
 }

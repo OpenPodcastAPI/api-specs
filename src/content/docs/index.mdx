@@ -17,6 +17,8 @@ hero:
       variant: secondary
 ---
 
+import { CardGrid, Card, LinkCard } from "@astrojs/starlight/components";
+import SponsorCallout from "@components/SponsorCallout.astro";
 import netlifyLogo from "@assets/sponsor-contributor logos/logo-netlify-small-fullcolor-dynamicmode.svg";
 
 The Open Podcast API is an initiative aiming to provide a feature-complete synchronization API specification for podcast (web) apps and user-focused servers.
@@ -26,13 +28,14 @@ The Open Podcast API is an initiative aiming to provide a feature-complete synch
 <CardGrid>
   <Card title="For users" icon="star">
     - Synchronize subscriptions, listening progress, favorites, queues, and more
-    - Support multiple apps and online services
-    - Enable users to easily switch between providers without losing any information
+    - Support multiple apps and online services - Enable users to easily switch
+    between providers without losing any information
   </Card>
   <Card title="For developers" icon="laptop">
-    - Write clear and comprehensive documentation for features and behaviors
-    - Create reliable specifications that are decentralization-ready and easy to implement
-    - Provide a full [OpenAPI](https://spec.openapis.org/oas/latest) specification
+    - Write clear and comprehensive documentation for features and behaviors -
+    Create reliable specifications that are decentralization-ready and easy to
+    implement - Provide a full [OpenAPI](https://spec.openapis.org/oas/latest)
+    specification
   </Card>
 </CardGrid>
 
@@ -43,9 +46,18 @@ The Open Podcast API initiative builds on open source and open standards. Contri
 We invite all projects and individuals to join us in developing these specifications. This ensures that we take all perspectives into account and create a set of interoperable specs.
 
 <CardGrid>
-  <LinkCard title="Join the chatroom on Matrix" href="https://matrix.to/#/!ZHdcrdWSgxXRREuJdU:matrix.org" />
-  <LinkCard title="Give input in our GitHub discussions" href="https://github.com/orgs/OpenPodcastAPI/discussions/categories/problem-definitions-solutions" />
-  <LinkCard title="Add our monthly meeting to your calendar" href="https://github.com/orgs/OpenPodcastAPI/discussions/15" />
+  <LinkCard
+    title="Join the chatroom on Matrix"
+    href="https://matrix.to/#/!ZHdcrdWSgxXRREuJdU:matrix.org"
+  />
+  <LinkCard
+    title="Give input in our GitHub discussions"
+    href="https://github.com/orgs/OpenPodcastAPI/discussions/categories/problem-definitions-solutions"
+  />
+  <LinkCard
+    title="Add our monthly meeting to your calendar"
+    href="https://github.com/orgs/OpenPodcastAPI/discussions/15"
+  />
 </CardGrid>
 
 <SponsorCallout

@@ -7,31 +7,49 @@ sidebar:
   order: 1
 ---
 
-import CoreEndpoint from "@partials/_core-endpoint.mdx";
+import CoreEndpoint from "@partials/_core-endpoint.md";
 
 <CoreEndpoint />
 
-The subscriptions endpoint is used to synchronize subscriptions between a server and connected clients. The server is treated as the authoritative source for subscription information. Clients can query the endpoint by specifying the datetime from which they want to fetch changes to ensure they only fetch information that is relevant to them since their last sync.
+The `subscriptions` endpoint is used to synchronize subscriptions between a server and connected clients.
 
-Subscriptions represent the feeds a user has subscribed to. A subscription object stores essential information about each subscription and acts as an index that links other activity information together.
+## What is a subscription?
 
-## Important data fields
+Subscriptions represent the relationship between **users** and **podcast feeds**.
+Each user may have many subscriptions, and each feed may have many subscribers.
 
-| Field                  | Type           | Nullable? | Description                                                                                                                                                         |
-| ---------------------- | -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `feed_url`             | String         | No        | The URL of the podcast RSS feed                                                                                                                                     |
-| `guid`                 | String\<UUID\> | No        | The globally unique ID of the podcast                                                                                                                               |
-| `is_subscribed`        | Boolean        | No        | Whether the user is subscribed to the podcast                                                                                                                       |
-| `subscription_changed` | Datetime       | No        | The date on which the `is_subscribed` field was last updated. Presented in [ISO 8601 format]                                                                        |
-| `guid_changed`         | Datetime       | No        | The date on which the podcast's `guid` or `new_guid` was last updated. Presented in [ISO 8601 format]                                                               |
-| `new_guid`             | String\<UUID\> | Yes       | The new GUID associated with the podcast                                                                                                                            |
-| `deleted`              | Datetime       | Yes       | The date on which data associated with the subscription was deleted by the user. This field is used to determine whether a `410 (Gone)` response should be returned |
+Users may add and delete subscriptions at any time.
+Deleting a subscription **MUST NOT** result in the feed being removed.
 
-:::note[Tombstoning]
-Servers SHOULD hold all previous `guid` and `feed_url` field data with a link to the succeeding data (such that a path of values can be followed) or with a link to the most recent data. This enables the server to handle situations in which clients submit old data. For example:
+```mermaid
+erDiagram
+    USERS ||--o{ SUBSCRIPTIONS : has
+    FEEDS ||--o{ SUBSCRIPTIONS : has
+```
 
-- A user finds a podcast, whose URL had changed, and adds the old URL in the app. Because the client doesn't have the old URL in its database, it recognizes the podcast as **new** and POSTs the `feed_url` to the `/subscriptions` endpoint. If the user is already subscribed to the podcast (with the current feed URL) this would lead to a duplicate subscription.
-- A user has a device that they didn't use for a very long time. In that time, a podcaster added a GUID in their feed, leading to updated data in this field. When the client connects to the server again to pull all episode changes since the last connection, it retrieves episodes with their current subscription `guid`. The client won't recognize the subscription and fail to update the status of episodes.
-  :::
+## `guid` calculation
 
-[ISO 8601 format]: https://www.iso.org/iso-8601-date-and-time-format.html
+Subscriptions are identified by a globally unique `guid` value.
+This `guid` is used as the `id` field of each subscription resource and acts as the canonical resource identifier.
+
+Feed `guid` values **MUST** be created in accordance with the [Podcast Index's methodology](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/guid.md).
+If a feed already has a valid UUIDv5 `guid` tag, the client **MUST** pass this value to the server when submitting the feed.
+If the feed doesn't have a valid `guid` tag, the client **MUST**:
+
+1. Generate a UUIDv5 `guid` value using:
+   - The feed URL (with protocol and trailing slashes removed).
+   - The Podcast namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
+2. Pass the generated value as the `guid` in the API request.
+
+This process ensures that any feed not currently registered with the Podcast Index is identified by the exact same GUID it would receive if it were updated to the Podcasting 2.0 specification.
+
+The server **MUST** reject invalid `guid` values with a `400 Bad Request` response.
+
+The server **MUST NOT** attempt to validate or recalculate the `guid` against the `feedUrl`, as the origin URL may have changed since the `guid` was set.
+
+## Supported actions
+
+- [Add a subscription](/specs/subscriptions/add-subscription)
+- [List all subscriptions](/specs/subscriptions/list-subscriptions)
+- [Get a subscription](/specs/subscriptions/get-subscription)
+- [Delete a subscription](/specs/subscriptions/delete-subscription)
