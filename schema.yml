@@ -1,607 +1,424 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: OpenPodcast API
-  description: |-
-    This is the OpenAPI specification for the OpenPodcast API
-  version: 0.1.0
-tags:
-  - name: Subscriptions
-    description: All actions relating to subscription management
+  title: Open Podcast API
+  version: 1.0.0
+  description: API for managing podcast subscriptions.
+
 paths:
-  /subscriptions:
+  /v1/subscriptions:
     get:
+      summary: List subscriptions
+      operationId: listSubscriptions
       tags:
         - Subscriptions
-      summary: Retrieve all updated subscription information
-      description: Retrieve all subscription information that has changed since the provided timestamp
-      operationId: getSubscriptions
+      description: |
+        Retrieves a paginated list of podcast subscriptions associated with the authenticated user.
       parameters:
-        - in: query
-          name: since
-          schema:
-            type: string
-            format: date-time
-          required: false
-          example:
-            '2022-04-23T18:25:43.511Z'
-        - in: query
-          name: page
-          schema:
-            type: number
-          required: false
-          example:
-            1
-        - in: query
-          name: per_page
-          schema:
-            type: number
-          required: false
-          example:
-            5
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
       responses:
-        '200':
-          description: Successful operation
+        "200":
+          description: List of subscriptions successfully returned.
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/Subscriptions'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Subscriptions'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-      security:
-        - podcast_auth:
-            - read:subscriptions
+                $ref: "#/components/schemas/PaginatedSubscriptionResponse"
     post:
-      tags:
-        - Subscriptions
-      summary: Add new subscriptions for the authenticated user
-      description: Add one or more new subscriptions for the authenticated user by passing an array of feed URLs in the request body
+      summary: Add a new subscription
       operationId: addSubscription
-      requestBody:
-        $ref: '#/components/requestBodies/FeedArray'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NewSubscriptions'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/NewSubscriptions'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
-  /subscriptions/{guid}:
-    get:
       tags:
         - Subscriptions
-      summary: Retrieve information about a single subscription
-      description: Retrieve information about a single subscription specified in the path
+      description: |
+        Enables clients to add a new subscription to the system and register the authenticated user as a subscriber.
+
+        The operation is **idempotent**. If the subscription already exists, the server MAY return a `200 OK`.
+      requestBody:
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  type: object
+                  required: [type, id, attributes]
+                  properties:
+                    type:
+                      type: string
+                      enum: [subscription]
+                      example: subscription
+                    id:
+                      type: string
+                      format: uuid
+                      description: UUIDv5 identifying the feed.
+                      example: ce510f4d-9046-5590-846e-58619ab8b353
+                    attributes:
+                      type: object
+                      required: [feedUrl]
+                      properties:
+                        feedUrl:
+                          type: string
+                          format: uri
+                          example: https://example.com/rss1
+      responses:
+        "201":
+          description: Subscription successfully created.
+          headers:
+            Location:
+              description: URI of the created resource
+              schema:
+                type: string
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponse"
+        "200":
+          description: Subscription already existed; confirmed.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponse"
+  /v1/subscriptions/{guid}:
+    get:
+      summary: Get a subscription
       operationId: getSubscription
-      parameters:
-        - in: path
-          name: guid
-          schema:
-            type: string
-            format: guid
-          required: true
-          example: 968cb508-803c-493c-8ff2-9e397dadb83c
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-        '410':
-          $ref: '#/components/responses/Gone'
-      security:
-        - podcast_auth:
-            - read:subscriptions
-    patch:
       tags:
         - Subscriptions
-      summary: Update a single subscription entry
-      description: Update information about a single subscription specified in the path
-      operationId: updateSubscription
+      description: |
+        Fetch a single subscription resource by its globally unique `guid`, associated with the authenticated user.
       parameters:
-        - in: path
-          name: guid
-          schema:
-            type: string
-            format: guid
-          required: true
-          example: 968cb508-803c-493c-8ff2-9e397dadb83c
-      requestBody:
-        $ref: '#/components/requestBodies/PatchedSubscription'
+        - $ref: "#/components/parameters/Guid"
       responses:
-        '200':
-          description: Successful operation
+        "200":
+          description: Subscription found and returned successfully.
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/PatchedSubscription'
-            application/xml:
+                $ref: "#/components/schemas/SingleSubscriptionResponse"
+        "400":
+          description: The provided GUID is not a valid UUID.
+          content:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/PatchedSubscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Subscription not found or inaccessible to the user.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
+      summary: Delete a subscription
+      operationId: deleteSubscription
       tags:
         - Subscriptions
-      summary: Delete a single subscription entry
-      description: Deletes a single subscription specified in the path
-      operationId: deleteSubscription
+      description: |
+        Removes a subscription for the authenticated user by `guid`.
+
+        The operation is user-specific and does not affect other users subscribed to the same feed.
       parameters:
-        - in: path
-          name: guid
+        - name: guid
+          in: path
+          required: true
+          description: The globally unique identifier (UUIDv5) of the subscription resource.
           schema:
             type: string
-            format: guid
-          required: true
-          example: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
+            format: uuid
       responses:
-        '202':
-          $ref: '#/components/responses/DeletionReceived'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
-  /deletions/{id}:
-    get:
+        "204":
+          description: Subscription successfully deleted. No content returned.
+        "400":
+          description: Invalid GUID format.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errors:
+                  - status: "400"
+                    title: "Invalid GUID in request"
+                    detail: "The requested GUID is not a UUID value"
+        "404":
+          description: Subscription not found for the authenticated user.
+
+  /v1/operations:
+    post:
+      summary: Atomic Operations Endpoint
+      operationId: atomicOperation
       tags:
-        - Subscriptions
-      summary: Retrieve information subscription deletion
-      description: Retrieve information about a deletion by querying the ID sent in a deletion request
-      operationId: getDeletions
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: number
-            format: integer
-          required: true
-          example: 25
+        - Operations
+      description: |
+        Perform multiple resource-level operations in a single, ordered request using the JSON:API Atomic Operations extension.
+        Only supported operations documented by the server should be used.
+      requestBody:
+        required: true
+        content:
+          application/vnd.api+json;ext="https://jsonapi.org/ext/atomic":
+            schema:
+              $ref: "#/components/schemas/AtomicOperationsRequest"
       responses:
-        '200':
-          $ref: '#/components/responses/DeletionResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - read:subscriptions
+        "200":
+          description: Atomic operations executed. Each result is reported positionally.
+          content:
+            application/vnd.api+json;ext="https://jsonapi.org/ext/atomic":
+              schema:
+                $ref: "#/components/schemas/AtomicOperationsResponse"
+
 components:
-  responses:
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 401
-            message: User not authorized
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 401
-            message: User not authorized
-    NotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 404
-            message: Resource not found
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 404
-            message: Resource not found
-    ValidationException:
-      description: Validation exception
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 405
-            message: Input could not be validated
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 405
-            message: Input could not be validated
-    Gone:
-      description: Object deleted
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 410
-            message: Subscription has been deleted
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 410
-            message: Subscription has been deleted
-    DeletionReceived:
-      description: The deletion request has been received and will be processed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Success'
-          example:
-            deletion_id: 25
-            message: Deletion request was received and will be processed
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Success'
-          example:
-            deletion_id: 25
-            message: Deletion request was received and will be processed
-    DeletionResponse:
-      description: The object was successfully deleted
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Deletion'
-          examples:
-            Success:
-              value:
-                deletion_id: 25
-                status: SUCCESS
-                message: Subscription deleted successfully
-            Pending:
-              value:
-                deletion_id: 25
-                status: PENDING
-                message: Deletion is pending
-            Failure:
-              value:
-                deletion_id: 25
-                status: FAILURE
-                message: The deletion process encountered an error and was rolled backwas rolled back
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Deletion'
-          examples:
-            Success:
-              value:
-                deletion_id: 25
-                status: SUCCESS
-                message: Subscription deleted successfully
-            Pending:
-              value:
-                deletion_id: 25
-                status: PENDING
-                message: Deletion is pending
-            Failure:
-              value:
-                deletion_id: 25
-                status: FAILURE
-                message: The deletion process encountered an error and was rolled back
+  parameters:
+    Guid:
+      name: guid
+      in: path
+      required: true
+      description: The globally unique identifier (UUIDv5) of the subscription resource.
+      schema:
+        type: string
+        format: uuid
+        example: ce510f4d-9046-5590-846e-58619ab8b353
+
+    PageNumber:
+      name: page[number]
+      in: query
+      required: false
+      description: "The page of results to return (default: 1)."
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PageSize:
+      name: page[size]
+      in: query
+      required: false
+      description: "The number of results per page (default: 25, max: 100)."
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+
   schemas:
-    Error:
+    SubscriptionResponse:
       type: object
       properties:
-        code:
-          type: string
-        message:
-          type: string
-      required:
-        - code
-        - message
-    Success:
-      type: object
-      properties:
-        deletion_id:
-          type: number
-          format: integer
-        message:
-          type: string
-      required:
-        - code
-        - message
+        jsonapi:
+          type: object
+          properties:
+            version:
+              type: string
+              example: "1.1"
+        data:
+          type: object
+          required: [type, id, attributes, links]
+          properties:
+            type:
+              type: string
+              enum: [subscription]
+            id:
+              type: string
+              format: uuid
+              example: ce510f4d-9046-5590-846e-58619ab8b353
+            attributes:
+              type: object
+              properties:
+                feedUrl:
+                  type: string
+                  format: uri
+                  example: https://example.com/rss1
+                userSubscribedAt:
+                  type: string
+                  format: date-time
+                  example: 2025-08-24T16:00:00Z
+            links:
+              type: object
+              required: [self, unsubscribe]
+              properties:
+                self:
+                  type: string
+                  example: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                unsubscribe:
+                  type: object
+                  required: [href, method]
+                  properties:
+                    href:
+                      type: string
+                      example: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                    method:
+                      type: string
+                      enum: [DELETE]
+                      example: DELETE
+
     Subscription:
-      xml:
-        name: subscription
-      required:
-        - feed_url
-        - guid
-        - is_subscribed
+      type: object
+      required: [type, id, attributes, links]
+      properties:
+        type:
+          type: string
+          enum: [subscription]
+          example: subscription
+        id:
+          type: string
+          format: uuid
+          example: ce510f4d-9046-5590-846e-58619ab8b353
+        attributes:
+          type: object
+          properties:
+            feedUrl:
+              type: string
+              format: uri
+              example: https://example.com/rss1
+            userSubscribedAt:
+              type: string
+              format: date-time
+              example: 2025-08-24T16:00:00Z
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              example: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+            unsubscribe:
+              type: object
+              required: [href, method]
+              properties:
+                href:
+                  type: string
+                  example: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                method:
+                  type: string
+                  enum: [DELETE]
+                  example: DELETE
+
+    SingleSubscriptionResponse:
       type: object
       properties:
-        feed_url:
-          type: string
-          format: url
-        guid:
-          type: string
-          format: guid
-        is_subscribed:
-          type: boolean
-        subscription_changed:
-          type: string
-          format: date-time
-        new_guid:
-          type: string
-          format: guid
-        guid_changed:
-          type: string
-          format: date-time
-        deleted:
-          type: string
-          format: date-time
-      example:
-        feed_url: https://example.com/feed2
-        guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-        is_subscribed: true
-    NewSubscription:
-      xml:
-        name: success
-      required:
-        - feed_url
-        - guid
-        - is_subscribed
-        - subscription_changed
+        jsonapi:
+          type: object
+          properties:
+            version:
+              type: string
+              example: "1.1"
+        data:
+          $ref: "#/components/schemas/Subscription"
+
+    PaginationLinks:
       type: object
       properties:
-        feed_url:
+        self:
           type: string
-          format: url
-        guid:
+          example: /v1/subscriptions?page[number]=1&page[size]=2
+        first:
           type: string
-          format: guid
-        is_subscribed:
-          type: boolean
-        subscription_changed:
+          example: /v1/subscriptions?page[number]=1&page[size]=2
+        prev:
           type: string
-          format: date-time
-    FailedSubscription:
-      xml:
-        name: failure
-      required:
-        - feed_url
-        - message
-      type: object
-      properties:
-        feed_url:
+          nullable: true
+          example: null
+        next:
           type: string
-          format: url
-        message:
+          nullable: true
+          example: /v1/subscriptions?page[number]=2&page[size]=2
+        last:
           type: string
-    Subscriptions:
-      required:
-        - total
-        - page
-        - per_page
-        - subscriptions
-      xml:
-        name: subscriptions
+          example: /v1/subscriptions?page[number]=5&page[size]=2
+
+    PaginationMeta:
       type: object
       properties:
         total:
-          type: number
-        page:
-          type: number
-        per_page:
-          type: number
-        next:
-          type: string
-          format: url
-        previous:
-          type: string
-          format: url
-        subscriptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscription'
-      example:
-        total: 2
-        page: 1
-        per_page: 5
-        subscriptions:
-          - feed_url: https://example.com/rss1
-            guid: 31740ac6-e39d-49cd-9179-634bcecf4143
-            is_subscribed: true
-            guid_changed: 2022-09-21T10:25:32.411Z
-            new_guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-          - feed_url: https://example.com/rss2
-            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-            is_subscribed: false
-            subscription_changed: 2022-04-24T17:53:21.573Z
-            deleted: 2022-04-24T17:53:21.573Z
-    NewSubscriptions:
-      xml:
-        name: subscriptions
+          type: integer
+          example: 10
+
+    PaginatedSubscriptionResponse:
       type: object
       properties:
-        success:
+        jsonapi:
+          type: object
+          properties:
+            version:
+              type: string
+              example: "1.1"
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/NewSubscription'
-        failure:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedSubscription'
-      example:
-        success:
-          - feed_url: https://example.com/rss1
-            guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-          - feed_url: https://example.com/rss2
-            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-          - feed_url: https://example.com/rss3
-            guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-        failure:
-          - feed_url: example.com/rss4
-            message: No protocol present
-    FeedArray:
-      xml:
-        name: subscriptions
-      required:
-        - subscriptions
+            $ref: "#/components/schemas/Subscription"
+        links:
+          $ref: "#/components/schemas/PaginationLinks"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    AtomicOperationsRequest:
       type: object
+      required: ["atomic:operations"]
       properties:
-        subscriptions:
-          xml:
-            name: subscription
+        "atomic:operations":
           type: array
           items:
             type: object
-            required:
-              - feed_url
+            required: [op, data]
             properties:
-              feed_url:
+              op:
                 type: string
-              guid:
+                enum: [add]
+                example: add
+              data:
+                type: object
+                required: [type, attributes]
+                properties:
+                  type:
+                    type: string
+                    enum: [subscription]
+                    example: subscription
+                  id:
+                    type: string
+                    format: uuid
+                    example: b80719b3-1485-57c0-9e55-fda2b8f7472b
+                  attributes:
+                    type: object
+                    required: [feedUrl]
+                    properties:
+                      feedUrl:
+                        type: string
+                        format: uri
+                        example: https://example.com/rss2
+
+    AtomicOperationsResponse:
+      type: object
+      required: ["atomic:results"]
+      properties:
+        "atomic:results":
+          type: array
+          items:
+            oneOf:
+              - type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Subscription"
+              - type: object
+                required: [errors]
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ErrorResponse"
+
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required: [status, title]
+            properties:
+              status:
                 type: string
-          example:
-            - feed_url: https://example.com/feed1
-            - feed_url: https://example.com/feed2
-            - feed_url: https://example.com/feed3
-            - feed_url: example.com/feed4
-              guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-    SubscriptionUpdate:
-      xml:
-        name: subscription
-      type: object
-      minProperties: 1
-      properties:
-        new_feed_url:
-          type: string
-          format: url
-        new_guid:
-          type: string
-          format: uuid
-        is_subscribed:
-          type: boolean
-      example:
-        new_feed_url: https://example.com/rss5
-        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
-        is_subscribed: false
-    PatchedSubscription:
-      xml:
-        name: subscription
-      type: object
-      minProperties: 1
-      properties:
-        new_feed_url:
-          type: string
-          format: url
-        is_subscribed:
-          type: boolean
-        subscription_changed:
-          type: string
-          format: date-time
-        new_guid:
-          type: string
-          format: uuid
-        guid_changed:
-          type: string
-          format: date-time
-      example:
-        new_feed_url: https://example.com/rss5
-        is_subscribed: false
-        subscription_changed: 2023-02-23T14:41:00.000Z
-        guid_changed: 2023-02-23T14:41:00.000Z
-        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
-    Deletion:
-      xml:
-        name: deletion
-      required:
-        - deletion_id
-        - status
-      type: object
-      properties:
-        deletion_id:
-          type: number
-          format: integer
-        status:
-          type: string
-          enum:
-            - SUCCESS
-            - FAILURE
-            - PENDING
-        message:
-          type: string
-      example:
-        deletion_id: 25
-        status: SUCCESS
-        message: Subscription deleted successfully
-  requestBodies:
-    FeedArray:
-      description: An array of feeds the user wants to subscribe to
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/FeedArray'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/FeedArray'
-    PatchedSubscription:
-      description: A request containing new information to update an existing subscription with
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
-  securitySchemes:
-    podcast_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://test.openpodcastapi.com/oauth/authorize
-          scopes:
-            write:subscriptions: modify subscription information for your account
-            read:subscriptions: read your subscription information
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+                example: "404"
+              title:
+                type: string
+                example: "Subscription not found"
+              detail:
+                type: string
+                example: The requested subscription does not exist for the user.

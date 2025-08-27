@@ -28,6 +28,12 @@ export default defineConfig({
             base: "/reference/api",
             label: "API reference",
             schema: "./schema.yml",
+            sidebar: {
+              operations: {
+                badges: true,
+                labels: "operationId",
+              },
+            },
           },
         ]),
         starlightSidebarTopics([
