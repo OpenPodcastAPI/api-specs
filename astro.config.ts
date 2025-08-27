@@ -25,8 +25,8 @@ export default defineConfig({
       plugins: [
         starlightOpenAPI([
           {
-            base: "/explorer",
-            label: "API explorer",
+            base: "/reference/api",
+            label: "API reference",
             schema: "./schema.yml",
           },
         ]),
@@ -80,13 +80,16 @@ export default defineConfig({
           },
           {
             label: "Reference",
-            link: "/explorer",
+            link: "/reference",
+            id: "reference",
             icon: "laptop",
-            items: [
-              ...openAPISidebarGroups,
-            ],
+            items: ["reference", ...openAPISidebarGroups],
           },
-        ]),
+        ], {
+          topics: {
+            reference: ["/reference/api", "/reference/api/**/*"],
+          },
+        }),
       ],
     }),
   ],
