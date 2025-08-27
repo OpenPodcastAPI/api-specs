@@ -23,6 +23,29 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/PaginatedSubscriptionResponse"
+              example:
+                jsonapi:
+                  version: "1.1"
+                data:
+                  - type: subscription
+                    id: ce510f4d-9046-5590-846e-58619ab8b353
+                    attributes:
+                      feedUrl: https://example.com/rss1
+                      userSubscribedAt: 2025-08-24T16:00:00Z
+                    links:
+                      self: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                      unsubscribe:
+                        href: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                        method: DELETE
+                links:
+                  self: /v1/subscriptions?page[number]=1&page[size]=25
+                  first: /v1/subscriptions?page[number]=1&page[size]=25
+                  prev: null
+                  next: /v1/subscriptions?page[number]=2&page[size]=25
+                  last: /v1/subscriptions?page[number]=4&page[size]=25
+                meta:
+                  total: 100
+
     post:
       summary: Add a new subscription
       operationId: addSubscription
@@ -73,12 +96,42 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/SubscriptionResponse"
+              example:
+                jsonapi:
+                  version: "1.1"
+                data:
+                  type: subscription
+                  id: ce510f4d-9046-5590-846e-58619ab8b353
+                  attributes:
+                    feedUrl: https://example.com/rss1
+                    userSubscribedAt: 2025-08-24T16:00:00Z
+                  links:
+                    self: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                    unsubscribe:
+                      href: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                      method: DELETE
+
         "200":
           description: Subscription already existed; confirmed.
           content:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/SubscriptionResponse"
+              example:
+                jsonapi:
+                  version: "1.1"
+                data:
+                  type: subscription
+                  id: ce510f4d-9046-5590-846e-58619ab8b353
+                  attributes:
+                    feedUrl: https://example.com/rss1
+                    userSubscribedAt: 2025-08-24T16:00:00Z
+                  links:
+                    self: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                    unsubscribe:
+                      href: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                      method: DELETE
+
   /v1/subscriptions/{guid}:
     get:
       summary: Get a subscription
@@ -96,18 +149,45 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/SingleSubscriptionResponse"
+              example:
+                jsonapi:
+                  version: "1.1"
+                data:
+                  type: subscription
+                  id: ce510f4d-9046-5590-846e-58619ab8b353
+                  attributes:
+                    feedUrl: https://example.com/rss1
+                    userSubscribedAt: 2025-08-24T16:00:00Z
+                  links:
+                    self: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                    unsubscribe:
+                      href: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
+                      method: DELETE
+
         "400":
           description: The provided GUID is not a valid UUID.
           content:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errors:
+                  - status: "400"
+                    title: "Invalid GUID in request"
+                    detail: "The requested GUID is not a UUID value"
+
         "404":
           description: Subscription not found or inaccessible to the user.
           content:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errors:
+                  - status: "404"
+                    title: "Subscription not found"
+                    detail: "The requested subscription does not exist for the user."
+
     delete:
       summary: Delete a subscription
       operationId: deleteSubscription
@@ -139,8 +219,18 @@ paths:
                   - status: "400"
                     title: "Invalid GUID in request"
                     detail: "The requested GUID is not a UUID value"
+
         "404":
           description: Subscription not found for the authenticated user.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errors:
+                  - status: "404"
+                    title: "Subscription not found"
+                    detail: "The requested subscription does not exist for the user."
 
   /v1/operations:
     post:
@@ -164,6 +254,19 @@ paths:
             application/vnd.api+json;ext="https://jsonapi.org/ext/atomic":
               schema:
                 $ref: "#/components/schemas/AtomicOperationsResponse"
+              example:
+                atomic:results:
+                  - data:
+                      type: subscription
+                      id: b80719b3-1485-57c0-9e55-fda2b8f7472b
+                      attributes:
+                        feedUrl: https://example.com/rss2
+                        userSubscribedAt: 2025-08-27T12:00:00Z
+                      links:
+                        self: /v1/subscriptions/b80719b3-1485-57c0-9e55-fda2b8f7472b
+                        unsubscribe:
+                          href: /v1/subscriptions/b80719b3-1485-57c0-9e55-fda2b8f7472b
+                          method: DELETE
 
 components:
   parameters:
