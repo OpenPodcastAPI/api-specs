@@ -8,7 +8,6 @@ const LINK_URL = "https://www.iso.org/iso-8601-date-and-time-format.html";
 export function remarkAutoLinkISO() {
    return function (tree: Root) {
       visit(tree, TARGET_NODE_TYPES, (node, index, parent) => {
-         console.log(node);
          if (node.type !== "text" || !parent || typeof index !== "number") {
             return CONTINUE;
          }
