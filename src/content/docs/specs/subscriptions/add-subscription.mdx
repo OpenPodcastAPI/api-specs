@@ -25,8 +25,8 @@ The client **MUST** provide a single resource object with:
 
 ```http
 POST /v1/subscriptions HTTP/1.1
-Content-Type: application/vnd.api+json
-Accept: application/vnd.api+json
+Content-Type: application/vnd.api+json; profile="https://openpodcastapi.org/specs/profiles/subscription"
+Accept: application/vnd.api+json; profile="https://openpodcastapi.org/specs/profiles/subscription"
 
 {
   "data": {
@@ -70,10 +70,18 @@ The response **MUST** contain the following `links`.
 ```http
 HTTP/1.1 201 Created
 Location: /v1/subscriptions/ce510f4d-9046-5590-846e-58619ab8b353
-Content-Type: application/vnd.api+json
+Content-Type: application/vnd.api+json; profile="https://openpodcastapi.org/specs/profiles/subscription"; ext="https://openpodcastapi.org/specs/extensions/link-method"
 
 {
-  "jsonapi": { "version": "1.1" },
+  "jsonapi": {
+    "version": "1.1",
+    "ext": [
+      "https://openpodcastapi.org/specs/extensions/link-method"
+    ],
+    "profile": [
+      "https://openpodcastapi.org/specs/profiles/subscription"
+    ]
+  },
   "data": {
     "type": "subscription",
     "id": "ce510f4d-9046-5590-846e-58619ab8b353",
@@ -95,4 +103,4 @@ Content-Type: application/vnd.api+json
 ## Bulk operations
 
 Clients **MAY** use the [Atomic Operations extension](https://jsonapi.org/ext/atomic/) for batch creation or updates.
-See [Add subscriptions in bulk](../operations/bulk-create-subscriptions.md) for more information.
+See [Add subscriptions in bulk](/specs/operations/add-subscriptions) for more information.

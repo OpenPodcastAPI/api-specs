@@ -8,8 +8,10 @@ import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
 import starlightSidebarTopics from "starlight-sidebar-topics";
 import mermaid from "astro-mermaid";
 import { remarkAutoLinkISO } from "./plugins/remark-autolink-iso";
+import starlightLinksValidator from "starlight-links-validator";
 
 export default defineConfig({
+  site: "https://openpodcastapi.org",
   integrations: [
     mermaid(),
     starlight({
@@ -23,6 +25,7 @@ export default defineConfig({
         },
       ],
       plugins: [
+        starlightLinksValidator(),
         starlightOpenAPI([
           {
             base: "/reference/api",
