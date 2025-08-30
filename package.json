@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",
-    "astro": "^5.13.4",
+    "astro": "^5.13.5",
     "astro-mermaid": "^1.0.4",
     "mermaid": "^11.10.1",
     "remark-definition-list": "^2.0.0",
