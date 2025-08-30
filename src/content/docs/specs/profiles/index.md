@@ -19,4 +19,4 @@ Client and server developers **SHOULD** agree upon and understand each profile.
 
 ## Open Podcast API profiles
 
-- [Subscriptions](/specs/profiles/subscriptions)
+- [Subscriptions](/specs/profiles/subscription)
