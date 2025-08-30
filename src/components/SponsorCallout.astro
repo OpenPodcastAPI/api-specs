@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 
 interface Props {
   title: string;
@@ -9,15 +9,21 @@ interface Props {
 }
 
 const { title, sponsorName, logo, website } = Astro.props;
-
 ---
 
-<article class="sl-flex" aria-labelledby=`about-${sponsorName}-heading`}>
-  <small id=`about-${sponsorName}-heading`}>
+<article class="sl-flex" aria-labelledby={`about-${sponsorName}-heading`}>
+  <small id={`about-${sponsorName}-heading`}>
     {title}
-    <span class="sr-only">{ sponsorName }</span>
+    <span class="sr-only">{sponsorName}</span>
   </small>
-  <a href={website} target="_blank" rel="noreferrer"><Image src={logo} alt=`${sponsorName} logo`></a>
+  <a href={website} target="_blank" rel="noreferrer">
+    <Image
+      width={logo.width}
+      height={logo.height}
+      src={logo}
+      alt={`${sponsorName} logo`}
+    />
+  </a>
   <slot />
 </article>
 
