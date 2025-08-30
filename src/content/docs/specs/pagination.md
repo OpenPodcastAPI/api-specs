@@ -1,8 +1,9 @@
 ---
 title: Pagination
+description: Pagination enables clients to navigate result sets
+prev: false
+next: false
 ---
-
-# Pagination
 
 Clients **MAY** paginate resource collections using the `page` query parameter object.
 

@@ -5,18 +5,17 @@ prev: false
 sidebar:
   label: Overview
   order: 1
+banner:
+  content: |
+    This is a <b>core endpoint</b>. All server implementations MUST support it.
 ---
-
-import CoreEndpoint from "@partials/_core-endpoint.md";
-
-<CoreEndpoint />
 
 The `subscriptions` endpoint is used to synchronize subscriptions between a server and connected clients.
 
 ## What is a subscription?
 
-Subscriptions represent the relationship between **users** and **podcast feeds**.
-Each user may have many subscriptions, and each feed may have many subscribers.
+A subscription represents the relationship between a **user** and a **podcast feed**.
+Each user may have many **subscriptions**, and each feed may have many **subscribers**.
 
 Users may add and delete subscriptions at any time.
 Deleting a subscription **MUST NOT** result in the feed being removed.

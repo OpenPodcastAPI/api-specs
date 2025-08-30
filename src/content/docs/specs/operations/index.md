@@ -4,11 +4,10 @@ description: The operations endpoint allows clients to perform multiple resource
 prev: false
 sidebar:
   order: 1
+banner:
+  content: |
+    This is a <b>core endpoint</b>. All server implementations MUST support it.
 ---
-
-import CoreEndpoint from "@partials/_core-endpoint.md";
-
-<CoreEndpoint />
 
 The operations endpoint allows clients to perform multiple resource-level operations in a single, ordered request.
 It follows the [JSON:API Atomic Operations extension](https://jsonapi.org/ext/atomic/) and is intended for use cases where bulk writes or tightly ordered changes are needed.

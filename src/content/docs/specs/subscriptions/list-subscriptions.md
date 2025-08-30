@@ -3,11 +3,10 @@ title: List subscriptions
 description: List all subscriptions for a user
 sidebar:
   order: 3
+banner:
+  content: |
+    This is a <b>core action</b>. All server implementations MUST support it.
 ---
-
-import CoreAction from "@partials/_core-action.md";
-
-<CoreAction />
 
 Retrieves a paginated list of podcast subscriptions associated with the authenticated user.
 

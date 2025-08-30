@@ -21,4 +21,3 @@ The following headers apply to all requests and responses:
 | -------------- | -------------------------- | ----------------------------------------------------------------------------- |
 | `Content-Type` | `application/vnd.api+json` | **MUST** be present in all JSON:API responses.                                |
 | `Location`     | URI of created resource    | **MUST** be included in `201 Created` responses to identify the new resource. |
-

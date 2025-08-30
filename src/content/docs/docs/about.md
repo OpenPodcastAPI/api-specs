@@ -1,8 +1,6 @@
 ---
 title: Project overview
 description: An introduction to the Open Podcast API project
-sidebar:
-  order: 1
 ---
 
 The Open Podcast API project is inspired by and builds upon the [gPodder API](https://gpoddernet.readthedocs.io/en/latest/api/index.html). In the summer of 2019, the creator of gPodder announced they were stepping down and the community took over.[^1] Unfortunately, about a year later the project entered 'basic maintenance mode' due to shifting priorities of key contributors. The limited availability of volunteers combined with gPodder.net's popularity among end-users meant that people started to see server errors while synchronizing or creating an account.[^2] [^3] Attempts to establish contact and collaborate on improving the situation didn't work out as hoped. Given the situation, AntennaPod contributors started discussing whether gPodder.net support should be removed[^4] or whether it could be forked. They concluded that the best solution would be to create a new API spec with a broad range of contributors to allow users to switch servers (avoiding major loads on a single server or project), to provide an opportunity to more easily go beyond the existing gPodder.net API specs, and to enable developers to address some technical issues with the API specs.

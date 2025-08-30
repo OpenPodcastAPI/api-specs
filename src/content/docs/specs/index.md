@@ -7,12 +7,11 @@ tableOfContents: false
 sidebar:
   label: Overview
   order: 1
+banner:
+  content: |
+    All specifications are currently "in progress".
+    Breaking changes can occur as we implement specifications and address issues.
 ---
-
-:::caution[Important]
-All specifications are currently 'in progress'.
-Breaking changes can occur as we implement specifications and address issues.
-:::
 
 Below you can find the specifications which are already available.
 We encourage all interested projects offering podcast listening and/or synchronization functionality to adopt and implement defined specifications.

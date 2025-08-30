@@ -3,11 +3,10 @@ title: Bulk add subscriptions
 description: Create multiple subscription resource in a single request
 sidebar:
   order: 2
+banner:
+  content: |
+    This is a <b>core action</b>. All server implementations MUST support it.
 ---
-
-import CoreAction from "@partials/_core-action.md";
-
-<CoreAction />
 
 ```http
 POST /v1/operations

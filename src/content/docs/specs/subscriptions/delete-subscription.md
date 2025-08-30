@@ -3,11 +3,10 @@ title: Delete a subscription
 description: Delete a subscription for the authenticated user
 sidebar:
   order: 5
+banner:
+  content: |
+    This is a <b>core action</b>. All server implementations MUST support it.
 ---
-
-import CoreAction from "@partials/_core-action.md";
-
-<CoreAction />
 
 Enables clients to remove a subscription for the authenticated user by `guid`.
 

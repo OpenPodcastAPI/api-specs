@@ -14,6 +14,9 @@ sidebar:
 **Status**  
 : Draft
 
+**Namespace**
+: `linkmethod`
+
 **Purpose:**  
 This extension allows `link` objects in JSON:API documents to explicitly declare the HTTP method supported by a link.  
 
@@ -29,7 +32,7 @@ This extension allows the use of an additional `method` member within any [link 
       "self": "/v1/subscriptions/abc",
       "delete": {
          "href": "/v1/subscriptions/abc",
-         "method": "DELETE"
+         "linkext:method": "DELETE"
       }
    }
 }

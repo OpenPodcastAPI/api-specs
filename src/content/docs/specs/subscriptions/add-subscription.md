@@ -3,11 +3,10 @@ title: Add a subscription
 description: Add a subscription
 sidebar:
   order: 2
+banner:
+  content: |
+    This is a <b>core action</b>. All server implementations MUST support it.
 ---
-
-import CoreAction from "@partials/_core-action.md";
-
-<CoreAction />
 
 Enables clients to add a new subscription to the system and register the authenticated user as a subscriber.
 

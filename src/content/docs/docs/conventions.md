@@ -3,11 +3,6 @@ title: Conventions
 description: This document outlines the design conventions and constraints that guide all specifications.
 ---
 
-:::note
-All specifications are currently 'in progress'.
-Breaking changes can occur as we implement specifications and address issues.
-:::
-
 This document outlines the design conventions and constraints that guide all specifications.
 It exists to ensure a consistent, evolvable API surface and reduce the need for breaking changes in the future.
 

@@ -97,4 +97,3 @@ All error responses **MUST** return an array of error objects using the format d
 
 - `source.pointer`: a JSON Pointer to the part of the request that caused the error
 - `meta`: additional non-standard metadata useful for debugging or client-side handling
-

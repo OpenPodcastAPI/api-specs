@@ -3,11 +3,10 @@ title: Get a single subscription
 description: Get a single subscription for a user
 sidebar:
   order: 4
+banner:
+  content: |
+    This is a <b>core action</b>. All server implementations MUST support it.
 ---
-
-import CoreAction from "@partials/_core-action.md";
-
-<CoreAction />
 
 Enables clients to fetch a single subscription resource by its globally unique `guid`.
 
