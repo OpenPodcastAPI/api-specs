@@ -46,6 +46,10 @@ export default defineConfig({
               link: "specs",
             },
             {
+              label: "UUID namespaces",
+              link: "specs/namespaces",
+            },
+            {
               label: "Subscriptions",
               collapsed: true,
               autogenerate: {
