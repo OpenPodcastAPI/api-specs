@@ -13,6 +13,9 @@ export default defineConfig({
     starlight({
       title: "Open Podcast API",
       favicon: "favicon.ico",
+      customCss: [
+        './src/styles/custom.css',
+      ],
       social: [
         {
           icon: "github",
@@ -47,9 +50,24 @@ export default defineConfig({
             },
             {
               label: "Subscriptions",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
               collapsed: true,
               autogenerate: {
                 directory: "specs/subscriptions",
+              },
+            },
+            {
+              label: "Episodes",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
+              collapsed: true,
+              autogenerate: {
+                directory: "specs/episodes",
               },
             },
           ],
@@ -68,7 +86,9 @@ export default defineConfig({
             "TabItem",
           ],
         },
-        "src/components/SponsorCallout.astro"
+        "src/components/SponsorCallout.astro",
+        "src/components/BadgeOptional.astro",
+        "src/components/BadgeCore.astro"
       ],
     }),
   ],
