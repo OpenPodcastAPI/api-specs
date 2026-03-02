@@ -46,6 +46,13 @@ export default defineConfig({
               link: "specs",
             },
             {
+              label: "Capabilities",
+              collapsed: true,
+              autogenerate: {
+                directory: "specs/capabilities",
+              },
+            },
+            {
               label: "Subscriptions",
               collapsed: true,
               autogenerate: {
