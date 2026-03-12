@@ -9,8 +9,8 @@
     "preview": "astro preview",
     "astro": "astro"
   },  "dependencies": {
-    "@astrojs/starlight": "^0.37.7",
-    "astro": "^5.18.0",
+    "@astrojs/starlight": "^0.38.1",
+    "astro": "^5.18.1",
     "astro-auto-import": "^0.5.1",
     "remark-definition-list": "^2.0.0",
     "sharp": "^0.34.5",
