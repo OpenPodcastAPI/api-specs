@@ -8,12 +8,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
-  },  "dependencies": {
+  },
+  "dependencies": {
     "@astrojs/starlight": "^0.38.1",
-    "astro": "^5.18.1",
+    "astro": "^6.0.4",
     "astro-auto-import": "^0.5.1",
     "remark-definition-list": "^2.0.0",
     "sharp": "^0.34.5",
-    "starlight-openapi": "^0.22.0"
+    "starlight-openapi": "^0.23.1"
   }
 }
