@@ -50,7 +50,8 @@ User
 Feed
 : A shared resource representing a podcast feed.
 
-Subscription: A user-owned resource containing details about a User's subscription to a Feed.
+Subscription
+: A user-owned resource containing details about a User's subscription to a Feed.
 
 Action
 : An operation performed against a subscription resource.
