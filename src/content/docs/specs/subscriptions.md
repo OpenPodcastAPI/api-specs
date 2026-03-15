@@ -91,7 +91,7 @@ This document does not define:
 * Feed metadata ingestion
 * Client user interface behavior
 
-## 5. System Architecture
+## 5. System architecture
 
 ### 5.1 Overview
 
@@ -100,13 +100,13 @@ The system consists of:
 * Client devices
 * An HTTP API server
 
-### 5.2 Offline Operation
+### 5.2 Offline operation
 
 Clients MAY operate without network connectivity and queue actions locally.
 
 Queued actions MUST be transmitted to the server when connectivity is restored.
 
-### 5.3 Synchronization Model
+### 5.3 Synchronization model
 
 Synchronization is based on an append-only action log.
 
