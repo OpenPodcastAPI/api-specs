@@ -1,6 +1,15 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+<<<<<<< HEAD:astro.config.ts
 import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
+=======
+import AutoImport from "astro-auto-import";
+import {
+  remarkDefinitionList,
+  defListHastHandlers,
+} from "remark-definition-list";
+import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
+>>>>>>> ef160ed (Add missing files):astro.config.mjs
 
 export default defineConfig({
   integrations: [
@@ -19,11 +28,16 @@ export default defineConfig({
           {
             base: "/explorer",
             schema: "./schema.yml",
+<<<<<<< HEAD:astro.config.ts
 	    sidebar: {
 	      label: "API explorer",
 	    }
           }
         ])
+=======
+          },
+        ]),
+>>>>>>> ef160ed (Add missing files):astro.config.mjs
       ],
       sidebar: [
         {
@@ -36,6 +50,7 @@ export default defineConfig({
         },
         {
           label: "Specifications",
+<<<<<<< HEAD:astro.config.ts
           items: [
             {
               label: "Introduction",
@@ -53,6 +68,27 @@ export default defineConfig({
           ],
         },
 	...openAPISidebarGroups,
+=======
+          autogenerate: {
+            directory: "specs",
+          },
+        },
+        ...openAPISidebarGroups,
+      ],
+    }),
+    AutoImport({
+      imports: [
+        {
+          "@astrojs/starlight/components": [
+            "Card",
+            "CardGrid",
+            "LinkCard",
+            "Tabs",
+            "TabItem",
+          ],
+        },
+        "src/components/SponsorCallout.astro",
+>>>>>>> ef160ed (Add missing files):astro.config.mjs
       ],
     }),
   ],
