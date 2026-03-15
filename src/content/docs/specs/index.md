@@ -28,5 +28,5 @@ Optional
 
 ## 3. Core endpoints
 
-- [Subscriptions](./subscriptions)
+- [Subscriptions](/specs/subscriptions)
 
