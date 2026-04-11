@@ -26,7 +26,7 @@ The `subscriptions` endpoint is designed to give clients a simple interface for 
 
 ## 2. Motivation
 
-The Podcast 2.0 specification presents developers with stable identifiers (`podcast:guid`), which are UUIDv5 values that can be calculated from the feed URL using a standard-supplied namespace. However, the original podcast specification makes no such guarantees. This makes implementing cross-device synchronization difficult, as developers need to use unstable fields to determine which feed is being targeted.
+The Podcasting 2.0 specification presents developers with stable identifiers (`podcast:guid`), which are UUIDv5 values that can be calculated from the feed URL using a standard-supplied namespace. However, the original podcast specification makes no such guarantees. This makes implementing cross-device synchronization difficult, as developers need to use unstable fields to determine which feed is being targeted.
 
 To resolve this, the Open Podcast API makes use of the same deterministic UUID resolution outlined in the Podcast Index documentation[^1] and requires Clients to provide a calculated UUID value with every feed.
 
@@ -610,7 +610,7 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
 }
 ```
 
-[^1]: https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/guid.md
+[^1]: https://podcasting2.org/docs/podcast-namespace/tags/guid
 [^2]: https://www.rfc-editor.org/rfc/rfc2119
 [^3]: https://www.rfc-editor.org/rfc/rfc3339
 [^4]: https://www.rfc-editor.org/rfc/rfc9562
