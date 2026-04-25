@@ -170,21 +170,21 @@ This endpoint supports the submission of `actions` for Subscriptions. Each `acti
 
 Each object in a request payload MUST reference an `action`. The supported actions for this endpoint are:
 
-`create`
+`subscribe`
 : Create a new subscription for the authenticated User and the referenced Feed
 
-`update`
-: Update the subscription details for an authenticated User and a referenced Feed
+`unsubscribe`
+: Mark a subscription as unsubscribed for the authenticated User and a referenced Feed
 
 ### 7.4 Response statuses
 
 Each handled item in a POST request to this endpoint MUST be returned in the response. To inform the Client, each object MUST contain a `status` field matching the following enumerable values:
 
-`created`
+`subscribed`
 : The subscription was created successfully
 
-`updated`
-: The subscription was updated successfully
+`unsubscribed`
+: The subscription was updated and marked as unsubscribed
 
 `conflict`
 : A subscription for the requesting User to the provided Feed exists already
@@ -295,7 +295,7 @@ For each Subscription:
       // Subscribe to a feed
       {
          "uuid": "329e6b8f-a540-4c6e-9ba0-2996e0352736",
-         "action": "create",
+         "action": "subscribe",
          "feed": {
             "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
             "feed_url": "https://example.com/feed1.rss/"
@@ -308,20 +308,20 @@ For each Subscription:
       // Resubscribe to a feed
       {
          "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "action": "update",
+         "action": "subscribe",
          "feed": {
             "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
             "feed_url": "https://example.com/feed2.rss/"
          },
          "data": {
-            "unsubscribed_at": null
+            "subscribed_at": "2026-03-16T05:20:48.000Z"
          }
       },
 
       // Unsubscribe from a feed
       {
          "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "action": "update",
+         "action": "unsubcribe",
          "feed": {
             "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
             "feed_url": "https://example.com/feed3.rss/"
@@ -347,7 +347,7 @@ For each Subscription:
       // Invalid feed UUID
       {
          "uuid": "4c92e4d0-ba1a-497c-83d8-b0c469d4e1be",
-         "action": "create",
+         "action": "subscribe",
          "feed": {
             "uuid": "not-a-uuid",
             "feed_url": "https://example.com/feed5.rss/"
@@ -365,7 +365,7 @@ For each Subscription:
    "data": [
       {
          "uuid": "4790ba1b-1d4e-5f24-886e-7359eb98d52d",
-         "status": "created",
+         "status": "subscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
@@ -379,7 +379,7 @@ For each Subscription:
       },
       {
          "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "status": "updated",
+         "status": "subscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
@@ -393,7 +393,7 @@ For each Subscription:
       },
       {
          "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "status": "updated",
+         "status": "unsubscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
@@ -494,7 +494,7 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
    "data": [
       {
          "uuid": "4790ba1b-1d4e-5f24-886e-7359eb98d52d",
-         "status": "created",
+         "status": "subscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
@@ -508,7 +508,7 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
       },
       {
          "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "status": "updated",
+         "status": "unsubscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
@@ -522,7 +522,7 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
       },
       {
          "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "status": "updated",
+         "status": "unsubscribed",
          "received": "2026-03-16T06:05:02:000Z",
          "feed": {
             "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
