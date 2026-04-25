@@ -12,6 +12,8 @@ banner:
 
 Subscriptions represent the relationship between a user and a podcast feed.
 
+See [conventions](/specs#2-conventions) for an overview of conventions used in this document.
+
 ## 1. Introduction
 
 Subscriptions are at the heart of the Open Podcast API. They represent which feeds a user has subscribed to, both presently and historically.
@@ -30,52 +32,7 @@ The Podcasting 2.0 specification presents developers with stable identifiers (`p
 
 To resolve this, the Open Podcast API makes use of the same deterministic UUID resolution outlined in the Podcast Index documentation[^1] and requires Clients to provide a calculated UUID value with every feed.
 
-## 3. Conventions used in this document
-
-### 3.1 Normative language 
-
-The key words "MUST", "MUST NOT", "SHOULD", "SHOULD NOT", and "MAY" in this document are to be interpreted as described in RFC 2119[^2].
-
-The following terms are also used throughout this document:
-
-Client
-: Software that sends HTTP requests to a conforming server.
-
-Server
-: An implementation that exposes the endpoints defined in this specification.
-
-User
-: The authenticated principal performing requests.
-
-Feed
-: A shared resource representing a podcast feed.
-
-Subscription
-: A user-owned resource containing details about a User's subscription to a Feed.
-
-Action
-: An operation performed against a subscription resource.
-
-Cursor
-: An opaque token used to resume synchronization.
-
-### 3.2 Timestamp format
-
-Timestamps MUST be conform to RFC 3339[^3] and be submitted in UTC.
-
-### 3.3 Data Serialization
-
-All request and response bodies MUST be encoded as UTF-8 JSON.
-
-### 3.4 Identifier formats
-
-This specification uses the following identifier formats:
-
-* UUID version 4 for client identifiers as defined in RFC 9562[^4]
-* UUID version 5 for deterministic resource identifiers as defined in RFC 9562[^4]
-* Base64 encoding for cursors
-
-## 4. Scope
+## 3. Scope
 
 This specification defines:
 
@@ -91,28 +48,28 @@ This document does not define:
 * Feed metadata ingestion
 * Client user interface behavior
 
-## 5. System architecture
+## 4. System architecture
 
-### 5.1 Overview
+### 4.1 Overview
 
 The system consists of:
 
 * Client devices
 * An HTTP API server
 
-### 5.2 Offline operation
+### 4.2 Offline operation
 
 Clients MAY operate without network connectivity and queue actions locally.
 
 Queued actions MUST be transmitted to the server when connectivity is restored.
 
-### 5.3 Synchronization model
+### 4.3 Synchronization model
 
 Synchronization is based on an append-only action log.
 
 Clients retrieve new actions using a cursor-based incremental synchronization mechanism.
 
-## 6. UUID calculation
+## 5. UUID calculation
 
 Feeds are identified using **deterministic UUIDv5 identifiers** derived from podcast feed URLs. 
 Clients MUST provide a valid UUIDv5 identifier for all feed objects.
@@ -128,7 +85,7 @@ To calculate the UUID value, the client MUST do the following:
 
 See the Podcast Index's `Guid` documentation for more information.[^1]
 
-### 6.1 Example
+### 5.1 Example
 
 ```py
 import uuid
@@ -142,7 +99,7 @@ def calculate_uuid(feed_url):
 
 Running the above example with the feed URL `"https://podnews.net/rss/"` will yield `9b024349-ccf0-5f69-a609-6b82873eab3c`.
 
-## 7. Subscription status
+## 6. Subscription status
 
 Subscriptions are considered valid even if the User has unsubscribed from the feed. Unsubscribing is a **non-destructive** action that leaves the subscription entry intact.
 
@@ -153,9 +110,9 @@ A User is "subscribed" to a Feed when they:
 
 Clients may submit an `update` to a Subscription with a null `unsubscribed_at` timestamp to resubscribe a user to a feed.
 
-## 7. Resource models
+## 6. Resource models
 
-### 7.1 Feed
+### 6.1 Feed
 
 A Feed represents a shared logical resource corresponding to a podcast RSS feed. Feeds are uniquely identified by a deterministic UUID derived from the normalized feed URL and a podcast namespace UUID.
 
@@ -170,7 +127,7 @@ A Feed resource MAY exist independently of any Subscriptions but MAY also be cre
 | `created_at` | string (RFC3339) | Yes      | Server-authoritative creation UTC timestamp                 |
 | `updated_at` | string (RFC3339) | Yes      | Server-authoritative update UTC timestamp                   |
 
-### 8.2 Subscription
+### 6.2 Subscription
 
 A Subscription represents a user's subscription to a given Feed.
 
@@ -195,9 +152,9 @@ Clients do not directly access Subscription identifiers. Subscriptions are acces
 
 Normative rule: `created_at` and `updated_at` are managed by the server. Clients MAY supply `subscribed_at` and `unsubscribed_at` in requests but it doesn't override the server’s canonical timestamps.
 
-## 8. Client action submission
+## 7. Client action submission
 
-### 8.1 Endpoint
+### 7.1 Endpoint
 
 ```http
 POST /api/v1/subscriptions
@@ -205,11 +162,11 @@ POST /api/v1/subscriptions
 
 Clients use this endpoint to submit subscription actions.
 
-### 8.2 Purpose
+### 7.2 Purpose
 
 This endpoint supports the submission of `actions` for Subscriptions. Each `action` MUST reference a Feed.
 
-### 8.3 Supported actions
+### 7.3 Supported actions
 
 Each object in a request payload MUST reference an `action`. The supported actions for this endpoint are:
 
@@ -219,7 +176,7 @@ Each object in a request payload MUST reference an `action`. The supported actio
 `update`
 : Update the subscription details for an authenticated User and a referenced Feed
 
-### 8.4 Response statuses
+### 7.4 Response statuses
 
 Each handled item in a POST request to this endpoint MUST be returned in the response. To inform the Client, each object MUST contain a `status` field matching the following enumerable values:
 
@@ -247,7 +204,7 @@ Each handled item in a POST request to this endpoint MUST be returned in the res
 `transient_server_error`
 : The Server could not perform the update due to a transient issue such as database connection issues
 
-### 8.5 Request format
+### 7.5 Request format
 
 Requests sent to this endpoint MUST conform to the following:
 
@@ -269,7 +226,7 @@ Servers MUST immediately reject any invalid payload with a `400` response.
 | `data[].data.unsubscribed_at` | string (RFC3339) or null | No       | The UTC timestamp at which the user unsubscribed from the feed                         |
 
 
-### 8.6 Response format
+### 7.6 Response format
 
 If all fields in the request payload are valid, the Server MUST respond with a `202` status and return a payload with an object corresponding to each `action` submitted.
 
@@ -288,7 +245,7 @@ If all fields in the request payload are valid, the Server MUST respond with a `
 | `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
 | `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
 
-### 8.7 Client behavior
+### 7.7 Client behavior
 
 The Client MUST follow these rules when submitting a request to this endpoint:
 
@@ -302,7 +259,7 @@ The Client MUST follow these rules when submitting a request to this endpoint:
 1. The Client MUST NOT retry items that failed with a status of `malformed_feed_url`.
 1. The Client MAY use the `updated_at` timestamp of the Subscription to communicate to a user when the subscription was made active again.
 
-### 8.8 Server behavior
+### 7.8 Server behavior
 
 The Server MUST keep all action requests in a centralized append-only log format. The Server MAY compact this data to retain only the latest action of a given type.
 
@@ -330,7 +287,7 @@ For each Subscription:
 1. The Server SHOULD generate a `subscribed_at` timestamp matching the `created_at` timestamp if no `subscribed_at` field is received in the creation payload.
 1. The Server MUST NOT add an `unsubscribed_at` timestamp unless one is sent by the Client.
 
-### 8.9 Example
+### 7.9 Example
 
 ```jsonc title="Request"
 {
@@ -463,9 +420,9 @@ For each Subscription:
 }
 ```
 
-## 9. Synchronization
+## 8. Synchronization
 
-### 9.1 Endpoint
+### 8.1 Endpoint
 
 ```http /[\\?\&](.*?)\=/
 GET /api/v1/subscriptions?cursor={cursor}&page_size=30&direction={direction}&include_errors=false
@@ -473,11 +430,11 @@ GET /api/v1/subscriptions?cursor={cursor}&page_size=30&direction={direction}&inc
 
 Clients use this endpoint to request actions that have been submitted to the server since the provided `cursor`.
 
-### 9.2 Purpose
+### 8.2 Purpose
 
 This endpoint returns a list of valid and applied actions taken on an authenticated principal's Subscriptions. Clients may use this endpoint to fetch a list of updates to Subscriptions since they last came online.
 
-### 9.3 Request parameters
+### 8.3 Request parameters
 
 | Parameter        | Type    | In    | Required | Description                                                                          |
 | ---------------- | ------  | ----- | -------- | ------------------------------------------------------------------------------------ | 
@@ -486,7 +443,7 @@ This endpoint returns a list of valid and applied actions taken on an authentica
 | `direction`      | string  | Query | No       | The direction in which to search for results. `ascending` (default) or `descending`. | 
 | `include_errors` | boolean | Query | No       | Whether to include invalid actions (default `false`)                                 |
 
-### 9.4 Response format
+### 8.4 Response format
 
 The Server MUST respond to valid requests with a `200` status.
 
@@ -508,12 +465,12 @@ The Server MUST respond to valid requests with a `200` status.
 | `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
 | `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
 
-### 9.5 Client behavior
+### 8.5 Client behavior
 
 1. The Client MAY provide any combination of supported query parameters, or none.
 1. The Client SHOULD compare results in the response against its internal state to resolve the latest state of the User's Subscriptions.
 
-### 9.6 Server behavior
+### 8.6 Server behavior
 
 1. The Server MUST return a `400` error if the request contains invalid query parameters.
 1. The Server MUST calculate and encode a cursor value for the given request using the provided parameters, or default parameters.
@@ -526,7 +483,7 @@ The Server MUST respond to valid requests with a `200` status.
 1. The Server SHOULD set sensible default values for any parameters whose default is not explicitly stated in this document.
 1. The Server MUST return **at most** the number of results specified in the `page_size` parameter.
 
-### 9.7 Example
+### 8.7 Example
 
 ```sh
 curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
@@ -595,6 +552,4 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
 ```
 
 [^1]: https://podcasting2.org/docs/podcast-namespace/tags/guid
-[^2]: https://www.rfc-editor.org/rfc/rfc2119
-[^3]: https://www.rfc-editor.org/rfc/rfc3339
-[^4]: https://www.rfc-editor.org/rfc/rfc9562
+
