@@ -163,12 +163,12 @@ A Feed resource MAY exist independently of any Subscriptions but MAY also be cre
 
 #### Fields
 
-| Field        | Type             | Required | Description                                             |
-| ------------ | ---------------- | -------- | ------------------------------------------------------- |
-| `uuid`       | UUID             | Yes      | Deterministic identifier for the feed                   |
-| `feed_url`   | string           | Yes      | The RSS feed's canonical URL used to calculate the UUID |
-| `created_at` | string (RFC3339) | Yes      | Server-authoritative creation timestamp                 |
-| `updated_at` | string (RFC3339) | Yes      | Server-authoritative update timestamp                   |
+| Field        | Type             | Required | Description                                                 |
+| ------------ | ---------------- | -------- | ----------------------------------------------------------- |
+| `uuid`       | UUID             | Yes      | Deterministic identifier for the feed                       |
+| `feed_url`   | string           | Yes      | The RSS feed's canonical URL used to calculate the UUID     |
+| `created_at` | string (RFC3339) | Yes      | Server-authoritative creation UTC timestamp                 |
+| `updated_at` | string (RFC3339) | Yes      | Server-authoritative update UTC timestamp                   |
 
 ### 8.2 Subscription
 
@@ -186,12 +186,12 @@ Clients do not directly access Subscription identifiers. Subscriptions are acces
 
 #### Fields
 
-| Field             | Type             | Required | Description                                                                                      |
-| ----------------- | ---------------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `subscribed_at`   | string (RFC3339) | Yes      | Client-provided subscription timestamp, if submitted. Implicitly created by the server if absent |
-| `unsubscribed_at` | string (RFC3339) | No       | Client-provided unsubscription timestamp, if submitted.                                          |
-| `created_at`      | string (RFC3339) | Yes      | Server-authoritative creation timestamp                                                          |
-| `updated_at`      | string (RFC3339) | Yes      | Server-authoritative update timestamp                                                            |
+| Field             | Type             | Required | Description                                                                                          |
+| ----------------- | ---------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `subscribed_at`   | string (RFC3339) | Yes      | Client-provided subscription UTC timestamp, if submitted. Implicitly created by the server if absent |
+| `unsubscribed_at` | string (RFC3339) | No       | Client-provided unsubscribe UTC timestamp, if submitted.                                             |
+| `created_at`      | string (RFC3339) | Yes      | Server-authoritative creation UTC timestamp                                                          |
+| `updated_at`      | string (RFC3339) | Yes      | Server-authoritative update UTC timestamp                                                            |
 
 Normative rule: `created_at` and `updated_at` are managed by the server. Clients MAY supply `subscribed_at` and `unsubscribed_at` in requests but it doesn't override the server’s canonical timestamps.
 
@@ -256,39 +256,39 @@ Requests sent to this endpoint MUST conform to the following:
 
 Servers MUST immediately reject any invalid payload with a `400` response.
 
-| Field                         | Type                     | Required | Description                                                                        |
-| ----------------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------- |
-| `data`                        | array                    | Yes      | The array of data submitted to the server                                          |
-| `data.uuid`                   | UUID                     | Yes      | The Client-generated UUIDv4 identifier for the action                              |
-| `data[].action`               | string                   | Yes      | The [supported action](#83-supported-actions) being taken against the subscription |
-| `data[].feed`                 | object                   | Yes      | Details about the Feed that the subscription targets                               |
-| `data[].feed.uuid`            | UUID                     | Yes      | The calculated UUIDv5 identifier for the Feed                                      |
-| `data[].feed.feed_url`        | string                   | Yes      | The canonical URL of the feed RSS file                                             |
-| `data[].data`                 | object                   | Yes      | The data object containing subscription information with **at least one** value    |
-| `data[].data.subscribed_at`   | string (RFC3339)         | No       | The timestamp at which the subscription was created                                |
-| `data[].data.unsubscribed_at` | string (RFC3339) or null | No       | The timestamp at which the user unsubscribed from the feed                         |
+| Field                         | Type                     | Required | Description                                                                            |
+| ----------------------------- | ------------------------ | -------- | -------------------------------------------------------------------------------------- |
+| `data`                        | array                    | Yes      | The array of data submitted to the server                                              |
+| `data.uuid`                   | UUID                     | Yes      | The Client-generated UUIDv4 identifier for the action                                  |
+| `data[].action`               | string                   | Yes      | The [supported action](#83-supported-actions) being taken against the subscription     |
+| `data[].feed`                 | object                   | Yes      | Details about the Feed that the subscription targets                                   |
+| `data[].feed.uuid`            | UUID                     | Yes      | The calculated UUIDv5 identifier for the Feed                                          |
+| `data[].feed.feed_url`        | string                   | Yes      | The canonical URL of the feed RSS file                                                 |
+| `data[].data`                 | object                   | Yes      | The data object containing subscription information with **at least one** value        |
+| `data[].data.subscribed_at`   | string (RFC3339)         | No       | The UTC timestamp at which the subscription was created                                |
+| `data[].data.unsubscribed_at` | string (RFC3339) or null | No       | The UTC timestamp at which the user unsubscribed from the feed                         |
 
 
 ### 8.6 Response format
 
 If all fields in the request payload are valid, the Server MUST respond with a `202` status and return a payload with an object corresponding to each `action` submitted.
 
-| Field                                   | Type             | Required | Description                                                             |
-| --------------------------------------- | ---------------- | -------- | ----------------------------------------------------------------------- |
-| `data`                                  | array            | Yes      | The array of response objects                                           |
-| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                   |
-| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)       |
-| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative timestamp at which the request was received    |
-| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                 |
-| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                           |
-| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                  |
-| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation timestamp for the Feed entity         |
-| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update timestamp for the Feed entity      |
-| `data[].subscription`                   | object           | No       | The Subscription entity                                                 |
-| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation timestamp for the Subscription entity |
-| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update timestamp for the Subscription entity   |
+| Field                                   | Type             | Required | Description                                                                 |
+| --------------------------------------- | ---------------- | -------- | --------------------------------------------------------------------------- |
+| `data`                                  | array            | Yes      | The array of response objects                                               |
+| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                       |
+| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)           |
+| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative UTC timestamp at which the request was received    |
+| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
+| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
+| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
+| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Feed entity         |
+| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update UTC timestamp for the Feed entity      |
+| `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
+| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
+| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
+| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
+| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
 
 ### 8.7 Client behavior
 
@@ -498,25 +498,25 @@ This endpoint returns a list of valid and applied actions taken on an authentica
 
 The Server MUST respond to valid requests with a `200` status.
 
-| Field                                   | Type             | Required | Description                                                             |
-| --------------------------------------- | ---------------- | -------- | ----------------------------------------------------------------------- |
-| `next_cursor`                           | string           | No       | The Base64-encoded cursor for the next page of results                  |
-| `prev_cursor`                           | string           | Yes      | The Base64-encoded cursor for the current page of results               |
-| `has_next`                              | boolean          | No       | Whether there are more results for the given request                    |
-| `data`                                  | array            | Yes      | The array of response objects                                           |
-| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                   |
-| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)       |
-| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative timestamp at which the request was received    |
-| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                 |
-| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                           |
-| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                  |
-| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation timestamp for the Feed entity         |
-| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update timestamp for the Feed entity      |
-| `data[].subscription`                   | object           | No       | The Subscription entity                                                 |
-| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation timestamp for the Subscription entity |
-| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update timestamp for the Subscription entity   |
+| Field                                   | Type             | Required | Description                                                                 |
+| --------------------------------------- | ---------------- | -------- | --------------------------------------------------------------------------- |
+| `next_cursor`                           | string           | No       | The Base64-encoded cursor for the next page of results                      |
+| `prev_cursor`                           | string           | Yes      | The Base64-encoded cursor for the current page of results                   |
+| `has_next`                              | boolean          | No       | Whether there are more results for the given request                        |
+| `data`                                  | array            | Yes      | The array of response objects                                               |
+| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                       |
+| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)           |
+| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative UTC timestamp at which the request was received    |
+| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
+| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
+| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
+| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Feed entity         |
+| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update UTC timestamp for the Feed entity      |
+| `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
+| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
+| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
+| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
+| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
 
 ### 9.5 Client behavior
 
