@@ -525,7 +525,7 @@ The Server MUST respond to valid requests with a `200` status.
 
 ### 9.6 Server behavior
 
-1. The Server MUST discard invalid query parameters and use default parameters.
+1. The Server MUST return a `400` error if the request contains invalid query parameters.
 1. The Server MUST calculate and encode a cursor value for the given request using the provided parameters, or default parameters.
 1. The Server MUST NOT return any actions that were not applied due to errors, unless the `include_errors` parameter is `true`.
 1. The Server MAY use any method to calculate a cursor provided it meets the following criteria:
