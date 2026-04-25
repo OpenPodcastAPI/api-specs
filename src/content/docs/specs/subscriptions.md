@@ -4,8 +4,8 @@ descriptions: Use the subscriptions endpoint to manage podcast subscriptions
 sidebar:
   label: Subscriptions
   badge:
-    text: Experimental
-    variant: caution
+    text: Core
+    variant: success
 banner:
   content: This is a core endpoint. All implementing servers and clients MUST support it.
 ---
