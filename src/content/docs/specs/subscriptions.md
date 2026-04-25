@@ -282,8 +282,6 @@ If all fields in the request payload are valid, the Server MUST respond with a `
 | `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
 | `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
 | `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
-| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Feed entity         |
-| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update UTC timestamp for the Feed entity      |
 | `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
 | `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
 | `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
@@ -415,8 +413,6 @@ For each Subscription:
          "feed": {
             "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
             "feed_url": "https://example.com/feed1.rss/",
-            "created_at": "2026-03-16T06:05:02.000Z",
-            "updated_at": "2026-03-16T06:05:02.000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-16T05:20:48.000Z",
@@ -431,8 +427,6 @@ For each Subscription:
          "feed": {
             "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
             "feed_url": "https://example.com/feed2.rss/",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-15T03:05:01:000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-15T03:05:01:000Z",
@@ -447,8 +441,6 @@ For each Subscription:
          "feed": {
             "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
             "feed_url": "https://example.com/feed3.rss/",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-15T03:05:01:000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-15T03:05:01:000Z",
@@ -510,8 +502,6 @@ The Server MUST respond to valid requests with a `200` status.
 | `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
 | `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
 | `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
-| `data[].feed.created_at`                | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Feed entity         |
-| `data[].feed.updated_at`                | string (RFC3339) | No       | The Server-authoritative last update UTC timestamp for the Feed entity      |
 | `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
 | `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
 | `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
@@ -552,8 +542,6 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
          "feed": {
             "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
             "feed_url": "https://example.com/feed1.rss/",
-            "created_at": "2026-03-16T06:05:02.000Z",
-            "updated_at": "2026-03-16T06:05:02.000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-16T05:20:48.000Z",
@@ -568,8 +556,6 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
          "feed": {
             "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
             "feed_url": "https://example.com/feed2.rss/",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-15T03:05:01:000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-15T03:05:01:000Z",
@@ -584,8 +570,6 @@ curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
          "feed": {
             "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
             "feed_url": "https://example.com/feed3.rss/",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-15T03:05:01:000Z"
          },
          "subscription": {
             "subscribed_at": "2026-03-15T03:05:01:000Z",
