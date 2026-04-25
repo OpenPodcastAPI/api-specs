@@ -123,7 +123,7 @@ This UUID value must be determined by ONE of the following methods, in order of 
 
 To calculate the UUID value, the client MUST do the following:
 
-1. Normalize the `feed_url` by removing the scheme (for example: `https://`) and all trailing slashes (`/`).
+1. Normalize the `feed_url` by removing the scheme (for example: `https://`) and the final trailing slash (`/`).
 1. Calculate the UUID using the normalized `feed_url` and the podcast namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
 
 See the Podcast Index's `Guid` documentation for more information.[^1]
