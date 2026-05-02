@@ -5,7 +5,7 @@ import {
   remarkDefinitionList,
   defListHastHandlers,
 } from "remark-definition-list";
-import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
+import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,8 +26,8 @@ export default defineConfig({
             base: "/explorer",
             label: "API explorer",
             schema: "./schema.yml",
-          }
-        ])
+          },
+        ]),
       ],
       sidebar: [
         {
@@ -40,19 +40,9 @@ export default defineConfig({
         },
         {
           label: "Specifications",
-          items: [
-            {
-              label: "Introduction",
-              link: "specs",
-            },
-            {
-              label: "Subscriptions",
-              collapsed: true,
-              autogenerate: {
-                directory: "specs/subscriptions",
-              },
-            },
-          ],
+          autogenerate: {
+            directory: "specs",
+          },
         },
         ...openAPISidebarGroups,
       ],
@@ -68,7 +58,7 @@ export default defineConfig({
             "TabItem",
           ],
         },
-        "src/components/SponsorCallout.astro"
+        "src/components/SponsorCallout.astro",
       ],
     }),
   ],
