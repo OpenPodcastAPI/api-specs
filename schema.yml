@@ -202,6 +202,20 @@ paths:
       security:
         - podcast_auth:
             - read:subscriptions
+  /capabilities:
+    get:
+      tags:
+        - Capabilities
+      summary: Retrieve server capabilities
+      description: Returns a summary of features and core specification versions supported by the server.
+      operationId: getCapabilities
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capabilities"
 components:
   responses:
     Unauthorized:
@@ -573,6 +587,48 @@ components:
         deletion_id: 25
         status: SUCCESS
         message: Subscription deleted successfully
+    Capabilities:
+      type: object
+      properties:
+        capabilities:
+          type: object
+          description: |
+            The features supported by the server. The first object MUST be "urn:opa:core".
+          additionalProperties:
+            type: object
+            description: A map of versions for a specific feature.
+            additionalProperties:
+              type: object
+              required:
+                - status
+                - root
+              properties:
+                status:
+                  type: string
+                  enum: [STABLE, UNSTABLE, DEPRECATED]
+                root:
+                  type: string
+          example:
+            urn:opa:core:
+              "0.0.1":
+                status: DEPRECATED
+                root: '/v0'
+              "1.0.0":
+                status: STABLE
+                root: '/v1'
+              "2.0.0":
+                status: UNSTABLE
+                root: '/v2'
+            urn:opa:extra:playcount:
+              "0.0.1":
+                status: DEPRECATED
+                root: '/v0/playcount'
+              "1.0.0":
+                status: STABLE
+                root: '/v1/playcount'
+              "2.0.0":
+                status: UNSTABLE
+                root: '/v2/playcount'
   requestBodies:
     FeedArray:
       description: An array of feeds the user wants to subscribe to
