@@ -1,11 +1,8 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import AutoImport from "astro-auto-import";
-import {
-  remarkDefinitionList,
-  defListHastHandlers,
-} from "remark-definition-list";
-import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
+import starlightOpenAPI, { createOpenAPISidebarGroup } from 'starlight-openapi'
+
+const openApiSidebar = createOpenAPISidebarGroup()
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,8 +21,8 @@ export default defineConfig({
         starlightOpenAPI([
           {
             base: "/explorer",
-            label: "API explorer",
             schema: "./schema.yml",
+            sidebar: { group: openApiSidebar }
           }
         ])
       ],
@@ -48,27 +45,19 @@ export default defineConfig({
             {
               label: "Subscriptions",
               collapsed: true,
-              autogenerate: {
-                directory: "specs/subscriptions",
-              },
+              items: [{
+                autogenerate: {
+                  directory: "specs/subscriptions",
+                }
+              }],
             },
           ],
         },
-        ...openAPISidebarGroups,
-      ],
-    }),
-    AutoImport({
-      imports: [
         {
-          "@astrojs/starlight/components": [
-            "Card",
-            "CardGrid",
-            "LinkCard",
-            "Tabs",
-            "TabItem",
-          ],
-        },
-        "src/components/SponsorCallout.astro"
+          label: 'Schema',
+          collapsed: false,
+          items: [openApiSidebar]
+        }
       ],
     }),
   ],
@@ -77,13 +66,5 @@ export default defineConfig({
     service: {
       entrypoint: "astro/assets/services/sharp",
     },
-  },
-  markdown: {
-    remarkPlugins: [remarkDefinitionList],
-    remarkRehype: {
-      handlers: {
-        ...defListHastHandlers,
-      },
-    },
-  },
+  }
 });
