@@ -1,10 +1,7 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import starlightOpenAPI, { createOpenAPISidebarGroup } from 'starlight-openapi'
+import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
 
-const openApiSidebar = createOpenAPISidebarGroup()
-
-// https://astro.build/config
 export default defineConfig({
   integrations: [
     starlight({
@@ -22,7 +19,9 @@ export default defineConfig({
           {
             base: "/explorer",
             schema: "./schema.yml",
-            sidebar: { group: openApiSidebar }
+	    sidebar: {
+	      label: "API explorer",
+	    }
           }
         ])
       ],
@@ -53,18 +52,8 @@ export default defineConfig({
             },
           ],
         },
-        {
-          label: 'Schema',
-          collapsed: false,
-          items: [openApiSidebar]
-        }
+	...openAPISidebarGroups,
       ],
     }),
   ],
-  // Process images with sharp: https://docs.astro.build/en/guides/assets/#using-sharp
-  image: {
-    service: {
-      entrypoint: "astro/assets/services/sharp",
-    },
-  }
 });
