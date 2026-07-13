@@ -10,4 +10,5 @@ jobs:
     - name: Lychee Broken Link Checker
       uses: lycheeverse/lychee-action@v2.8.0
       with:
+	args: --root-dir "$(pwd)/src/content/docs" --verbose --no-progress './**/*.md' './**/*.mdx'
         fail: true
