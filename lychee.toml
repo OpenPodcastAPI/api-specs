@@ -1,1 +1,3 @@
 exclude_path = ["meeting-notes"]
+root_dir = "/src/content/docs"
+extensions = ["md", "mdx"]
