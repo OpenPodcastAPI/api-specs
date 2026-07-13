@@ -1,607 +1,624 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: OpenPodcast API
-  description: |-
-    This is the OpenAPI specification for the OpenPodcast API
+  title: Open Podcast API
+  description: |
+    This is the OpenAPI specification for the Open Podcast API. For more information, check the specs at <https://openpodcastapi.org/>.
   version: 0.1.0
 tags:
+  - name: Authentication
+    description: All actions relating to authentication
+  - name: Synchronization
+    description: The core synchronization endpoint
   - name: Subscriptions
-    description: All actions relating to subscription management
+    description: Endpoints relating to podcast subscriptions
 paths:
-  /subscriptions:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in to the server
+      description: |
+        Logs a user in to the server and provides access credentials for the requesting client
+      operationId: login
+      requestBody:
+        $ref: '#/components/requestBodies/Login'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh an access token
+      description: |
+        Generates a new access token using an existing valid refresh token
+      operationId: refreshToken
+      requestBody:
+        $ref: '#/components/requestBodies/RefreshToken'
+      responses:
+        '200':
+          description: Successful token refresh
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+        '401':
+          description: Refresh token is expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                description: The supplied refresh token has expired. Please reauthenticate
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/sync:
     get:
       tags:
-        - Subscriptions
-      summary: Retrieve all updated subscription information
-      description: Retrieve all subscription information that has changed since the provided timestamp
-      operationId: getSubscriptions
+        - Synchronization
+      summary: Sync from the server
+      description: Fetch actions taken since the specified last sync time
+      security:
+        - bearerAuth: []
+      operationId: fetchSync
       parameters:
-        - in: query
-          name: since
+        - name: since
+          in: query
+          description: The most recent update timestamp to fetch data from
           schema:
             type: string
             format: date-time
-          required: false
-          example:
-            '2022-04-23T18:25:43.511Z'
-        - in: query
-          name: page
+        - name: limit
+          description: The number of results to include per page
+          in: query
           schema:
             type: number
-          required: false
-          example:
-            1
-        - in: query
-          name: per_page
+            format: int64
+            default: 50
+        - name: include
+          in: query
+          description: |
+            The entities to include in the response. Defaults to `all`
           schema:
-            type: number
-          required: false
-          example:
-            5
+            type: string
+            enum:
+              - all
+              - subscriptions
+            default: all
+        - name: include_own
+          in: query
+          description: |
+            Whether to include updates made by the requesting device. Defaults to `false`
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
-          description: Successful operation
+          description: Sync requested successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscriptions'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Subscriptions'
+                allOf:
+                  - type: object
+                    required:
+                      - results
+                    properties:
+                      results:
+
         '401':
-          $ref: '#/components/responses/Unauthorized'
-      security:
-        - podcast_auth:
-            - read:subscriptions
+          description: Access token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                description: The supplied access token is invalid
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
-        - Subscriptions
-      summary: Add new subscriptions for the authenticated user
-      description: Add one or more new subscriptions for the authenticated user by passing an array of feed URLs in the request body
-      operationId: addSubscription
+        - Synchronization
+      operationId: postSync
+      description: |
+        Post up to 30 actions per batch
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Client-ID
+          in: header
+          description: A unique identifier generated by the client for excluding results
+          schema:
+            type: string
+            format: uuid
       requestBody:
-        $ref: '#/components/requestBodies/FeedArray'
+        summary: Sync request
+        description: The array of actions sent to the client
+        $ref: '#/components/requestBodies/SyncAction'
       responses:
         '200':
-          description: Successful operation
+          description: Actions handled
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewSubscriptions'
-            application/xml:
+                $ref: '#/components/schemas/SyncActionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
               schema:
-                $ref: '#/components/schemas/NewSubscriptions'
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Bad request
+                description: The request payload is invalid. Check the number of entries.
         '401':
-          $ref: '#/components/responses/Unauthorized'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
-  /subscriptions/{guid}:
+          description: Access token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                description: The supplied access token is invalid
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/subscriptions:
     get:
       tags:
         - Subscriptions
-      summary: Retrieve information about a single subscription
-      description: Retrieve information about a single subscription specified in the path
-      operationId: getSubscription
+      operationId: getSubscriptions
+      security:
+        - bearerAuth: []
       parameters:
-        - in: path
-          name: guid
+        - name: include_unsubscribed
+          description: Whether to include unsubscribed feeds in the response
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: since
+          description: The cursor position to start at
+          in: query
           schema:
             type: string
-            format: guid
-          required: true
-          example: 968cb508-803c-493c-8ff2-9e397dadb83c
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-        '410':
-          $ref: '#/components/responses/Gone'
-      security:
-        - podcast_auth:
-            - read:subscriptions
-    patch:
-      tags:
-        - Subscriptions
-      summary: Update a single subscription entry
-      description: Update information about a single subscription specified in the path
-      operationId: updateSubscription
-      parameters:
-        - in: path
-          name: guid
-          schema:
-            type: string
-            format: guid
-          required: true
-          example: 968cb508-803c-493c-8ff2-9e397dadb83c
-      requestBody:
-        $ref: '#/components/requestBodies/PatchedSubscription'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatchedSubscription'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/PatchedSubscription'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
-    delete:
-      tags:
-        - Subscriptions
-      summary: Delete a single subscription entry
-      description: Deletes a single subscription specified in the path
-      operationId: deleteSubscription
-      parameters:
-        - in: path
-          name: guid
-          schema:
-            type: string
-            format: guid
-          required: true
-          example: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-      responses:
-        '202':
-          $ref: '#/components/responses/DeletionReceived'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - write:subscriptions
-  /deletions/{id}:
-    get:
-      tags:
-        - Subscriptions
-      summary: Retrieve information subscription deletion
-      description: Retrieve information about a deletion by querying the ID sent in a deletion request
-      operationId: getDeletions
-      parameters:
-        - in: path
-          name: id
+        - name: limit
+          description: The number of results to include per page
+          in: query
           schema:
             type: number
-            format: integer
+            format: int64
+            default: 50
+      responses: 
+        '200':
+          description: Subscriptions found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    required:
+                      - results
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PersistedSubscription'
+                  - $ref: '#/components/schemas/Pagination'
+                examples:
+                  - results:
+                    - sync_id: 4648b4d7-90bf-497c-a5e7-8383d1083d76
+                      guid: 677ea490-690e-51cb-8b43-755df6c55270
+                      feed_url: https://example.com/feed1
+                      subscribed_at: 2026-07-11T15:30:00.1Z
+                    - sync_id: aa840671-fc3b-430b-b8f2-92e6e9c7832b
+                      guid: a388867e-ce91-54d3-a116-114b07bb84e9
+                      feed_url: https://example.com/feed2
+                      subscribed_at: 2026-03-15T12:06:04.1Z
+                      unsubscribed_at: 2026-07-12T12:10:00.1Z
+                    has_next: true
+                    next_cursor: /api/v1/subscriptions?since=3
+        '401':
+          description: Access token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                description: The supplied access token is invalid
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/subscriptions/{sync_id}:
+    get:
+      tags:
+        - Subscriptionsh
+      operationId: getSubscription
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sync_id
+          in: path
+          description: The unique sync ID of the subscription
+          schema:
+            type: string
+            format: uuid
           required: true
-          example: 25
       responses:
         '200':
-          $ref: '#/components/responses/DeletionResponse'
+          description: Subscription found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersistedSubscription'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Access token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                description: The supplied access token is invalid
         '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/ValidationException'
-      security:
-        - podcast_auth:
-            - read:subscriptions
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Not found
+                description: The requested subscription was not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
+  requestBodies:
+    Login:
+      description: A login request payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+    RefreshToken:
+      description: A refresh token request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefreshTokenRequest'
+    SyncAction:
+      description: A sync action
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - requests
+            properties:
+              requests:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/SubscriptionAction'
+                  discrimintator:
+                    propertyName: type
+                    mapping:
+                      subscription: '#/components/schemas/SubscriptionAction'
   responses:
-    Unauthorized:
+    NotAuthorized:
       description: Unauthorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            code: 401
-            message: User not authorized
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 401
-            message: User not authorized
-    NotFound:
-      description: Not found
+            error: Unauthorized
+            description: The username or password is incorrect
+    InternalServerError:
+      description: Internal server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            code: 404
-            message: Resource not found
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 404
-            message: Resource not found
-    ValidationException:
-      description: Validation exception
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 405
-            message: Input could not be validated
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 405
-            message: Input could not be validated
-    Gone:
-      description: Object deleted
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 410
-            message: Subscription has been deleted
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 410
-            message: Subscription has been deleted
-    DeletionReceived:
-      description: The deletion request has been received and will be processed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Success'
-          example:
-            deletion_id: 25
-            message: Deletion request was received and will be processed
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Success'
-          example:
-            deletion_id: 25
-            message: Deletion request was received and will be processed
-    DeletionResponse:
-      description: The object was successfully deleted
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Deletion'
-          examples:
-            Success:
-              value:
-                deletion_id: 25
-                status: SUCCESS
-                message: Subscription deleted successfully
-            Pending:
-              value:
-                deletion_id: 25
-                status: PENDING
-                message: Deletion is pending
-            Failure:
-              value:
-                deletion_id: 25
-                status: FAILURE
-                message: The deletion process encountered an error and was rolled backwas rolled back
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Deletion'
-          examples:
-            Success:
-              value:
-                deletion_id: 25
-                status: SUCCESS
-                message: Subscription deleted successfully
-            Pending:
-              value:
-                deletion_id: 25
-                status: PENDING
-                message: Deletion is pending
-            Failure:
-              value:
-                deletion_id: 25
-                status: FAILURE
-                message: The deletion process encountered an error and was rolled back
+            error: Internal server error
+            description: The server encountered an error while processing the request
   schemas:
     Error:
+      description: Generic error object
       type: object
-      properties:
-        code:
-          type: string
-        message:
-          type: string
       required:
-        - code
-        - message
-    Success:
-      type: object
+        - error
+        - description
       properties:
-        deletion_id:
+        error:
+          type: string
+          description: The error message
+        description:
+          type: string
+          description: The error description
+    Pagination:
+      description: Pagination properties for paginated results
+      type: object
+      required:
+        - has_next
+      properties:
+        has_next:
+          type: boolean
+          description: Whether there is a next page of results
+        next_cursor:
+          type: string
+          format: url
+          description: The URL of the next page of results, if available
+        prev_cursor:
+          type: string
+          format: url
+          description: The URL of the previous page of results, if available
+    LoginResponse:
+      description: A response object containing an access token and refresh token
+      allOf:
+        - $ref: '#/components/schemas/AccessTokenResponse'
+        - $ref: '#/components/schemas/RefreshTokenResponse'
+      examples:
+        - access_token: G6IWgOSDfXylCr8donVs5wlnfaBvv6EszuKcppz9XXbC9AqiT5jp161nN05jghcQ2OQ/JMRvSaUQxf6L9fWVYA==
+          expires_in: 3600
+          refresh_token: vRT0XmbTHs3KzrPZJD8F92AWnOrPk9o781mQkP63iyZZ8MNzfpd5x5xVRojFrjXmM72vYe3I9v/PR16dzHxgkg==
+          refresh_expires: 2026-07-11T15:30:00Z
+          refresh_endpoint: /auth/refresh
+    LoginRequest:
+      type: object
+      description: A login request payload
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: The username of the requesting user
+        password:
+          type: string
+          description: The password of the requesting user
+      examples:
+        - username: example-user
+          password: example-password
+    AccessTokenResponse:
+      type: object
+      description: A response object containing a refreshed access token
+      required:
+        - access_token
+        - expires_in
+      properties:
+        access_token:
+          type: string
+          description: The access token generated by the server
+        expires_in:
           type: number
-          format: integer
-        message:
-          type: string
+          description: The lifetime of the access token, in seconds
+      examples: 
+        - access_token: G6IWgOSDfXylCr8donVs5wlnfaBvv6EszuKcppz9XXbC9AqiT5jp161nN05jghcQ2OQ/JMRvSaUQxf6L9fWVYA==
+          expires_in: 3600
+    RefreshTokenRequest:
+      type: object
+      description: A refresh token request
       required:
-        - code
-        - message
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          description: The refresh token held by the client
+      examples:
+        - refresh_token: vRT0XmbTHs3KzrPZJD8F92AWnOrPk9o781mQkP63iyZZ8MNzfpd5x5xVRojFrjXmM72vYe3I9v/PR16dzHxgkg==
+    RefreshTokenResponse:
+      type: object
+      description: A response object containing a refresh token
+      required:
+        - refresh_token
+        - refresh_expires
+        - refresh_endpoint
+      properties:
+        refresh_token:
+          type: string
+          description: The refresh token generated by the server
+        refresh_expires:
+          type: string
+          format: date-time
+          description: The UTC timestamp at which the refresh token expires
+        refresh_endpoint:
+          type: string
+          format: url
+          description: The endpoint used to refresh the access token
+      examples:
+        - refresh_token: vRT0XmbTHs3KzrPZJD8F92AWnOrPk9o781mQkP63iyZZ8MNzfpd5x5xVRojFrjXmM72vYe3I9v/PR16dzHxgkg==
+          refresh_expires: 2026-07-11T15:30:00Z
+          refresh_endpoint: /auth/refresh
+    EntityType:
+      type: string
+      description: The type of entity targeted by an action
+      enum:
+        - subscription
+    ActionObject:
+      type: object
+      description: An object containing action information
+      required:
+        - type
+        - action
+        - action_id
+        - occurred_at
+        - data
+      properties:
+        type:
+          $ref: '#/components/schemas/EntityType'
+        action:
+          type: string
+          description: The action being taken on the target
+        action_id:
+          type: string
+          format: uuid
+          description: A client-generated UUID identifier for the action
+        occurred_at:
+          type: string
+          format: date-time
+          description: The UTC timestamp of when the action was undertaken on the client
+        data:
+          anyOf:
+            - $ref: '#/components/schemas/Subscription'
     Subscription:
-      xml:
-        name: subscription
+      type: object
       required:
-        - feed_url
         - guid
-        - is_subscribed
-      type: object
-      properties:
-        feed_url:
-          type: string
-          format: url
-        guid:
-          type: string
-          format: guid
-        is_subscribed:
-          type: boolean
-        subscription_changed:
-          type: string
-          format: date-time
-        new_guid:
-          type: string
-          format: guid
-        guid_changed:
-          type: string
-          format: date-time
-        deleted:
-          type: string
-          format: date-time
-      example:
-        feed_url: https://example.com/feed2
-        guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-        is_subscribed: true
-    NewSubscription:
-      xml:
-        name: success
-      required:
         - feed_url
-        - guid
-        - is_subscribed
-        - subscription_changed
-      type: object
+        - subscribed_at
       properties:
-        feed_url:
-          type: string
-          format: url
-        guid:
-          type: string
-          format: guid
-        is_subscribed:
-          type: boolean
-        subscription_changed:
-          type: string
-          format: date-time
-    FailedSubscription:
-      xml:
-        name: failure
-      required:
-        - feed_url
-        - message
-      type: object
-      properties:
-        feed_url:
-          type: string
-          format: url
-        message:
-          type: string
-    Subscriptions:
-      required:
-        - total
-        - page
-        - per_page
-        - subscriptions
-      xml:
-        name: subscriptions
-      type: object
-      properties:
-        total:
-          type: number
-        page:
-          type: number
-        per_page:
-          type: number
-        next:
-          type: string
-          format: url
-        previous:
-          type: string
-          format: url
-        subscriptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscription'
-      example:
-        total: 2
-        page: 1
-        per_page: 5
-        subscriptions:
-          - feed_url: https://example.com/rss1
-            guid: 31740ac6-e39d-49cd-9179-634bcecf4143
-            is_subscribed: true
-            guid_changed: 2022-09-21T10:25:32.411Z
-            new_guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-          - feed_url: https://example.com/rss2
-            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-            is_subscribed: false
-            subscription_changed: 2022-04-24T17:53:21.573Z
-            deleted: 2022-04-24T17:53:21.573Z
-    NewSubscriptions:
-      xml:
-        name: subscriptions
-      type: object
-      properties:
-        success:
-          type: array
-          items:
-            $ref: '#/components/schemas/NewSubscription'
-        failure:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedSubscription'
-      example:
-        success:
-          - feed_url: https://example.com/rss1
-            guid: 8d1f8f09-4f50-4327-9a63-639bfb1cbd98
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-          - feed_url: https://example.com/rss2
-            guid: 968cb508-803c-493c-8ff2-9e397dadb83c
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-          - feed_url: https://example.com/rss3
-            guid: e672c1f4-230d-4ab4-99d3-390a9f835ec1
-            is_subscribed: true
-            subscription_changed: 2023-02-23T14:00:00.000Z
-        failure:
-          - feed_url: example.com/rss4
-            message: No protocol present
-    FeedArray:
-      xml:
-        name: subscriptions
-      required:
-        - subscriptions
-      type: object
-      properties:
-        subscriptions:
-          xml:
-            name: subscription
-          type: array
-          items:
-            type: object
-            required:
-              - feed_url
-            properties:
-              feed_url:
-                type: string
-              guid:
-                type: string
-          example:
-            - feed_url: https://example.com/feed1
-            - feed_url: https://example.com/feed2
-            - feed_url: https://example.com/feed3
-            - feed_url: example.com/feed4
-              guid: 2d8bb39b-8d34-48d4-b223-a0d01eb27d71
-    SubscriptionUpdate:
-      xml:
-        name: subscription
-      type: object
-      minProperties: 1
-      properties:
-        new_feed_url:
-          type: string
-          format: url
-        new_guid:
+        sync_id:
           type: string
           format: uuid
-        is_subscribed:
-          type: boolean
-      example:
-        new_feed_url: https://example.com/rss5
-        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
-        is_subscribed: false
-    PatchedSubscription:
-      xml:
-        name: subscription
-      type: object
-      minProperties: 1
-      properties:
-        new_feed_url:
+          description: The server-generated synchronization ID for the subscription
+        guid:
+          type: string
+          description: |
+            The `guid` field as found in the podcast's RSS feed
+        feed_url:
           type: string
           format: url
-        is_subscribed:
-          type: boolean
-        subscription_changed:
+          description: The canonical address of the podcast RSS feed
+        subscribed_at:
           type: string
           format: date-time
-        new_guid:
-          type: string
-          format: uuid
-        guid_changed:
+          description: The UTC timestamp at which the user subscribed to the feed
+        unsubscribed_at:
           type: string
           format: date-time
-      example:
-        new_feed_url: https://example.com/rss5
-        is_subscribed: false
-        subscription_changed: 2023-02-23T14:41:00.000Z
-        guid_changed: 2023-02-23T14:41:00.000Z
-        new_guid: 965fcecf-ce04-482b-b57c-3119b866cc61
-    Deletion:
-      xml:
-        name: deletion
+          description: The UTC timestamp at which the user unsubscribed from the feed
+      examples: 
+        - sync_id: 4648b4d7-90bf-497c-a5e7-8383d1083d76
+          guid: 677ea490-690e-51cb-8b43-755df6c55270
+          feed_url: https://example.com/feed1
+          subscribed_at: 2026-07-11T15:30:00.1Z
+        - sync_id: aa840671-fc3b-430b-b8f2-92e6e9c7832b
+          guid: a388867e-ce91-54d3-a116-114b07bb84e9
+          feed_url: https://example.com/feed2
+          subscribed_at: 2026-03-15T12:06:04.1Z
+          unsubscribed_at: 2026-07-12T12:10:00.1Z
+    PersistedSubscription:
+      type: object
       required:
-        - deletion_id
+        - sync_id
+        - guid
+        - feed_url
+        - subscribed_at
+      $ref: '#/components/schemas/Subscription'
+    ActionId:
+      type: string
+      format: uuid
+      description: The client-generated UUIDv4 identifier for the action
+    SyncAction:
+      type: object
+      required:
+        - action_id
+        - occurred_at
+        - type
+        - action
+        - data
+      properties:
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        occurred_at:
+          type: string
+          format: date-time
+          description: The UTC timestamp at which the action occurred on the client
+        type:
+          type: string
+        action:
+          type: string
+        data:
+          type: object
+
+    SubscriptionActions:
+      type: string
+      enum:
+        - subscribe
+        - unsubscribe
+        - update
+    SubscriptionAction:
+      allOf:
+        - $ref: '#/components/schemas/SyncAction'
+        - type: object
+          properties:
+            action:
+              $ref: '#/components/schemas/SubscriptionActions'
+            type:
+              type: string
+              description: The target entity type
+              enum:
+                - subscription
+            data:
+              $ref: '#/components/schemas/Subscription'
+    ActionResult:
+      type: object
+      required:
+        - type
+        - action
+        - action_id
         - status
-      type: object
+        - data
       properties:
-        deletion_id:
-          type: number
-          format: integer
+        type:
+          type: string
+          description: The target entity type
+          enum:
+            - subscription
+        action:
+          allOf:
+            - $ref: '#/components/schemas/SubscriptionActions'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
         status:
           type: string
+          description: The status of the action
           enum:
-            - SUCCESS
-            - FAILURE
-            - PENDING
-        message:
-          type: string
-      example:
-        deletion_id: 25
-        status: SUCCESS
-        message: Subscription deleted successfully
-  requestBodies:
-    FeedArray:
-      description: An array of feeds the user wants to subscribe to
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/FeedArray'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/FeedArray'
-    PatchedSubscription:
-      description: A request containing new information to update an existing subscription with
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/SubscriptionUpdate'
+            - applied
+            - ignored
+            - rejected
+        data:
+          type: object
+          description: The canonical state of the target entity
+    SubscriptionActionResult:
+      allOf:
+        - $ref: '#/components/schemas/ActionResult'
+        - type: object
+          properties:
+            action: 
+              $ref: '#/components/schemas/SubscriptionActions'
+            type:
+              type: string
+              description: The target entity type
+              enum:
+                - subscription
+            data:
+              $ref: '#/components/schemas/PersistedSubscription'
+    SyncActionResponse:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/SubscriptionActionResult'
+            discrimintator:
+              propertyName: type
+              mapping:
+                subscription: '#/components/schemas/SubscriptionActionResult'
   securitySchemes:
-    podcast_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://test.openpodcastapi.com/oauth/authorize
-          scopes:
-            write:subscriptions: modify subscription information for your account
-            read:subscriptions: read your subscription information
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
