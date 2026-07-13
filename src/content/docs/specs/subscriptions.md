@@ -203,7 +203,7 @@ When the server receives a payload containing `"unsubscribe"` actions, it must f
 				"guid": "677ea490-690e-51cb-8b43-755df6c55270",
 				"feed_url": "https://example.com/feed1",
 				"subscribed_at": "2026-07-11T15:30:00.1Z",
-				"unsubscrbed_at": "2026-07-12T12:10:00.1Z"
+				"unsubscribed_at": "2026-07-12T12:10:00.1Z"
 			}
 		}
 	]
@@ -276,7 +276,7 @@ When the server receives a payload containing `update` actions, it must follow t
 				"guid": "21dad7d6-94d7-48bc-8052-aa3384624f7",
 				"feed_url": "https://example.com/feed3",
 				"subscribed_at": "2026-07-11T15:30:00.1Z",
-				"unsubscrbed_at": "2026-07-12T12:10:00.1Z"
+				"unsubscribed_at": "2026-07-12T12:10:00.1Z"
 			}
 		}
 	]
