@@ -1,555 +1,370 @@
 ---
 title: Subscription API specification
 descriptions: Use the subscriptions endpoint to manage podcast subscriptions
-sidebar:
-  label: Subscriptions
-  badge:
-    text: Core
-    variant: success
 banner:
-  content: This is a core endpoint. All implementing servers and clients MUST support it.
+  content: This is a core endpoint. All implementing servers and clients must support it.
 ---
 
-Subscriptions represent the relationship between a user and a podcast feed.
+Subscriptions represent the link between a user an a podcast feed. Users may create new subscriptions and update them to reflect changes to their subscription status.
 
-See [conventions](/specs#2-conventions) for an overview of conventions used in this document.
+A subscription entity belongs to a single user entity. When a user subscribes to a feed, it creates a new subscription entity containing all information about the target feed.
 
-## 1. Introduction
+## Data model {#data-model}
 
-Subscriptions are at the heart of the Open Podcast API. They represent which feeds a user has subscribed to, both presently and historically.
+A subscription entity contains the following properties.
 
-The `subscriptions` endpoint is designed to give clients a simple interface for synchronizing a user's podcast subscriptions. It aims to support:
+| Property          | Type          | Required | Description                                                              |
+|-------------------|---------------|----------|--------------------------------------------------------------------------|
+| `sync_id`         | String (UUID) | Yes      | A server-generated ID used to query the entity                           |
+| `guid`            | String        | Yes      | The podcast `guid` extracted from the feed                               |
+| `feed_url`        | String        | Yes      | The canonical URL of the RSS feed                                        |
+| `subscribed_at`   | Timestamp     | Yes      | The UTC timestamp at which the user most recently subscribed to the feed |
+| `unsubscribed_at` | Timestamp     | No       | The UTC timestamp at which the user unsubscribed from the feed           |
 
-* Offline-first operation
-* Deterministic identifiers
-* Idempotent operations
-* Efficient incremental synchronization
-* Multi-device consistency
+## Sync actions {#sync-actions}
 
-## 2. Motivation
+Clients may perform the following sync actions on subscription entities.
+	
+### Subscribe {#subscribe}
 
-The Podcasting 2.0 specification presents developers with stable identifiers (`podcast:guid`), which are UUIDv5 values that can be calculated from the feed URL using a standard-supplied namespace. However, the original podcast specification makes no such guarantees. This makes implementing cross-device synchronization difficult, as developers need to use unstable fields to determine which feed is being targeted.
+Subscribing to a feed creates a new feed entity or clears the `unsubscribed_at` field of an existing feed entity. Subscribed feeds are accessible via the server-generated `sync_id`.
 
-To resolve this, the Open Podcast API makes use of the same deterministic UUID resolution outlined in the Podcast Index documentation[^1] and requires Clients to provide a calculated UUID value with every feed.
+To subscribe or resubscribe to a feed, the client must submit an array of action payloads to the [sync endpoint](/specs/sync) containing the following properties:
 
-## 3. Scope
+| Property        | Type                | Description                                                  |
+|-----------------|---------------------|--------------------------------------------------------------|
+| `type`          | String              | Must be `subscription`                                       |
+| `action`        | String              | Must be `subscribe`                                          |
+| `action_id`     | String (UUID)       | A client-generated UUIDv4 that identifies the action         |
+| `occurred_at`   | Timestamp (RFC3339) | The UTC timestamp at which the action occurred on the client |
+| `data`          | Object              | The data payload containing subscription details             |
+| `data.guid`     | String              | The podcast `guid`                                           |
+| `data.feed_url` | String              | The canonical URL of the feed                                |
 
-This specification defines:
-
-* Resource identifiers
-* Action submission semantics
-* Synchronization mechanisms
-* Conflict resolution rules
-* Client and server behavior
-
-This document does not define:
-
-* User authentication mechanisms
-* Feed metadata ingestion
-* Client user interface behavior
-
-## 4. System architecture
-
-### 4.1 Overview
-
-The system consists of:
-
-* Client devices
-* An HTTP API server
-
-### 4.2 Offline operation
-
-Clients MAY operate without network connectivity and queue actions locally.
-
-Queued actions MUST be transmitted to the server when connectivity is restored.
-
-### 4.3 Synchronization model
-
-Synchronization is based on an append-only action log.
-
-Clients retrieve new actions using a cursor-based incremental synchronization mechanism.
-
-## 5. UUID calculation
-
-Feeds are identified using **deterministic UUIDv5 identifiers** derived from podcast feed URLs. 
-Clients MUST provide a valid UUIDv5 identifier for all feed objects.
-This UUID value must be determined by ONE of the following methods, in order of preference:
-
-1. Using the `podcast:guid` value of the feed's RSS file, if it is a valid UUID OR,
-1. Calculating a UUIDv5 value using the normalized `feed_url`.
-
-To calculate the UUID value, the client MUST do the following:
-
-1. Normalize the `feed_url` by removing the scheme (for example: `https://`) and the final trailing slash (`/`).
-1. Calculate the UUID using the normalized `feed_url` and the podcast namespace UUID: `ead4c236-bf58-58c6-a2c6-a6b28d128cb6`.
-
-See the Podcast Index's `Guid` documentation for more information.[^1]
-
-### 5.1 Example
-
-```py
-import uuid
-import re
-
-def calculate_uuid(feed_url):
-    PODCAST_NAMESPACE = uuid.UUID("ead4c236-bf58-58c6-a2c6-a6b28d128cb6")
-    sanitized_feed_url = re.sub(r'^[a-zA-Z]+://', '', feed_url).rstrip('/')
-    return uuid.uuid5(PODCAST_NAMESPACE, sanitized_feed_url)
+```sh title="Example"
+curl '/api/v1/sync' \
+  -X 'POST' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <access_token>' \
+  -H 'Client-ID: cca4ad10-dc35-4572-8f11-125dc465428a'
+  -d '{
+	  "requests": [
+		  {
+			  "type": "subscription",
+			  "action": "subscribe",
+			  "action_id": "a651fd88-555d-4ac4-bdbb-e35846aa4da9",
+			  "occurred_at": "2026-07-11T15:30:00.1Z",
+			  "data": {
+				  "guid": "677ea490-690e-51cb-8b43-755df6c55270",
+				  "feed_url": "https://example.com/feed1"
+			  }
+		  },
+		  {
+			  "type": "susbcription",
+			  "action": "subscribe",
+			  "action_id": "65a57789-3578-4842-89e5-a221f177efb9",
+			  "occurred_at": "2026-07-11T13:25:00.1Z",
+			  "data": {
+				  "guid": "a388867e-ce91-54d3-a116-114b07bb84e9",
+				  "feed_url": "https://example.com/feed2"
+			  }
+		  }
+	]
+}'
 ```
 
-Running the above example with the feed URL `"https://podnews.net/rss/"` will yield `9b024349-ccf0-5f69-a609-6b82873eab3c`.
 
-## 6. Subscription status
+#### Response {#subscribe-response}
 
-Subscriptions are considered valid even if the User has unsubscribed from the feed. Unsubscribing is a **non-destructive** action that leaves the subscription entry intact.
+When the server receives a payload containing `"subscribe"` actions, it must follow these rules:
 
-A User is "subscribed" to a Feed when they:
+1. If a subscription entity with a matching `feed_url` or `guid` exists and has no `unsubscribed_at` timestamp:
+   1. Return the existing entity with a `status` of `ignored`.
+1. If a subscription entity with a matching `feed_url` or `guid` exists and has an `unsubscribed_at` timestamp that is earlier than the `occurred_at` timestamp of the payload:
+   1. Update the existing entity to set its `unsubscribed_at` timestamp to `null`.
+   1. Update the existing entity to set its `subscribed_at` timestamp to the `occurred_at` timestamp sent in the request.
+   1. Return the updated entity with a `status` of `applied`.
+1. If a subscription entity with a matching `feed_url` or `guid` exists and has an `unsubscribed_at` timestamp that is later than the `occurred_at` timestamp of the payload:
+   1. Return the existing entity with a `status` of `ignored`.
+1. If there is no existing subscription entity, the server must create the entity and:
+   1. Create a unique UUIDv4 `sync_id` for the entity.
+   1. Set the `subscribed_at` timestamp to the `occurred_at` timestamp in the request body.
+   1. Return the newly created entity with a `status` of `applied`.
 
-1. Have a Subscription entry for the Feed AND
-1. The `unsubscribed_at` timestamp is null.
+| Property       | Type          | Description                                                                             |
+|----------------|---------------|-----------------------------------------------------------------------------------------|
+| `results`      | Array         | All affected entities in their latest state                                             |
+| `[].action`    | String        | The action in the request                                                               |
+| `[].action_id` | String (UUID) | The client-generated action ID                                                          |
+| `[].type`      | String        | The target entity type                                                                  |
+| `[].status`    | String (enum) | The [status](/specs/sync#action-statuses) of the action                                 |
+| `[].reason`    | String        | The reason an update was rejected by the server. Only applies if `status` is `rejected` |
+| `[].data`      | Object        | The affected [subscription entity](#data-model)                                         |
 
-Clients may submit an `update` to a Subscription with a null `unsubscribed_at` timestamp to resubscribe a user to a feed.
-
-## 6. Resource models
-
-### 6.1 Feed
-
-A Feed represents a shared logical resource corresponding to a podcast RSS feed. Feeds are uniquely identified by a deterministic UUID derived from the normalized feed URL and a podcast namespace UUID.
-
-A Feed resource MAY exist independently of any Subscriptions but MAY also be created implicitly when a Subscription is submitted.
-
-#### Fields
-
-| Field        | Type             | Required | Description                                                 |
-| ------------ | ---------------- | -------- | ----------------------------------------------------------- |
-| `uuid`       | UUID             | Yes      | Deterministic identifier for the feed                       |
-| `feed_url`   | string           | Yes      | The RSS feed's canonical URL used to calculate the UUID     |
-| `created_at` | string (RFC3339) | Yes      | Server-authoritative creation UTC timestamp                 |
-| `updated_at` | string (RFC3339) | Yes      | Server-authoritative update UTC timestamp                   |
-
-### 6.2 Subscription
-
-A Subscription represents a user's subscription to a given Feed.
-
-Each User MAY have **at most one Subscription per Feed**.
-
-A Subscription is uniquely identified by the tuple:
-
-```txt
-(user, feed_uuid)
-```
-
-Clients do not directly access Subscription identifiers. Subscriptions are accessed via the Feed resource.
-
-#### Fields
-
-| Field             | Type             | Required | Description                                                                                          |
-| ----------------- | ---------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `subscribed_at`   | string (RFC3339) | Yes      | Client-provided subscription UTC timestamp, if submitted. Implicitly created by the server if absent |
-| `unsubscribed_at` | string (RFC3339) | No       | Client-provided unsubscribe UTC timestamp, if submitted.                                             |
-| `created_at`      | string (RFC3339) | Yes      | Server-authoritative creation UTC timestamp                                                          |
-| `updated_at`      | string (RFC3339) | Yes      | Server-authoritative update UTC timestamp                                                            |
-
-Normative rule: `created_at` and `updated_at` are managed by the server. Clients MAY supply `subscribed_at` and `unsubscribed_at` in requests but it doesn't override the server’s canonical timestamps.
-
-## 7. Client action submission
-
-### 7.1 Endpoint
-
-```http
-POST /api/v1/subscriptions
-```
-
-Clients use this endpoint to submit subscription actions.
-
-### 7.2 Purpose
-
-This endpoint supports the submission of `actions` for Subscriptions. Each `action` MUST reference a Feed.
-
-### 7.3 Supported actions
-
-Each object in a request payload MUST reference an `action`. The supported actions for this endpoint are:
-
-`subscribe`
-: Create a new subscription for the authenticated User and the referenced Feed
-
-`unsubscribe`
-: Mark a subscription as unsubscribed for the authenticated User and a referenced Feed
-
-### 7.4 Response statuses
-
-Each handled item in a POST request to this endpoint MUST be returned in the response. To inform the Client, each object MUST contain a `status` field matching the following enumerable values:
-
-`subscribed`
-: The subscription was created successfully
-
-`unsubscribed`
-: The subscription was updated and marked as unsubscribed
-
-`conflict`
-: A subscription for the requesting User to the provided Feed exists already
-
-`duplicate`
-: The payload object is a duplicate of another update in the same payload
-
-`invalid_action`
-: The payload object referenced an invalid [action](#83-supported-actions)
-
-`malformed_feed_uuid`
-: The UUID value in the Feed payload is malformed
-
-`malformed_feed_url`
-: The URL in the Feed payload is not a valid URI value
-
-`transient_server_error`
-: The Server could not perform the update due to a transient issue such as database connection issues
-
-### 7.5 Request format
-
-Requests sent to this endpoint MUST conform to the following:
-
-1. All requests MUST be submitted as an array of objects, with at least one and at most 30 items.
-1. Each item in the array MUST include all required fields.
-
-Servers MUST immediately reject any invalid payload with a `400` response.
-
-| Field                         | Type                     | Required | Description                                                                            |
-| ----------------------------- | ------------------------ | -------- | -------------------------------------------------------------------------------------- |
-| `data`                        | array                    | Yes      | The array of data submitted to the server                                              |
-| `data.uuid`                   | UUID                     | Yes      | The Client-generated UUIDv4 identifier for the action                                  |
-| `data[].action`               | string                   | Yes      | The [supported action](#83-supported-actions) being taken against the subscription     |
-| `data[].feed`                 | object                   | Yes      | Details about the Feed that the subscription targets                                   |
-| `data[].feed.uuid`            | UUID                     | Yes      | The calculated UUIDv5 identifier for the Feed                                          |
-| `data[].feed.feed_url`        | string                   | Yes      | The canonical URL of the feed RSS file                                                 |
-| `data[].data`                 | object                   | Yes      | The data object containing subscription information with **at least one** value        |
-| `data[].data.subscribed_at`   | string (RFC3339)         | No       | The UTC timestamp at which the subscription was created                                |
-| `data[].data.unsubscribed_at` | string (RFC3339) or null | No       | The UTC timestamp at which the user unsubscribed from the feed                         |
-
-
-### 7.6 Response format
-
-If all fields in the request payload are valid, the Server MUST respond with a `202` status and return a payload with an object corresponding to each `action` submitted.
-
-| Field                                   | Type             | Required | Description                                                                 |
-| --------------------------------------- | ---------------- | -------- | --------------------------------------------------------------------------- |
-| `data`                                  | array            | Yes      | The array of response objects                                               |
-| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                       |
-| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)           |
-| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative UTC timestamp at which the request was received    |
-| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
-| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
-| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
-| `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
-| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
-| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
-
-### 7.7 Client behavior
-
-The Client MUST follow these rules when submitting a request to this endpoint:
-
-1. The Client MUST NOT submit more than 30 items in a single payload.
-1. The Client MUST generate a random UUID for each action in the payload.
-1. The Client MUST await a response from the Server before submitting a new request.
-1. The Client SHOULD inform the User of any failures that were received in the response.
-1. The Client MAY retry items that failed with a status of `transient_server_error`.
-1. The Client MUST NOT retry items that failed with a status of `invalid_action`.
-1. The Client MUST NOT retry items that failed with a status of `malformed_uuid`.
-1. The Client MUST NOT retry items that failed with a status of `malformed_feed_url`.
-1. The Client MAY use the `updated_at` timestamp of the Subscription to communicate to a user when the subscription was made active again.
-
-### 7.8 Server behavior
-
-The Server MUST keep all action requests in a centralized append-only log format. The Server MAY compact this data to retain only the latest action of a given type.
-
-The Server MUST update the materialized view of updated entities and return their data in response to updates.
-
-The Server MUST follow these rules when processing a request to this endpoint:
-
-1. The Server MUST respond with a `400` error if the payload doesn't contain all required fields.
-1. The Server MUST respond with a `400` error if the payload contains **more than 30** or **fewer than 1** items.
-1. The Server MUST NOT attempt to process any action that fails validation.
-1. The Server MUST process all objects in the response and return a corresponding object in the response.
-1. The Server MUST discard any duplicate object from the payload and process only one version of the `action`.
-1. The Server MUST create a corresponding object for all submitted `actions` and respond with an array matching the length of the submission.
-1. The Server MUST implicitly create a Feed for all actions that reference a non-extant Feed.
-
-For each Feed:
-
-1. The Server MUST generate a `created_at` timestamp recording the date and time at which the Feed was added to the system.
-1. The Server MUST generate an `updated_at` timestamp recording the date and time at which the Feed was last modified.
-
-For each Subscription:
-
-1. The Server MUST generate a `created_at` timestamp recording the date and time at which the Subscription was added to the system.
-1. The Server MUST generate an `updated_at` timestamp recording the date and time at which the Subscription was last modified.
-1. The Server SHOULD generate a `subscribed_at` timestamp matching the `created_at` timestamp if no `subscribed_at` field is received in the creation payload.
-1. The Server MUST NOT add an `unsubscribed_at` timestamp unless one is sent by the Client.
-
-### 7.9 Example
-
-```jsonc title="Request"
+```json title="Response"
 {
-   "data": [
-      // Subscribe to a feed
-      {
-         "uuid": "329e6b8f-a540-4c6e-9ba0-2996e0352736",
-         "action": "subscribe",
-         "feed": {
-            "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
-            "feed_url": "https://example.com/feed1.rss/"
-         },
-         "data": {
-            "subscribed_at": "2026-03-16T05:20:48.000Z"
-         }
-      },
-
-      // Resubscribe to a feed
-      {
-         "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "action": "subscribe",
-         "feed": {
-            "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
-            "feed_url": "https://example.com/feed2.rss/"
-         },
-         "data": {
-            "subscribed_at": "2026-03-16T05:20:48.000Z"
-         }
-      },
-
-      // Unsubscribe from a feed
-      {
-         "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "action": "unsubcribe",
-         "feed": {
-            "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
-            "feed_url": "https://example.com/feed3.rss/"
-         },
-         "data": {
-            "unsubscribed_at": "2026-03-16T05:21:48.000Z"
-         }
-      },
-
-      // Invalid action
-      {
-         "uuid": "100c7e48-085f-4906-a91e-40c3c4b1a73e",
-         "action": "unsupported",
-         "feed": {
-            "uuid": "4790ba1b-1d4e-5f24-886e-7359eb98d52d",
-            "feed_url": "https://example.com/feed4.rss/"
-         },
-         "data": {
-            "subscribed_at": "2026-03-16T06:00:02.000Z",
-         }
-      },
-
-      // Invalid feed UUID
-      {
-         "uuid": "4c92e4d0-ba1a-497c-83d8-b0c469d4e1be",
-         "action": "subscribe",
-         "feed": {
-            "uuid": "not-a-uuid",
-            "feed_url": "https://example.com/feed5.rss/"
-         },
-         "data": {
-            "subscribed_at": "2026-03-16T06:05:02.000Z"
-         }
-      }
-   ]
+	"results": [
+		{
+			"action_id": "a651fd88-555d-4ac4-bdbb-e35846aa4da",
+			"type": "subscription",
+			"action": "subscribe",
+			"status": "applied",
+			"data": {
+				"sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d76",
+				"guid": "677ea490-690e-51cb-8b43-755df6c55270",
+				"feed_url": "https://example.com/feed1",
+				"subscribed_at": "2026-07-11T15:30:00.1Z"
+			}
+		},
+		{
+			"action_id": "65a57789-3578-4842-89e5-a221f177efb9",
+			"type": "subscription",
+			"action": "subscribe",
+			"status": "ignored",
+			"data": {
+				"sync_id": "aa840671-fc3b-430b-b8f2-92e6e9c7832b",
+				"guid": "a388867e-ce91-54d3-a116-114b07bb84e9",
+				"feed_url": "https://example.com/feed2",
+				"subscribed_at": "2026-03-15T12:06:04.1Z"
+			}
+		}
+	]
 }
 ```
 
-```jsonc title="Response"
+### Unsubscribe {#unsubscribe}
+
+Users may unsubscribe from feeds to stop them appearing in sync results by default. Unsubscribing is a non-destructive action. Servers must update the `unsubscribed_at` timestamp of the subscription entity, but must not delete the entity.
+
+To unsubscribe from a feed, the client must submit an array of action payloads to the [sync endpoint](/specs/sync) containing the following properties:
+
+| Property       | Type                | Description                                                  |
+|----------------|---------------------|--------------------------------------------------------------|
+| `type`         | String              | Must be `subscription`                                       |
+| `action`       | String              | Must be `unsubscribe`                                        |
+| `action_id`    | String (UUID)       | A client-generated UUIDv4 that identifies the action         |
+| `occurred_at`  | Timestamp (RFC3339) | The UTC timestamp at which the action occurred on the client |
+| `data`         | Object              | The data payload containing subscription details             |
+| `data.sync_id` | String (UUID)       | The server-generated sync ID for the entity                  |
+
+```sh title="Example"
+curl '/api/v1/sync' \
+  -X 'POST' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer your-token-here' \
+  -H 'Client-ID: cca4ad10-dc35-4572-8f11-125dc465428a'
+  -d '{
+	  "requests": [
+		  {
+			  "type": "subscription",
+			  "action": "unsubscribe",
+			  "action_id": "9c0de111-fcdb-4463-9e2e-400b624e27f6",
+			  "occurred_at": "2026-07-12T12:10:00.1Z",
+			  "data": {
+				  "sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d7"
+			  }
+		  },
+	  ]
+	}'
+```
+
+#### Response {#unsubscribe-response}
+
+When the server receives a payload containing `"unsubscribe"` actions, it must follow these rules:
+
+1. If no entity with a matching `sync_id` is found:
+   1. Return the action payload with a `status` of `rejected` and a `reason` of `"Entity not found"`.
+1. If a subscription entity with a matching `sync_id` exists and has an `unsubscribed_at` timestamp that is earlier than the `occurred_at` timestamp of the payload:
+   1. Return the entity with a `status` of `ignored`.
+1. If a subscription entity with a matching `sync_id` exists and has no `unsubscribed_at` timestamp:
+   1. Set the `unsubscribed_at` timestamp on the entity to the `occurred_at` timestamp submitted with  the action.
+   1. Return the full updated entity.
+
+| Property       | Type          | Description                                                                             |
+|----------------|---------------|-----------------------------------------------------------------------------------------|
+| `results`      | Array         | All affected entities in their latest state                                             |
+| `[].action`    | String        | The action in the request                                                               |
+| `[].action_id` | String (UUID) | The client-generated action ID                                                          |
+| `[].type`      | String        | The target entity type                                                                  |
+| `[].status`    | String (enum) | The [status](/specs/sync#action-statuses) of the action                                 |
+| `[].reason`    | String        | The reason an update was rejected by the server. Only applies if `status` is `rejected` |
+| `[].entity`    | Object        | The affected [subscription entity](#data-model)                                         |
+
+```json title="Response"
 {
-   "data": [
-      {
-         "uuid": "4790ba1b-1d4e-5f24-886e-7359eb98d52d",
-         "status": "subscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
-            "feed_url": "https://example.com/feed1.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-16T05:20:48.000Z",
-            "created_at": "2026-03-16T06:05:02.000Z",
-            "updated_at": "2026-03-16T06:05:02.000Z"
-         }
-      },
-      {
-         "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "status": "subscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
-            "feed_url": "https://example.com/feed2.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-15T03:05:01:000Z",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-16T06:05:02:000Z"
-         }
-      },
-      {
-         "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "status": "unsubscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
-            "feed_url": "https://example.com/feed3.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-15T03:05:01:000Z",
-            "unsubscribed_at": "2026-03-16T05:21:48.000Z",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-16T06:05:02:000Z"
-         }
-      },
-      {
-         "uuid": "100c7e48-085f-4906-a91e-40c3c4b1a73e",
-         "status": "invalid_action",
-         "received": "2026-03-16T06:05:02:000Z",
-      },
-      {
-         "uuid": "100c7e48-085f-4906-a91e-40c3c4b1a73e",
-         "status": "malformed_feed_uuid",
-         "received": "2026-03-16T06:05:02:000Z",
-      }
-   ]
+	"results": [
+		{
+			"type": "subscription",
+			"action": "unsubscribe",
+			"action_id": "9c0de111-fcdb-4463-9e2e-400b624e27f6",
+			"status": "applied",
+			"entity": {
+				"sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d7",
+				"guid": "677ea490-690e-51cb-8b43-755df6c55270",
+				"feed_url": "https://example.com/feed1",
+				"subscribed_at": "2026-07-11T15:30:00.1Z",
+				"unsubscrbed_at": "2026-07-12T12:10:00.1Z"
+			}
+		}
+	]
 }
 ```
 
-## 8. Synchronization
+### Update {#update}
 
-### 8.1 Endpoint
+Clients may update the subscription entity metadata by submitting an `update` action to the sync endpoint.
 
-```http /[\\?\&](.*?)\=/
-GET /api/v1/subscriptions?cursor={cursor}&page_size=30&direction={direction}&include_errors=false
+To update subscriptions, the client must submit an array of action payloads to the [sync endpoint](/specs/sync) containing the following properties:
+
+| Property        | Type                | Description                                                  |
+|-----------------|---------------------|--------------------------------------------------------------|
+| `type`          | String              | Must be `subscription`                                       |
+| `action`        | String              | Must be `update`                                             |
+| `action_id`     | String (UUID)       | A client-generated UUIDv4 that identifies the action         |
+| `occurred_at`   | Timestamp (RFC3339) | The UTC timestamp at which the action occurred on the client |
+| `data`          | Object              | The data payload containing subscription details             |
+| `data.sync_id`  | String (UUID)       | The server-generated sync ID for the entity                  |
+| `data.guid`     | String              | The podcast feed `guid` value                                |
+| `data.feed_url` | String              | The canonical URL of the subscription feed                   |
+
+```sh title="Example"
+curl '/api/v1/sync' \
+  -X 'POST' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <access_token>' \
+  -H 'Client-ID: cca4ad10-dc35-4572-8f11-125dc465428a'
+  -d '{
+	  "requests": [
+		  {
+			  "type": "subscription",
+			  "action": "update",
+			  "action_id": "aec337fe-7a9f-4d02-90ad-19d1f552c972",
+			  "occurred_at": "2026-07-13T14:09:42.0Z",
+			  "data": {
+				  "sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d7",
+				  "guid": "21dad7d6-94d7-48bc-8052-aa3384624f78",
+				  "feed_url": "https://example.com/feed3"
+			  }
+		  },
+	  ]
+	}'
 ```
 
-Clients use this endpoint to request actions that have been submitted to the server since the provided `cursor`.
+#### Response {#update-response}
 
-### 8.2 Purpose
+When the server receives a payload containing `update` actions, it must follow these rules:
 
-This endpoint returns a list of valid and applied actions taken on an authenticated principal's Subscriptions. Clients may use this endpoint to fetch a list of updates to Subscriptions since they last came online.
+1. If no entity with a matching `sync_id` is found:
+   1. Return the action payload with a `status` of `rejected` and a `reason` of `"Entity not found"`.
+1. If a subscription with a matching `sync_id` exists and the last modified timestamp of the entity is later than the `occurred_at` timestamp of the payload.
+   1. Return the entity with a `status` of `ignored`
+1. If a subscription with a matching `sync_id` exists and the last modified timestamp of the entity is earlier than the `occurred_at` timestamp of the payload:
+   1. Set the `guid` and `feed_url` fields to the values in the payload.
+   1. Update the last modified timestamp and last modified by identifier.
+   1. Return the updated entity payload.
 
-### 8.3 Request parameters
-
-| Parameter        | Type    | In    | Required | Description                                                                          |
-| ---------------- | ------  | ----- | -------- | ------------------------------------------------------------------------------------ | 
-| `cursor`         | string  | Query | No       | The Base64-encoded cursor to query from                                              |
-| `page_size`      | number  | Query | No       | The number of results to return per-page                                             |
-| `direction`      | string  | Query | No       | The direction in which to search for results. `ascending` (default) or `descending`. | 
-| `include_errors` | boolean | Query | No       | Whether to include invalid actions (default `false`)                                 |
-
-### 8.4 Response format
-
-The Server MUST respond to valid requests with a `200` status.
-
-| Field                                   | Type             | Required | Description                                                                 |
-| --------------------------------------- | ---------------- | -------- | --------------------------------------------------------------------------- |
-| `next_cursor`                           | string           | No       | The Base64-encoded cursor for the next page of results                      |
-| `prev_cursor`                           | string           | Yes      | The Base64-encoded cursor for the current page of results                   |
-| `has_next`                              | boolean          | No       | Whether there are more results for the given request                        |
-| `data`                                  | array            | Yes      | The array of response objects                                               |
-| `data.uuid`                             | UUID             | Yes      | The Client-generated UUIDv4 identifier for the action                       |
-| `data.status`                           | string           | Yes      | The Server-authoritative [response status](#84-response-statuses)           |
-| `data.received`                         | string (RFC3339) | Yes      | The Server-authoritative UTC timestamp at which the request was received    |
-| `data[].feed`                           | object           | No       | The referenced Feed item for the action                                     |
-| `data[].feed.uuid`                      | UUID             | Yes      | The calculated UUIDv5 identifier for the feed                               |
-| `data[].feed.feed_url`                  | string           | Yes      | The canonical URL of the feed RSS file                                      |
-| `data[].subscription`                   | object           | No       | The Subscription entity                                                     |
-| `data[].subscription.subscribed_at`     | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.unsubscribed_at`   | string (RFC3339) | No       | The UTC timestamp at which the User subscribed to the Feed                  |
-| `data[].subscription.created_at`        | string (RFC3339) | Yes      | The Server-authoritative creation UTC timestamp for the Subscription entity |
-| `data[].subscription.updated_at`        | string (RFC3339) | Yes      | The Server-authoritative update UTC timestamp for the Subscription entity   |
-
-### 8.5 Client behavior
-
-1. The Client MAY provide any combination of supported query parameters, or none.
-1. The Client SHOULD compare results in the response against its internal state to resolve the latest state of the User's Subscriptions.
-
-### 8.6 Server behavior
-
-1. The Server MUST return a `400` error if the request contains invalid query parameters.
-1. The Server MUST calculate and encode a cursor value for the given request using the provided parameters, or default parameters.
-1. The Server MUST NOT return any actions that were not applied due to errors, unless the `include_errors` parameter is `true`.
-1. The Server MAY use any method to calculate a cursor provided it meets the following criteria:
-   1. The cursor MUST contain **at least one** ordered parameter. For example, `received` timestamp or incremental database IDs.
-   1. The cursor MUST NOT contain any sensitive data.
-   1. The cursor MUST be Base64-encoded.
-1. The Server MUST return actions relating to the authenticated principal only. The Server MUST NOT return any actions associated with other users.
-1. The Server SHOULD set sensible default values for any parameters whose default is not explicitly stated in this document.
-1. The Server MUST return **at most** the number of results specified in the `page_size` parameter.
-
-### 8.7 Example
-
-```sh
-curl -X GET "https://opa-server.test/api/v1/subscriptions?page_size=50"
-```
-
-```jsonc title="Response"
+```json title="Response"
 {
-   "data": [
-      {
-         "uuid": "4790ba1b-1d4e-5f24-886e-7359eb98d52d",
-         "status": "subscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "2fa174b5-2cd8-5c07-b086-fc60045fd9bf",
-            "feed_url": "https://example.com/feed1.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-16T05:20:48.000Z",
-            "created_at": "2026-03-16T06:05:02.000Z",
-            "updated_at": "2026-03-16T06:05:02.000Z"
-         }
-      },
-      {
-         "uuid": "987f1cad-807f-4c00-88aa-277fd470697a",
-         "status": "unsubscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "34a12041-bdcd-5a3a-be5e-657315db7c44",
-            "feed_url": "https://example.com/feed2.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-15T03:05:01:000Z",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-16T06:05:02:000Z"
-         }
-      },
-      {
-         "uuid": "4dcf3a4a-42dd-4658-88f6-c71887a04bb8",
-         "status": "unsubscribed",
-         "received": "2026-03-16T06:05:02:000Z",
-         "feed": {
-            "uuid": "fc4ed290-4621-54fe-b5b4-a001343aeed7",
-            "feed_url": "https://example.com/feed3.rss/",
-         },
-         "subscription": {
-            "subscribed_at": "2026-03-15T03:05:01:000Z",
-            "unsubscribed_at": "2026-03-16T05:21:48.000Z",
-            "created_at": "2026-03-15T03:05:01:000Z",
-            "updated_at": "2026-03-16T06:05:02:000Z"
-         }
-      },
-      {
-         "uuid": "100c7e48-085f-4906-a91e-40c3c4b1a73e",
-         "status": "invalid_action",
-         "received": "2026-03-16T06:05:02:000Z",
-      },
-      {
-         "uuid": "100c7e48-085f-4906-a91e-40c3c4b1a73e",
-         "status": "malformed_feed_uuid",
-         "received": "2026-03-16T06:05:02:000Z",
-      }
-   ],
-   "prev_cursor": "aWQ9MXxwYWdlX3NpemU9MzA=",
-   "has_next": false
+	"results": [
+		{
+			"type": "subscription",
+			"action": "update",
+			"action_id": "aec337fe-7a9f-4d02-90ad-19d1f552c972",
+			"status": "applied",
+			"data": {
+				"sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d7",
+				"guid": "21dad7d6-94d7-48bc-8052-aa3384624f7",
+				"feed_url": "https://example.com/feed3",
+				"subscribed_at": "2026-07-11T15:30:00.1Z",
+				"unsubscrbed_at": "2026-07-12T12:10:00.1Z"
+			}
+		}
+	]
 }
 ```
 
-[^1]: https://podcasting2.org/docs/podcast-namespace/tags/guid
+## Get all subscriptions {#get-all}
 
+Clients may request a [paginated](/specs/conventions#pagination) list of subscription entities from the `/api/v1/subscriptions` endpoint. The server must return only subscriptions belonging to the requesting user.
+
+```txt title="Endpoint"
+GET /api/v1/subscriptions
+```
+
+The server must return only subscriptions with no `unsubscribed_at` timestamp by default.
+
+### Query parameters {#get-all-query-params}
+
+The client may use the following query parameters when querying the subscriptions endpoint:
+
+| Parameter              | Type    | In    | Description                                                |
+|------------------------|---------|-------|------------------------------------------------------------|
+| `include_unsubscribed` | Boolean | Query | Whether to include unsubscribed feeds. Defaults to `false` |
+| `since`                | String  | Query | The pagination cursor position to query from               |
+| `limit`                | Number  | Query | The number of results to return per page. Defaults to `30` |
+
+### Example {#get-all-example}
+
+```sh title="Example request" /(limit=.*?)\&/ /(include_unsubscribed=.*?)\'/
+curl '/api/v1/subscriptions?limit=30&include_unsubscribed=true' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <access_token>' \
+  -H 'Client-ID: cca4ad10-dc35-4572-8f11-125dc465428a'
+```
+
+```json title="Example response"
+{
+	"results": [
+		{
+			"sync_id": "4648b4d7-90bf-497c-a5e7-8383d1083d76",
+			"guid": "677ea490-690e-51cb-8b43-755df6c55270",
+			"feed_url": "https://example.com/feed1",
+			"subscribed_at": "2026-07-11T15:30:00.1Z"
+		},
+		{
+			"sync_id": "aa840671-fc3b-430b-b8f2-92e6e9c7832b",
+			"guid": "a388867e-ce91-54d3-a116-114b07bb84e9",
+			"feed_url": "https://example.com/feed2",
+			"subscribed_at": "2026-03-15T12:06:04.1Z",
+			"unsubscribed_at": "2026-07-12T12:10:00.1Z"
+		}
+	],
+	"has_next": false
+}
+```
+## Get a single subscription {#get-one}
+
+Clients may request a single subscription's details by querying its `sync_id`. The server must respond with the full subscription entity whether the `unsubscribed_at` timestamp is populated or not.
+
+```txt title="Endpoint" "{sync_id}"
+GET /api/v1/subscriptions/{sync_id}
+```
+
+The server must respond with a `404 Not found` if no matching subscription is found for the requesting user.
+
+### Query parameters {#get-ony-query-params}
+
+The following query parameters are required in all requests.
+
+| Parameter | Type          | In   | Description                                                |
+|-----------|---------------|------|------------------------------------------------------------|
+| `sync_id` | String (UUID) | Path | The server-generated `sync_id` for the target subscription |
+
+### Example {#get-one-example}
+
+```sh title="Example" "aa840671-fc3b-430b-b8f2-92e6e9c7832b"
+curl '/api/v1/subscriptions/aa840671-fc3b-430b-b8f2-92e6e9c7832b \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <access_token>' \
+  -H 'Client-ID: cca4ad10-dc35-4572-8f11-125dc465428a'
+```
+
+```json title="Example response"
+{
+	"sync_id": "aa840671-fc3b-430b-b8f2-92e6e9c7832b",
+	"guid": "a388867e-ce91-54d3-a116-114b07bb84e9",
+	"feed_url": "https://example.com/feed2",
+	"subscribed_at": "2026-03-15T12:06:04.1Z",
+	"unsubscribed_at": "2026-07-12T12:10:00.1Z"
+}
+```
