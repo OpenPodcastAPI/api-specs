@@ -88,7 +88,7 @@ curl '/auth/refresh' \
 }
 ```
 
-If the refresh token is expired or invalid, the server returns an authentication error (typically `401 Unauthorized`). The client must then authenticate again using the `/auth/login` endpoint.
+If the refresh token is expired or invalid, the server must return an `401 Unauthorized` error. The client must then authenticate again using the `/auth/login` endpoint.
 
 ## Using the Access Token {#use-access-token}
 
