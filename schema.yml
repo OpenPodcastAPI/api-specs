@@ -107,13 +107,14 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: object
-                    required:
-                      - results
-                    properties:
-                      results:
-
+                type: object
+                required:
+                  - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActionObject'
         '401':
           description: Access token is invalid
           content:
@@ -240,7 +241,7 @@ paths:
   /api/v1/subscriptions/{sync_id}:
     get:
       tags:
-        - Subscriptionsh
+        - Subscriptions
       operationId: getSubscription
       security:
         - bearerAuth: []
@@ -307,7 +308,7 @@ components:
                 items:
                   oneOf:
                     - $ref: '#/components/schemas/SubscriptionAction'
-                  discrimintator:
+                  discriminator:
                     propertyName: type
                     mapping:
                       subscription: '#/components/schemas/SubscriptionAction'
@@ -507,13 +508,11 @@ components:
           subscribed_at: 2026-03-15T12:06:04.1Z
           unsubscribed_at: 2026-07-12T12:10:00.1Z
     PersistedSubscription:
-      type: object
-      required:
-        - sync_id
-        - guid
-        - feed_url
-        - subscribed_at
-      $ref: '#/components/schemas/Subscription'
+      allOf:
+        - $ref: '#/components/schemas/Subscription'
+        - type: object
+          required:
+            - sync_id
     ActionId:
       type: string
       format: uuid
@@ -539,7 +538,6 @@ components:
           type: string
         data:
           type: object
-
     SubscriptionActions:
       type: string
       enum:
@@ -551,58 +549,45 @@ components:
         - $ref: '#/components/schemas/SyncAction'
         - type: object
           properties:
-            action:
-              $ref: '#/components/schemas/SubscriptionActions'
             type:
               type: string
-              description: The target entity type
-              enum:
-                - subscription
+              enum: [subscription]
+            action:
+              $ref: '#/components/schemas/SubscriptionActions'
             data:
               $ref: '#/components/schemas/Subscription'
-    ActionResult:
+    SyncActionResult:
       type: object
       required:
+        - action_id
         - type
         - action
-        - action_id
         - status
-        - data
       properties:
+        action_id:
+          $ref: '#/components/schemas/ActionId'
         type:
           type: string
           description: The target entity type
-          enum:
-            - subscription
         action:
-          allOf:
-            - $ref: '#/components/schemas/SubscriptionActions'
-        action_id:
-          $ref: '#/components/schemas/ActionId'
+          type: string
+          description: The action being taken on the target
         status:
           type: string
-          description: The status of the action
-          enum:
-            - applied
-            - ignored
-            - rejected
-        data:
-          type: object
-          description: The canonical state of the target entity
+          enum: [applied, ignored, rejected]
     SubscriptionActionResult:
       allOf:
-        - $ref: '#/components/schemas/ActionResult'
+        - $ref: '#/components/schemas/SyncActionResult'
         - type: object
           properties:
-            action: 
-              $ref: '#/components/schemas/SubscriptionActions'
             type:
               type: string
-              description: The target entity type
-              enum:
-                - subscription
+              enum: [subscription]
+            action:
+              $ref: '#/components/schemas/SubscriptionActions'
             data:
               $ref: '#/components/schemas/PersistedSubscription'
+
     SyncActionResponse:
       type: object
       required:
@@ -613,10 +598,12 @@ components:
           items:
             oneOf:
               - $ref: '#/components/schemas/SubscriptionActionResult'
-            discrimintator:
+              # - $ref: '#/components/schemas/EpisodeActionResult'
+            discriminator:
               propertyName: type
               mapping:
                 subscription: '#/components/schemas/SubscriptionActionResult'
+                # episode: '#/components/schemas/EpisodeActionResult'
   securitySchemes:
     bearerAuth:
       type: http
