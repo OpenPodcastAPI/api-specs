@@ -46,6 +46,15 @@ export default defineConfig({
               link: "specs",
             },
             {
+              label: "Conventions",
+              collapsed: true,
+              items: [{
+                autogenerate: {
+                  directory: "specs/conventions",
+                }
+              }],
+            },
+            {
               label: "Subscriptions",
               badge: {
                 text: "C",
