@@ -7,7 +7,10 @@ export default defineConfig({
     starlight({
       title: "Open Podcast API",
       favicon: "favicon.ico",
-      customCss: ["styles/badges.css"],
+      customCss: ["styles/API-classification.css"],
+      components: {
+        Banner: "./src/components/Banner.astro",
+      },
       social: [
         {
           icon: "github",

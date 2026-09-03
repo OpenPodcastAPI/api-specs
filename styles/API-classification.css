@@ -1,0 +1,22 @@
+.sl-badge.core,
+.sl-banner.core-endpoint,
+.sl-banner.core-action {
+	background-color: var(--sl-color-green-low);
+	border-color: var(--sl-color-green);
+	color: var(--sl-color-green-high);
+}
+
+.sl-badge.optional,
+.sl-banner.optional-endpoint,
+.sl-banner.optional-action {
+	background-color: var(--sl-color-blue-low);
+	border-color: var(--sl-color-blue);
+	color: var(--sl-color-blue-high);
+}
+
+.sl-banner.core-endpoint,
+.sl-banner.core-action,
+.sl-banner.optional-endpoint,
+.sl-banner.optional-action {
+	box-shadow: none;
+}
