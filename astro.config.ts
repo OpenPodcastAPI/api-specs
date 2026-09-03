@@ -43,6 +43,10 @@ export default defineConfig({
             },
             {
               label: "Subscriptions",
+              badge: {
+                text: "Core",
+                variant: "caution",
+              },
               collapsed: true,
               items: [{
                 autogenerate: {
