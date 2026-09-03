@@ -45,7 +45,7 @@ export default defineConfig({
             {
               label: "Subscriptions",
               badge: {
-                text: "Core",
+                text: "C",
                 class: "core",
               },
               collapsed: true,

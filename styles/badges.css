@@ -1,11 +1,11 @@
 .sl-badge.core {
-  background-color: var(--sl-color-orange-low);
-  border-color: var(--sl-color-orange);
-  color: var(--sl-color-orange-high);
-}
-
-.sl-badge.optional {
   background-color: var(--sl-color-green-low);
   border-color: var(--sl-color-green);
   color: var(--sl-color-green-high);
+}
+
+.sl-badge.optional {
+  background-color: var(--sl-color-blue-low);
+  border-color: var(--sl-color-blue);
+  color: var(--sl-color-blue-high);
 }
