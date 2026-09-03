@@ -7,6 +7,7 @@ export default defineConfig({
     starlight({
       title: "Open Podcast API",
       favicon: "favicon.ico",
+      customCss: ["styles/badges.css"],
       social: [
         {
           icon: "github",
@@ -45,7 +46,7 @@ export default defineConfig({
               label: "Subscriptions",
               badge: {
                 text: "Core",
-                variant: "caution",
+                class: "core",
               },
               collapsed: true,
               items: [{
