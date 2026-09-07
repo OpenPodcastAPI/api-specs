@@ -3,12 +3,13 @@ title: Update a subscription
 description: Update details about a subscription
 sidebar:
   order: 5
+  badge:
+    text: C
+    class: core
+apiClassification: core-action
 ---
 
-import CoreAction from "@partials/_core-action.mdx";
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-
-<CoreAction />
 
 ```http title="Endpoint"
 PATCH /v1/subscriptions/{guid}
