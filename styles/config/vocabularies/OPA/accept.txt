@@ -1,0 +1,2 @@
+[nN]amespace
+[bB]oolean

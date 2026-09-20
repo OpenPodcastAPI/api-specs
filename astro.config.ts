@@ -1,8 +1,18 @@
 import { defineConfig } from "astro/config";
+import { satteri } from '@astrojs/markdown-satteri';
 import starlight from "@astrojs/starlight";
 import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi'
 
 export default defineConfig({
+  markdown: {
+    processor: satteri({
+      features: {
+	gfm: true,
+	headingAttributes: true,
+	directive: true,
+      },
+    })
+  },
   integrations: [
     starlight({
       title: "Open Podcast API",
@@ -41,14 +51,29 @@ export default defineConfig({
               label: "Introduction",
               link: "specs",
             },
+	    {
+	      label: "Conventions",
+	      link: "specs/conventions"
+	    },
+	    {
+	      label: "Authentication",
+	      link: "specs/authentication"
+	    },
+	    {
+	      label: "Synchronization",
+	      link: "specs/sync",
+	      badge: {
+		text: "Core",
+		variant: "success"
+	      }
+	    },
             {
               label: "Subscriptions",
-              collapsed: true,
-              items: [{
-                autogenerate: {
-                  directory: "specs/subscriptions",
-                }
-              }],
+              link: "specs/subscriptions",
+	      badge: {
+		text: 'Core',
+		variant: 'success'
+	      }
             },
           ],
         },
