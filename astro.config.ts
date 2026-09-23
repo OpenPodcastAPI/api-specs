@@ -74,9 +74,11 @@ export default defineConfig({
 				variant: "caution",
 			  },
               collapsed: true,
-              autogenerate: {
-                directory: "specs/episodes",
-              },
+              items: [{
+                autogenerate: {
+                  directory: "specs/episodes",
+                }
+              }],
             },
           ],
         },
