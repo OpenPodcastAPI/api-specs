@@ -7,6 +7,10 @@ export default defineConfig({
     starlight({
       title: "Open Podcast API",
       favicon: "favicon.ico",
+      customCss: ["styles/API-classification.css"],
+      components: {
+        Banner: "./src/components/Banner.astro",
+      },
       social: [
         {
           icon: "github",
@@ -42,7 +46,20 @@ export default defineConfig({
               link: "specs",
             },
             {
+              label: "Conventions",
+              collapsed: true,
+              items: [{
+                autogenerate: {
+                  directory: "specs/conventions",
+                }
+              }],
+            },
+            {
               label: "Subscriptions",
+              badge: {
+                text: "C",
+                class: "core",
+              },
               collapsed: true,
               items: [{
                 autogenerate: {
