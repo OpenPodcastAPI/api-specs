@@ -67,6 +67,19 @@ export default defineConfig({
                 }
               }],
             },
+            {
+              label: "Episodes",
+			  badge: {
+			    text: "Core",
+				variant: "caution",
+			  },
+              collapsed: true,
+              items: [{
+                autogenerate: {
+                  directory: "specs/episodes",
+                }
+              }],
+            },
           ],
         },
 	...openAPISidebarGroups,

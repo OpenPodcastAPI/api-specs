@@ -1,0 +1,60 @@
+---
+title: Add or update episodes
+description: Create new or update existing episodes for a user
+sidebar:
+  order: 5
+  badge:
+    text: Core
+    variant: caution
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```http title="Endpoint"
+POST /v1/episodes
+```
+
+This endpoint enables clients to register new episodes for or change information of episodes relating to the authenticated user. It returns an array of `success` responses for newly added episodes, and an array of `failure` responses for episodes that couldn't be added.
+
+This endpoint only accepts an array of objects, as it serves both for the creation and updating of a single and a batch of episodes.
+
+## Related fields
+
+See the [Overview](index) page for an overview of the fields used for this end-point.
+
+## Request parameters
+
+The client MUST provide a list of objects containing a set of parameters, which depend on the presence of a `sync_id`:
+* if the `sync_id` of the episode is known:
+    * `podcast_guid`
+    * `sync_id` (of the episode)
+* if there is no (known) `sync_id` (yet):
+    * all identifier fields except `sync_id` (`podcast_guid`, `episode_guid`, `title`, `publish_date`, `enclosure_url`, `episode_url`),
+    * `temporary_id` (optional),
+* and always: any data data fields that were changed
+
+## Client side behavior
+
+:::note[Reminder: pull first, post later]
+As discussed in the [Generic principles], clients SHOULD pull first and post later. In he process, clients are expected to do some [deduplication](identification-deduplication).
+:::
+
+Clients SHOULD adopt a **lazy synchronization** approach. This means:
+* not syncing immediately when a new episode is found (e.g. after refreshing a feed)
+* only syncing after an episode has been interacted with by the user or system (e.g. after initiating an automatic download)
+
+Clients MAY leave the `sync_id` empty when registering new episodes, and leave the generation of the `sync_id` to the server.
+
+Clients MAY provide a `temporary_id` with the request (e.g. the local database index) that the server will reflect in its response, so that the client can match the episodes from the server response more easily.
+
+## Server side behavior
+
+Servers SHOULD NOT rely on clients for episode discovery. If the server also has a 'client' component (a user interface to interact with subscriptions and episodes), it SHOULD independently ensure episode discovery (refresh feeds or rely on third party episode APIs). This is due to the lazy synchronization applied by clients - if servers do not fetch episodes themselves then the user might notice certain episodes are missing.
+
+### `sync_id`
+
+Servers MUST respond with a `sync_id` at all times. If none exists, they MUST be generated. Episode `sync_id`s are of type guid and could, for example, be the internal episode ID.
+
+Servers MUST respond with the `temporary_id` for the episode if it was provided by the client. ??What did we say again about asynchronous processing? How long does this temporary ID need to be preserved by the server??

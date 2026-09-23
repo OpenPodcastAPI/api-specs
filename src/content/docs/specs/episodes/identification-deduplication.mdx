@@ -1,0 +1,113 @@
+---
+title: '[WIP] Episode identification & deduplicating'
+description: TBD
+sidebar:
+  label: Idenfication & deduplication
+  order: 2
+---
+
+:::note[Episode matching & deduplication]
+TODO: Describe or reference to information about episode matching and deduplication. See:
+* 2023-05-30 https://pad.funkwhale.audio/oCfs5kJ6QTu02d_oVHW7DA#Deduplication
+* 2024-04-16 https://pad.funkwhale.audio/s/6mWuDexgz#Episode-deduplication
+* 2024-04-24 https://pad.funkwhale.audio/kIRwEOYDRNqTA4np6vbBVg#
+* 2024-05-06 https://pad.funkwhale.audio/2iNOQ2N2RF-ICMQcPWyyYQ# ✅ Comments processed
+:::
+
+Decentralisation is a key aspect of the Open Podcast API specification. This means that clients need to be able to independently retrieve data from RSS feeds, which might cause duplication if episodes aren't matched correctly. In a decentralised model, entities might also not necessarily trust other entities, which could be misbehaving and (accidentally) cause all episodes to be merged into one.
+
+To enable a reliable and decentralised approach without duplicate episodes, three principles are adopted:
+* extensive provision of identifiers for episode matching - see the previous page [Identifier fields](../#identifier-fields)
+* relying on clients to do episode matching - described below
+* `sync_id`s are used to exchange episode data after a first exchange about the episode 
+
+## Waterfall episode matching
+
+:::note[Guidelines]
+While each server and client should do as it pleases, based on previous experience the Open Podcast API team recommends applying the following.
+:::
+
+The waterfall process to match episodes is run:
+* at the client side when refreshing a feed
+* at the server side when recieving a 'new episode' instruction from a client
+* at the client side when joins an existing family (the 'pull first, post later' principle)
+
+Clients and servers might also skip deduplication if a new episode is provided by a known and trusted entity (e.g. if server and client are from the same developer and have adopted shared logic).
+
+Matching must happen only within a single feed, not across feeds. This is because the same `episode_guid` could (accidentally) be used between different feeds. There is one **exception**, however: if it concerns a [remote item](https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/tags/remote-item.md) the `episode_guid` is *expected* to be same as in the RSS feed identified in the `feedUrl` or `feedGuid` attributes of the `podcast:remoteItem` element.
+* If a client or server supports the `remoteItem` tag, it is expected to treat the two episodes as a 'duplicate'. (See also note on Tombstoning in the [Overview](..) page.)
+
+### Waterfall order
+The waterfall checks fields in this order:
+1. `episode_guid`
+2. `enclosure_url`
+3. Matching of at least 2 out of 3 relevant fields:
+    1. `publish_date`
+    2. `episode_url`
+    3. `title`
+
+:::tip[What if a feed has the same episode twice with the same `episode_guid`?]
+Imagine, a podcaster goes on holiday, and republishes existing episode. While usually they do record a new intro, it's defendable to release a new item but with the same `episode_guid`.
+
+In this case, as per the waterfall order above, we would recommend marking the episode as duplicate. While released on a different date, the content is largely the same and if the user has already listened to it, they probably wouldn't want to listen to it again. At the same time, in case the episode wasn't listened to yet, a client might decide to display it again as it were a new episode.
+:::
+
+:::note[Why 2 out of 3 in the last step?]
+We recognize that not all servers and clients might have all data at all times. Podverse, for example, cleans its database after a while and drops the `title` data. With the current guideline, they would still be able to reliable deduplciate episodes.
+:::
+
+### Waterfall principles
+In the waterfall process, the following principles apply:
+* Field data must be exact matches in order to proceed through the waterfall.
+* For each step:
+  * If there is no match, considering again all episodes in the next step.
+  * If there are one or multiple exact matches, consider (only) those matched episodes in the next step.
+* When the end of the waterfall is reached and
+  * no match is found, then the episode is considered unique
+  * one or more matches are found, then the episode(s) is (are) considered a duplicate and must be deduplicated (see [deduplication](#deduplication) endpoint)
+
+:::note[Open question: step out of waterfall if guid match?]
+In the [2023-05-30](https://pad.funkwhale.audio/oCfs5kJ6QTu02d_oVHW7DA#:~:text=matching%20proposal%20in%20pseudo-code%20(click%20to%20expand)) meeting notes we have pseudo code that notes that if the GUID is present, we shoudl decide exclusively based on it. Later notes from [2024-05-06](https://pad.funkwhale.audio/2iNOQ2N2RF-ICMQcPWyyYQ#:~:text=episode%E2%80%99%20from%20client.-,guid,-Enclosure%20URL) don't explicitly reject this principle.
+
+:::note[Differing (conflicting) matching principles]
+It is possible that clients have different deduplication methods. How would this work?
+* AntennaPod and Kasts have different methods
+* AntennaPod finds a new episode in the RSS feed, determines it a duplicate and merges the two episodes locally. It doesn't inform the server.
+* Kasts finds the same new episode in the RSS feed, but determines it unique. It informs the server via `POST /v1/episodes`.
+* The server does its own deduplication, as recommended by the spec [K-NL: This is a bit of a duplication of work?] The server might agree with AntennaPod or with Kasts, depending on its own standards.
+  * If the server determines the episode unique: it generates a `sync_id` and sends this back to Kasts. It informs AntennaPod of a new episode (the next time AntennaPod asks 'What's new since x'), which trusts the server about this new episode, and creates an additional entry in its database. Both episodes now exist.
+  * If the server determines the episode a duplicate: it replies with a 'fail' message for the episode, noting that it considers a duplicate of episode `podcast_guid`,`sync_id`. [K-NL: podcast guid is normally superfluous as the episode can only be duplicate within a feed, and even with remote items the `sync_id` should still be unique and usable.]
+:::
+
+:::note[A partial waterfall]
+From the [2024-05-06](https://pad.funkwhale.audio/2iNOQ2N2RF-ICMQcPWyyYQ#) meeting notes:
+We could imaging that, for efficiency purposes, a server only does step 1 of the waterfall (`episode_guid`). Then, at a later time the client can check in more detail and use the deduplication mechanism and -endpoint to deduplicate
+:::
+
+:::note[Open question from meeting notes]
+> [2024-05-06](https://pad.funkwhale.audio/2iNOQ2N2RF-ICMQcPWyyYQ#)
+> Is there a difference between ‘episode matching’ (assigning a sync-ID at client level) and deduplication?
+:::
+
+[K-NL: the Capabilities response/endpoint should probably also inform the client of episode matching capabilities during regular processing, in addition to the declaring of a deduplciation endpoint.]
+
+## Deduplication endpoint
+
+TO BE DESCRIBED - documentation should go to dedicated endpoint page.
+
+### Deduplication and data storage
+
+Deduplication MUST be a per-user action. [K-NL: Why does it? [The notes don't explain which scenarios would require this.](https://pad.funkwhale.audio/kIRwEOYDRNqTA4np6vbBVg#Question-about-how-server-stores-episode-data) Probably because of what I noted under `sync_id` on the [Overview](..#identifier-fields) page?]
+
+Database architecture of servers is of course up to the implementers, but an important consideration. Single-user ('small web') servers might keep a simple structure with one row per episode, while big instances would probably leverage multiple tables to store episode data efficiently.
+
+## Sync scenarios
+Given the decentralised nature there are certain sync scenarios which could lead to the need to match and deduplicate episodes. The above processes normally ensures that the following scenarios are handled graciously.
+
+### 1 episode data gets out of sync and has to be rematched
+A user has two phones, both of which independently pull the RSS feed. Phone A dies right after it refreshed the feed. Phone B pulls the RSS feed as well, informs the server of a new episode, and receives a `sync_id` for the episode. The podcast publisher doesn't follow protocol and gives the episode a new `episode_guid` while fixing a typo in the `title`. Phone B picks up both changes and tells the server to update its data too. Phone A comes back online and syncs with the server, not aware (yet) of the changed `episode_guid` and `title`. It tells the server to create a new a new episode.
+* If the server supports deduplication, it can itentify the new episode and tell Phone A that the episode already exists, providing the updated fields together with the `sync_id`.
+* If the server does not support deduplication, it will create a new episode in the database which is also passed on to Phone B. Phone B recognises that it is a duplicate, and makes a call to the 'deduplication' endpoint. When that's done, the server informs phone A of the new situation.
+
+### 2 new client with existing data joins server
+A user has a phone and a tablet which both refresh feeds locally. The phone is already syncing with a server, but the tablet is not. The user links the tablet with the server for the first time. The server sends all information it has to the tablet, which then does deduplication, and informs the server if it has any more recent information that should be applied.

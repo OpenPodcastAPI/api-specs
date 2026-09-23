@@ -1,0 +1,22 @@
+---
+title: Get all episodes of a podcast
+description: Get all episodes for a subscription
+sidebar:
+  order: 4
+  badge:
+    text: Core
+    variant: caution
+---
+
+import CoreAction from "@partials/_core-action.mdx";
+
+<CoreAction />
+
+```http title="Endpoint"
+GET /v1/subscriptions/{guid}/episodes
+```
+
+TO DO. See [2023-05-30](https://pad.funkwhale.audio/oCfs5kJ6QTu02d_oVHW7DA#) meeting notes.
+
+
+`GET/PUT /subscriptions/{guid}/episodes/{sync_id}` --> Really needed? `GET/PUT /episodes` would suffice probably.
